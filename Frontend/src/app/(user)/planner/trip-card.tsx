@@ -1,6 +1,6 @@
 "use client";
 import {
-  CalendarDays, Users, MapPin, DollarSign,
+  CalendarDays, Users, MapPin, Wallet,
   CheckSquare, ChevronRight, Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -120,7 +120,7 @@ export function TripCard({ plan, onOpen }: Props) {
           )}
           {plan.budget > 0 && (
             <span className="ml-auto flex items-center gap-0.5 font-medium text-foreground">
-              <DollarSign size={13} />
+              <Wallet size={13} />
               {plan.budget.toLocaleString()}
             </span>
           )}

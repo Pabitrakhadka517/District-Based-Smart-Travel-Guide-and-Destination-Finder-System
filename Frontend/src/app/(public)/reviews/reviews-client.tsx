@@ -4,15 +4,16 @@ import Link from "next/link";
 import {
   Star, PenSquare, Loader2, CheckCircle2, Lock,
   ShieldCheck, Camera, SlidersHorizontal, ArrowUpDown,
-  X, ChevronDown, ImagePlus, ThumbsUp,
+  X, ChevronDown, ThumbsUp,
 } from "lucide-react";
-import type { Review } from "@/types";
+import type { Review, CloudinaryImage } from "@/types";
 import { ReviewCard } from "@/components/cards/review-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/ui/alert";
+import { GalleryUploader } from "@/components/dashboard/image-uploader";
 import { cn } from "@/lib/utils";
 import { useCreateReview, useDestinations } from "@/hooks/use-content";
 import { useAuth } from "@/store/auth-store";
@@ -107,7 +108,7 @@ export function ReviewsClient({ reviews }: { reviews: Review[] }) {
   const [title, setTitle]           = useState("");
   const [body, setBody]             = useState("");
   const [destinationId, setDestId]  = useState("");
-  const [photoUrls, setPhotoUrls]   = useState(["", "", ""]);
+  const [photos, setPhotos]         = useState<CloudinaryImage[]>([]);
   const [error, setError]           = useState<string | null>(null);
   const [success, setSuccess]       = useState(false);
 
@@ -137,11 +138,8 @@ export function ReviewsClient({ reviews }: { reviews: Review[] }) {
   /* ── form helpers ── */
   const resetForm = () => {
     setTitle(""); setBody(""); setRating(5); setHoverRating(0);
-    setDestId(""); setPhotoUrls(["", "", ""]); setError(null);
+    setDestId(""); setPhotos([]); setError(null);
   };
-
-  const updatePhotoUrl = (i: number, val: string) =>
-    setPhotoUrls((prev) => prev.map((u, idx) => (idx === i ? val : u)));
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,15 +147,13 @@ export function ReviewsClient({ reviews }: { reviews: Review[] }) {
     if (!destinationId) { setError("Please select a destination."); return; }
     if (body.trim().length < 20) { setError("Review must be at least 20 characters."); return; }
 
-    const filteredPhotos = photoUrls.filter((u) => u.trim());
-
     try {
       const created = await createReview.mutateAsync({
         destinationId,
         rating,
         title: title.trim(),
         body: body.trim(),
-        photos: filteredPhotos.length > 0 ? filteredPhotos : undefined,
+        photos: photos.length > 0 ? photos : undefined,
       });
       setList([created, ...list]);
       setSuccess(true);
@@ -374,38 +370,19 @@ export function ReviewsClient({ reviews }: { reviews: Review[] }) {
             />
           </div>
 
-          {/* Photo URLs */}
+          {/* Photos */}
           <div>
             <Label className="mb-1 flex items-center gap-1.5">
               <Camera size={13} /> Photos <span className="font-normal text-muted-foreground">(optional)</span>
             </Label>
-            <p className="mb-2 text-xs text-muted-foreground">Paste up to 3 photo URLs from your trip</p>
-            <div className="space-y-2">
-              {photoUrls.map((url, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <ImagePlus size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <input
-                      type="url"
-                      value={url}
-                      onChange={(e) => updatePhotoUrl(i, e.target.value)}
-                      placeholder={`Photo URL ${i + 1}…`}
-                      className="h-9 w-full rounded-xl border border-border bg-white py-2 pl-8 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring"
-                    />
-                  </div>
-                  {url && (
-                    <button
-                      type="button"
-                      onClick={() => updatePhotoUrl(i, "")}
-                      className="shrink-0 text-muted-foreground hover:text-destructive transition"
-                      aria-label="Clear URL"
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
+            <GalleryUploader
+              type="review"
+              value={photos}
+              onChange={setPhotos}
+              alt="Review photo"
+              label=""
+              max={5}
+            />
           </div>
 
           {error && <Alert variant="error">{error}</Alert>}

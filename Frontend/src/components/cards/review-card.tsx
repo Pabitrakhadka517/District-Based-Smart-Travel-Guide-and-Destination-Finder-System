@@ -1,12 +1,14 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
-import { ThumbsUp, ShieldCheck, ChevronLeft, ChevronRight, X, Camera, MapPin } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ThumbsUp, ShieldCheck, Camera, MapPin } from "lucide-react";
 import type { Review } from "@/types";
 import { Rating } from "@/components/ui/rating";
 import { formatDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { useVoteHelpful } from "@/hooks/use-content";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
+import { Lightbox } from "@/components/shared/lightbox";
+import { getImageUrl } from "@/lib/cloudinary";
 
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 
@@ -32,100 +34,6 @@ function relativeTime(dateStr: string): string {
   if (days < 30)   return `${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? "s" : ""} ago`;
   if (days < 365)  return `${Math.floor(days / 30)} month${Math.floor(days / 30) > 1 ? "s" : ""} ago`;
   return `${Math.floor(days / 365)} year${Math.floor(days / 365) > 1 ? "s" : ""} ago`;
-}
-
-/* ── Photo lightbox ──────────────────────────────────────────────────────── */
-
-interface LightboxProps {
-  photos: string[];
-  idx: number;
-  onClose: () => void;
-  onPrev: () => void;
-  onNext: () => void;
-}
-
-function PhotoLightbox({ photos, idx, onClose, onPrev, onNext }: LightboxProps) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape")      onClose();
-      if (e.key === "ArrowLeft")   onPrev();
-      if (e.key === "ArrowRight")  onNext();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, onPrev, onNext]);
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/92 backdrop-blur-sm"
-      onClick={onClose}
-    >
-      {/* Close */}
-      <button
-        onClick={onClose}
-        aria-label="Close"
-        className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white transition hover:bg-white/20"
-      >
-        <X size={18} />
-      </button>
-
-      <div
-        className="relative flex max-h-[90vh] max-w-[90vw] items-center justify-center"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={photos[idx]}
-          alt={`Photo ${idx + 1} of ${photos.length}`}
-          className="max-h-[85vh] max-w-[85vw] rounded-xl object-contain shadow-2xl"
-        />
-
-        {photos.length > 1 && (
-          <>
-            <button
-              onClick={onPrev}
-              aria-label="Previous photo"
-              className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2.5 text-white transition hover:bg-black/70"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              onClick={onNext}
-              aria-label="Next photo"
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/50 p-2.5 text-white transition hover:bg-black/70"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </>
-        )}
-      </div>
-
-      {/* Counter + thumbnails strip */}
-      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3">
-        <p className="text-xs font-medium text-white/70">{idx + 1} / {photos.length}</p>
-        {photos.length > 1 && (
-          <div className="flex gap-1.5">
-            {photos.map((src, i) => (
-              <button
-                key={i}
-                onClick={(e) => { e.stopPropagation(); onClose(); /* handled by parent index */ }}
-                aria-label={`View photo ${i + 1}`}
-                className={cn(
-                  "h-10 w-10 overflow-hidden rounded-lg border-2 transition",
-                  i === idx ? "border-white" : "border-white/30 opacity-60 hover:opacity-80"
-                )}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt="" className="h-full w-full object-cover" />
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
 }
 
 /* ── ReviewCard ──────────────────────────────────────────────────────────── */
@@ -162,16 +70,7 @@ export function ReviewCard({ review: r, destinationName, compact = false }: Revi
     });
   }
 
-  const photos     = r.photos?.filter(Boolean) ?? [];
-  const totalPhotos = photos.length;
-
-  const closeLightbox = useCallback(() => setLightboxIdx(null), []);
-  const prevPhoto     = useCallback(() =>
-    setLightboxIdx((i) => (i !== null ? (i - 1 + totalPhotos) % totalPhotos : null)),
-    [totalPhotos]);
-  const nextPhoto     = useCallback(() =>
-    setLightboxIdx((i) => (i !== null ? (i + 1) % totalPhotos : null)),
-    [totalPhotos]);
+  const photos = r.photos?.filter((p) => p?.url) ?? [];
 
   return (
     <>
@@ -187,8 +86,8 @@ export function ReviewCard({ review: r, destinationName, compact = false }: Revi
         {/* ── Author row ── */}
         <div className="flex items-start gap-3">
           <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
-            <Image
-              src={r.avatar}
+            <CloudinaryImage
+              image={r.avatar}
               alt={r.author}
               fill
               sizes="44px"
@@ -235,7 +134,7 @@ export function ReviewCard({ review: r, destinationName, compact = false }: Revi
               <Camera size={11} /> {photos.length} photo{photos.length > 1 ? "s" : ""}
             </p>
             <div className="flex flex-wrap gap-2">
-              {photos.map((src, i) => (
+              {photos.map((photo, i) => (
                 <button
                   key={i}
                   onClick={() => setLightboxIdx(i)}
@@ -244,8 +143,8 @@ export function ReviewCard({ review: r, destinationName, compact = false }: Revi
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={src}
-                    alt={`Review photo ${i + 1}`}
+                    src={getImageUrl(photo)}
+                    alt={photo.alt || `Review photo ${i + 1}`}
                     className="h-full w-full object-cover transition group-hover:scale-105"
                     onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = "none"; }}
                   />
@@ -296,12 +195,11 @@ export function ReviewCard({ review: r, destinationName, compact = false }: Revi
 
       {/* Lightbox portal */}
       {lightboxIdx !== null && (
-        <PhotoLightbox
-          photos={photos}
-          idx={lightboxIdx}
-          onClose={closeLightbox}
-          onPrev={prevPhoto}
-          onNext={nextPhoto}
+        <Lightbox
+          images={photos}
+          index={lightboxIdx}
+          onClose={() => setLightboxIdx(null)}
+          onIndexChange={setLightboxIdx}
         />
       )}
     </>

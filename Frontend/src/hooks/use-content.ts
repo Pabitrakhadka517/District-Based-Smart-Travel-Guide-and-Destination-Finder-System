@@ -15,7 +15,7 @@ import { useAuth } from "@/store/auth-store";
 import type {
   Destination, District, Review, Trek,
   Festival, GuideArticle, TripPlan, User, WeatherDay, TouristAttraction, ActivityEvent,
-  WeatherInsight,
+  WeatherInsight, CloudinaryImage,
 } from "@/types";
 import type { PlatformStats } from "@/services/content";
 
@@ -50,10 +50,11 @@ export function useDistrictAttractions(districtSlug: string, category?: string) 
 
 /* ----------------------------- Attractions ------------------------------ */
 
-export function useAttractions(params = "") {
+export function useAttractions(params = "", initialData?: TouristAttraction[]) {
   return useQuery({
     queryKey: ["attractions", params],
     queryFn: () => attractionService.getAll(params),
+    initialData,
   });
 }
 
@@ -75,31 +76,35 @@ export function useTrendingAttractions() {
 
 /* ----------------------------- Destinations ----------------------------- */
 
-export function useDestinations(params = "") {
+export function useDestinations(params = "", initialData?: Destination[]) {
   return useQuery({
     queryKey: ["destinations", params],
     queryFn: () => apiGet<Destination[]>(`/destinations${params}`),
+    initialData,
   });
 }
 
-export function useTreks(params = "") {
+export function useTreks(params = "", initialData?: Trek[]) {
   return useQuery({
     queryKey: ["treks", params],
     queryFn: () => apiGet<Trek[]>(`/treks${params}`),
+    initialData,
   });
 }
 
-export function useFestivals() {
+export function useFestivals(initialData?: Festival[]) {
   return useQuery({
     queryKey: ["festivals"],
     queryFn: () => apiGet<Festival[]>("/festivals"),
+    initialData,
   });
 }
 
-export function useGuides(params = "") {
+export function useGuides(params = "", initialData?: GuideArticle[]) {
   return useQuery({
     queryKey: ["guides", params],
     queryFn: () => apiGet<GuideArticle[]>(`/guides${params}`),
+    initialData,
   });
 }
 
@@ -214,7 +219,7 @@ export function useUpdateProfile() {
   const qc = useQueryClient();
   const { updateUser } = useAuth();
   return useMutation({
-    mutationFn: (payload: { name?: string; avatar?: string }) =>
+    mutationFn: (payload: { name?: string; avatar?: CloudinaryImage }) =>
       profileService.update(payload),
     onSuccess: (updatedUser) => {
       updateUser(updatedUser);

@@ -6,6 +6,7 @@ import { SectionHeader } from "@/components/shared/section-header";
 import { Reveal } from "@/components/shared/reveal";
 import { Badge } from "@/components/ui/badge";
 import { CTASection } from "@/components/shared/cta-section";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { img, PHOTO } from "@/data/images";
 import { FESTIVAL_TYPE_SOLID } from "@/lib/category-colors";
 import { cn } from "@/lib/utils";
@@ -33,7 +34,7 @@ export default async function FestivalsPage() {
             <Reveal key={f.id} delay={i * 0.05}>
               <article className="group overflow-hidden rounded-3xl border border-border/70 bg-white shadow-soft card-hover">
                 <div className="relative h-48 overflow-hidden">
-                  <Image src={f.image} alt={f.name} fill sizes="(max-width:768px) 100vw, 33vw" className="object-cover transition duration-[600ms] group-hover:scale-[1.07]" />
+                  <CloudinaryImage image={f.image} alt={f.name} fill sizes="(max-width:768px) 100vw, 33vw" className="object-cover transition duration-[600ms] group-hover:scale-[1.07]" />
                   <Badge className="absolute left-3 top-3 bg-white/95 text-brand-600">{f.month}</Badge>
                   <Badge className={cn("absolute right-3 top-3", FESTIVAL_TYPE_SOLID[f.type] ?? FESTIVAL_TYPE_SOLID.Cultural)}>{f.type}</Badge>
                 </div>

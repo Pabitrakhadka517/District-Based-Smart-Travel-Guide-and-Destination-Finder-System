@@ -1,7 +1,6 @@
 "use client";
 import { useMemo, useState, useRef, useCallback, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import {
   Search, SlidersHorizontal, MapPin, X, Clock, CalendarDays, BookOpen,
@@ -16,6 +15,7 @@ import { AttractionCard } from "@/components/cards/attraction-card";
 import { TrekCard } from "@/components/cards/trek-card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { Badge } from "@/components/ui/badge";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { cn } from "@/lib/utils";
 import { categoryStyle } from "@/lib/category-colors";
 import { POPULAR_SEARCHES } from "@/data/popular-searches";
@@ -120,7 +120,7 @@ function FestivalResultCard({ f }: { f: Festival }) {
       className="flex items-center gap-4 rounded-2xl border border-border bg-white p-4 shadow-soft transition-colors hover:border-secondary/40"
     >
       <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl">
-        <Image src={f.image} alt={f.name} fill sizes="80px" className="object-cover" />
+        <CloudinaryImage image={f.image} alt={f.name} fill sizes="80px" className="object-cover" />
       </div>
       <div className="min-w-0 flex-1">
         <p className="font-medium text-brand-600 line-clamp-1">{f.name}</p>
@@ -143,7 +143,7 @@ function GuideResultCard({ g }: { g: GuideArticle }) {
       className="flex items-center gap-4 rounded-2xl border border-border bg-white p-4 shadow-soft transition-colors hover:border-secondary/40"
     >
       <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-xl">
-        <Image src={g.cover} alt={g.title} fill sizes="80px" className="object-cover" />
+        <CloudinaryImage image={g.cover} alt={g.title} fill sizes="80px" className="object-cover" />
       </div>
       <div className="min-w-0 flex-1">
         <p className="font-medium text-brand-600 line-clamp-1">{g.title}</p>
@@ -159,8 +159,8 @@ function DistrictResultCard({ d }: { d: District }) {
   return (
     <Link href={`/districts/${d.slug}`} className="group relative overflow-hidden rounded-2xl shadow-soft">
       <div className="relative h-36">
-        <Image
-          src={d.heroImage} alt={d.name} fill
+        <CloudinaryImage
+          image={d.heroImage} alt={d.name} fill
           sizes="(max-width:640px) 100vw, 33vw"
           className="object-cover transition duration-500 group-hover:scale-[1.05]"
         />

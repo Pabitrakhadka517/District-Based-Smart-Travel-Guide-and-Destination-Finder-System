@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Star, Clock, Ticket, ArrowUpRight } from "lucide-react";
 import type { TouristAttraction } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { WishlistButton } from "@/components/shared/wishlist-button";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { categorySolidBadge } from "@/lib/category-colors";
 import { cn } from "@/lib/utils";
 
@@ -16,8 +16,8 @@ export function AttractionCard({ attraction: a }: { attraction: TouristAttractio
       className="group block overflow-hidden rounded-3xl border border-border/70 bg-white shadow-soft card-hover"
     >
       <div className="relative h-56 overflow-hidden">
-        <Image
-          src={a.heroImage}
+        <CloudinaryImage
+          image={a.heroImage}
           alt={a.name}
           fill
           sizes="(max-width:768px) 100vw, 33vw"

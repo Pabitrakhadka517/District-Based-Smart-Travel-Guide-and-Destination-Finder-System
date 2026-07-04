@@ -2,7 +2,7 @@
 import { useState } from "react";
 import {
   X, ArrowLeft, ArrowRight, Minus, Plus, Users,
-  CalendarDays, DollarSign, Loader2,
+  CalendarDays, Wallet, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +32,7 @@ export function CreateTripModal({ onClose, onCreated }: Props) {
   /* Step 2 */
   const [startDate, setStart] = useState("");
   const [endDate, setEnd]     = useState("");
-  const [budget, setBudget]   = useState(500);
+  const [budget, setBudget]   = useState(65000);
   const [notes, setNotes]     = useState("");
 
   const canStep1 = title.trim().length >= 2;
@@ -233,25 +233,25 @@ export function CreateTripModal({ onClose, onCreated }: Props) {
             {/* Budget slider */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
-                <DollarSign size={13} /> Total budget
+                <Wallet size={13} /> Total budget
               </label>
               <div className="flex items-center gap-4">
                 <input
                   type="range"
-                  min={50}
-                  max={10000}
-                  step={50}
+                  min={5000}
+                  max={1500000}
+                  step={5000}
                   value={budget}
                   onChange={(e) => setBudget(Number(e.target.value))}
                   className="flex-1 accent-accent"
                 />
-                <span className="min-w-[70px] text-right text-sm font-semibold text-foreground">
-                  ${budget.toLocaleString()}
+                <span className="min-w-[90px] text-right text-sm font-semibold text-foreground">
+                  NPR {budget.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between text-[11px] text-muted-foreground">
-                <span>$50</span>
-                <span>$10,000</span>
+                <span>NPR 5,000</span>
+                <span>NPR 1,500,000</span>
               </div>
               {/* quick budget allocation preview */}
               <div className="mt-1 flex rounded-xl overflow-hidden h-2">

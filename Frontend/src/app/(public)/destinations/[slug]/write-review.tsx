@@ -2,15 +2,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  PenSquare, Star, X, CheckCircle2, Loader2, Lock, ChevronDown, ChevronUp,
+  PenSquare, Star, CheckCircle2, Loader2, Lock, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/ui/alert";
+import { GalleryUploader } from "@/components/dashboard/image-uploader";
 import { useCreateReview } from "@/hooks/use-content";
 import { useAuth } from "@/store/auth-store";
+import type { CloudinaryImage } from "@/types";
 
 const STAR_LABELS = ["", "Terrible", "Poor", "Average", "Good", "Excellent"];
 
@@ -26,16 +28,13 @@ export function WriteReview({ destinationId, destinationName }: {
   const [hover,      setHover]      = useState(0);
   const [title,      setTitle]      = useState("");
   const [body,       setBody]       = useState("");
-  const [photoUrls,  setPhotoUrls]  = useState(["", "", ""]);
+  const [photos,     setPhotos]     = useState<CloudinaryImage[]>([]);
   const [error,      setError]      = useState<string | null>(null);
   const [submitted,  setSubmitted]  = useState(false);
 
-  const updatePhoto = (i: number, v: string) =>
-    setPhotoUrls(prev => prev.map((u, idx) => idx === i ? v : u));
-
   const reset = () => {
     setRating(5); setHover(0); setTitle(""); setBody("");
-    setPhotoUrls(["", "", ""]); setError(null);
+    setPhotos([]); setError(null);
   };
 
   const close = () => { setOpen(false); reset(); };
@@ -47,7 +46,6 @@ export function WriteReview({ destinationId, destinationName }: {
       setError("Please write at least 20 characters.");
       return;
     }
-    const photos = photoUrls.filter(u => u.trim());
     try {
       await createReview.mutateAsync({
         destinationId,
@@ -185,24 +183,15 @@ export function WriteReview({ destinationId, destinationName }: {
               )}
             </div>
 
-            {/* Photo URLs */}
-            <div>
-              <Label className="mb-2 block">
-                Photos <span className="text-muted-foreground font-normal">(paste image URLs, optional)</span>
-              </Label>
-              <div className="space-y-2">
-                {photoUrls.map((url, i) => (
-                  <Input
-                    key={i}
-                    value={url}
-                    onChange={e => updatePhoto(i, e.target.value)}
-                    placeholder={`Photo URL ${i + 1}`}
-                    type="url"
-                    className="text-sm"
-                  />
-                ))}
-              </div>
-            </div>
+            {/* Photos */}
+            <GalleryUploader
+              type="review"
+              value={photos}
+              onChange={setPhotos}
+              alt={`${destinationName} review photo`}
+              label="Photos (optional)"
+              max={5}
+            />
 
             {/* Error */}
             {error && <Alert variant="error">{error}</Alert>}

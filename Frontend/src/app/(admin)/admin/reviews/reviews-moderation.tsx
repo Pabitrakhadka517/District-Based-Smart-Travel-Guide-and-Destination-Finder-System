@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
-import Image from "next/image";
 import { Check, X, Trash2, Search, CheckCheck, XCircle } from "lucide-react";
 import type { Review } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
 import { Rating } from "@/components/ui/rating";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { cn } from "@/lib/utils";
 import { apiGet, apiPatch, apiDelete } from "@/services/api-client";
 
@@ -303,8 +303,8 @@ export function ReviewsModeration() {
               />
 
               {/* Avatar */}
-              <Image
-                src={r.avatar} alt=""
+              <CloudinaryImage
+                image={r.avatar} alt=""
                 width={44} height={44}
                 className="shrink-0 rounded-full"
               />

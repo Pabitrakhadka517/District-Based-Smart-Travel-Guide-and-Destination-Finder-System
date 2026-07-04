@@ -6,6 +6,14 @@ function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
+/** Exposed for callers that need to build their own request (e.g. XHR uploads with progress). */
+export function getApiBase(): string {
+  return BASE;
+}
+export function getAuthToken(): string | null {
+  return getToken();
+}
+
 function setToken(token: string): void {
   if (typeof window !== "undefined") localStorage.setItem(TOKEN_KEY, token);
 }
@@ -99,4 +107,42 @@ export async function apiPatch<T>(path: string, body: unknown): Promise<T> {
 
 export async function apiDelete<T = void>(path: string): Promise<T> {
   return request<T>(path, { method: "DELETE" }, true);
+}
+
+/**
+ * Multipart upload helper — unlike `request()`, this never sets a
+ * `Content-Type` header so the browser can add its own multipart boundary,
+ * and the FormData body is passed through unmodified (not JSON.stringify'd).
+ */
+export async function apiUpload<T>(path: string, formData: FormData): Promise<T> {
+  const token = getToken();
+  const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
+
+  const res = await fetch(`${BASE}${path}`, {
+    method: "POST",
+    body: formData,
+    headers,
+    credentials: "include"
+  });
+
+  if (res.status === 401) {
+    const newToken = await refreshAccessToken();
+    if (newToken) {
+      const retryRes = await fetch(`${BASE}${path}`, {
+        method: "POST",
+        body: formData,
+        headers: { Authorization: `Bearer ${newToken}` },
+        credentials: "include"
+      });
+      const retryJson = await retryRes.json();
+      if (!retryJson.success) throw new Error(retryJson.error ?? "Upload failed");
+      return retryJson.data as T;
+    }
+    window.dispatchEvent(new Event("nepayatra:logout"));
+    throw new Error("Session expired. Please log in again.");
+  }
+
+  const json = await res.json();
+  if (!json.success) throw new Error(json.error ?? "Upload failed");
+  return json.data as T;
 }

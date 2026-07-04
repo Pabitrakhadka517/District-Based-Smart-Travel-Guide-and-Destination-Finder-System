@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -10,6 +9,7 @@ import {
 } from "lucide-react";
 import { getDestinationFull, getDestinations } from "@/services/content";
 import { GallerySlider } from "@/components/shared/gallery-slider";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { GuideActions } from "./guide-actions";
 import { DestinationNav } from "./destination-nav";
 import { MiniMap } from "@/components/maps/mini-map";
@@ -84,8 +84,8 @@ export default async function GuidePage({
           HERO — full-bleed cinematic header
       ═══════════════════════════════════════════════════════ */}
       <section className="relative min-h-[78vh]" aria-label="Hero">
-        <Image
-          src={d.heroImage}
+        <CloudinaryImage
+          image={d.heroImage}
           alt={d.name}
           fill
           priority

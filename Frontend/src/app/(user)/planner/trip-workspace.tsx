@@ -2,12 +2,12 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import {
   ArrowLeft, Save, Trash2, Loader2, ChevronDown,
-  CalendarDays, CheckSquare, DollarSign, MapPin, FileText,
+  CalendarDays, CheckSquare, Wallet, MapPin, FileText,
   Search, X, Cloud, Star, CheckCircle, Users, Clock,
 } from "lucide-react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { cn } from "@/lib/utils";
 import {
   useUpdatePlan, useDeletePlan, useDestinations,
@@ -34,7 +34,7 @@ const TABS: { id: Tab; label: string; icon: React.ComponentType<{ size?: number 
   { id: "itinerary",    label: "Itinerary",    icon: CalendarDays },
   { id: "destinations", label: "Destinations", icon: MapPin        },
   { id: "checklist",    label: "Checklist",    icon: CheckSquare   },
-  { id: "budget",       label: "Budget",       icon: DollarSign    },
+  { id: "budget",       label: "Budget",       icon: Wallet    },
   { id: "weather",      label: "Weather",      icon: Cloud         },
   { id: "notes",        label: "Notes",        icon: FileText      },
 ];
@@ -417,7 +417,7 @@ function DestinationsTab({
             {tripDestinations.map((d) => (
               <li key={d.id} className="flex items-center gap-3 px-5 py-3">
                 <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl">
-                  <Image src={d.heroImage} alt={d.name} fill className="object-cover" sizes="40px" />
+                  <CloudinaryImage image={d.heroImage} alt={d.name} fill className="object-cover" sizes="40px" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{d.name}</p>
@@ -465,7 +465,7 @@ function DestinationsTab({
             {filtered.map((d) => (
               <li key={d.id} className="flex items-center gap-3 px-5 py-3">
                 <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-xl">
-                  <Image src={d.heroImage} alt={d.name} fill className="object-cover" sizes="36px" />
+                  <CloudinaryImage image={d.heroImage} alt={d.name} fill className="object-cover" sizes="36px" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{d.name}</p>
@@ -499,7 +499,7 @@ function DestinationsTab({
                 className="group relative overflow-hidden rounded-2xl border border-border text-left transition hover:border-brand-300 hover:shadow-sm"
               >
                 <div className="relative h-24 w-full">
-                  <Image src={d.heroImage} alt={d.name} fill className="object-cover transition group-hover:scale-105" sizes="200px" />
+                  <CloudinaryImage image={d.heroImage} alt={d.name} fill className="object-cover transition group-hover:scale-105" sizes="200px" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-2 left-3 right-3">
                     <p className="text-xs font-semibold text-white truncate">{d.name}</p>

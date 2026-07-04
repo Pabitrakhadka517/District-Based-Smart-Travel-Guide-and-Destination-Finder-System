@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -9,17 +8,19 @@ import {
   Tent, Leaf, Sun, Flame, Snowflake, Map, Info, TrendingUp,
   Activity, Eye,
 } from "lucide-react";
-import {
-  getDistrict, getDistricts, getDistrictAttractions,
-  getTreks, getFestivals, getFeaturedGuides,
-} from "@/services/content";
+import { getDistrict, getDistricts, getDistrictFull } from "@/services/content";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Badge } from "@/components/ui/badge";
 import { Reveal, RevealList, RevealItem } from "@/components/shared/reveal";
 import { AttractionCard } from "@/components/cards/attraction-card";
 import { TrekCard } from "@/components/cards/trek-card";
 import { DistrictCard } from "@/components/cards/district-card";
+import { DestinationCard } from "@/components/cards/destination-card";
+import { ReviewCard } from "@/components/cards/review-card";
 import { DistrictAttractions } from "./district-attractions";
+import { DistrictMap } from "./district-map";
+import { DistrictWeatherWidget } from "@/components/districts/weather-widget";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { cn } from "@/lib/utils";
 import { FESTIVAL_TYPE_STYLE } from "@/lib/category-colors";
 import type { TouristAttraction, AttractionCategory, Festival, GuideArticle } from "@/types";
@@ -125,17 +126,13 @@ export default async function DistrictDetail({
 }) {
   const { slug } = await params;
 
-  const [district, attractions, allTreks, festivals, guides, allDistricts] =
-    await Promise.all([
-      getDistrict(slug),
-      getDistrictAttractions(slug),
-      getTreks(),
-      getFestivals(),
-      getFeaturedGuides(),
-      getDistricts(),
-    ]);
+  const full = await getDistrictFull(slug);
+  if (!full) notFound();
 
-  if (!district) notFound();
+  const {
+    district, destinations, attractions, treks, festivals, guides,
+    reviews, weather, nearbyDistricts, recommended, counts,
+  } = full;
 
   /* ── derived data ── */
   const topAttractions = [...attractions]
@@ -146,23 +143,8 @@ export default async function DistrictDetail({
     ...new Set(attractions.flatMap((a) => a.activities ?? [])),
   ].slice(0, 12);
 
-  const districtTreks = allTreks.filter(
-    (t) =>
-      t.region.toLowerCase().includes(district.name.toLowerCase()) ||
-      district.name.toLowerCase().includes(t.region.toLowerCase()),
-  );
-  const treksToShow = (districtTreks.length > 0 ? districtTreks : allTreks).slice(0, 3);
-  const trekHeading = districtTreks.length > 0 ? `Popular Treks in ${district.name}` : "Popular Treks";
-
-  const districtFestivals = festivals.filter((f) =>
-    f.where.toLowerCase().includes(district.name.toLowerCase()),
-  );
-  const festivalsToShow = (districtFestivals.length > 0 ? districtFestivals : festivals).slice(0, 4);
-  const festivalHeading = districtFestivals.length > 0 ? `Festivals in ${district.name}` : "Festivals & Events";
-
-  const nearbyDistricts = allDistricts
-    .filter((d) => d.province === district.province && d.id !== district.id)
-    .slice(0, 4);
+  const destinationById: Record<string, (typeof destinations)[number]> =
+    Object.fromEntries(destinations.map((d) => [d.id, d]));
 
   const difficulty = deriveDifficulty(attractions);
 
@@ -182,8 +164,8 @@ export default async function DistrictDetail({
           HERO
       ═══════════════════════════════════════════════════════ */}
       <section className="relative min-h-[72vh]">
-        <Image
-          src={district.heroImage}
+        <CloudinaryImage
+          image={district.heroImage}
           alt={district.name}
           fill
           priority
@@ -238,11 +220,11 @@ export default async function DistrictDetail({
             </span>
             <span className="flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 backdrop-blur-sm">
               <Map size={14} className="text-accent" />
-              {district.destinationCount} destinations
+              {counts.destinationCount} destinations
             </span>
             <span className="flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 backdrop-blur-sm">
               <Building2 size={14} className="text-accent" />
-              {district.cityCount} cities
+              {counts.cityCount} cities
             </span>
             {district.bestSeason && (
               <span className="flex items-center gap-1.5 rounded-full bg-white/10 px-4 py-1.5 backdrop-blur-sm">
@@ -286,8 +268,8 @@ export default async function DistrictDetail({
               {[
                 { icon: MapPin,     label: "Province",    value: district.province },
                 { icon: Landmark,   label: "Attractions", value: `${attractions.length} sites` },
-                { icon: Map,        label: "Destinations",value: `${district.destinationCount} places` },
-                { icon: Building2,  label: "Cities",      value: `${district.cityCount} cities` },
+                { icon: Map,        label: "Destinations",value: `${counts.destinationCount} places` },
+                { icon: Building2,  label: "Cities",      value: `${counts.cityCount} cities` },
                 { icon: Star,       label: "Rating",      value: `${district.rating} / 5` },
                 { icon: Calendar,   label: "Best Season", value: district.bestSeason ?? "Year-round" },
                 { icon: TrendingUp, label: "Difficulty",  value: difficulty.level },
@@ -372,6 +354,15 @@ export default async function DistrictDetail({
       </section>
 
       {/* ═══════════════════════════════════════════════════════
+          WEATHER
+      ═══════════════════════════════════════════════════════ */}
+      <section className="section pt-0">
+        <div className="mx-auto max-w-2xl">
+          <DistrictWeatherWidget weather={weather} districtName={district.name} />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
           POPULAR ACTIVITIES
       ═══════════════════════════════════════════════════════ */}
       {activities.length > 0 && (
@@ -400,6 +391,26 @@ export default async function DistrictDetail({
               })}
             </RevealList>
           </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════
+          POPULAR DESTINATIONS
+      ═══════════════════════════════════════════════════════ */}
+      {destinations.length > 0 && (
+        <section className="section">
+          <SectionHeader
+            eyebrow="Where to go"
+            title={`Popular Destinations in ${district.name}`}
+            subtitle="Standout places worth building your trip around."
+          />
+          <RevealList className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {destinations.map((d) => (
+              <RevealItem key={d.id}>
+                <DestinationCard destination={d} />
+              </RevealItem>
+            ))}
+          </RevealList>
         </section>
       )}
 
@@ -482,12 +493,12 @@ export default async function DistrictDetail({
       {/* ═══════════════════════════════════════════════════════
           POPULAR TREKS
       ═══════════════════════════════════════════════════════ */}
-      {treksToShow.length > 0 && (
+      {treks.length > 0 && (
         <section className="mesh-light">
           <div className="container py-20">
             <SectionHeader
               eyebrow="On foot"
-              title={trekHeading}
+              title={`Popular Treks in ${district.name}`}
               subtitle="From short day-hikes to multi-week expeditions."
               action={
                 <Link href="/treks" className="flex items-center gap-1.5 text-sm font-medium text-secondary hover:underline">
@@ -496,7 +507,7 @@ export default async function DistrictDetail({
               }
             />
             <RevealList className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {treksToShow.map((t) => (
+              {treks.map((t) => (
                 <RevealItem key={t.id}>
                   <TrekCard trek={t} />
                 </RevealItem>
@@ -509,11 +520,11 @@ export default async function DistrictDetail({
       {/* ═══════════════════════════════════════════════════════
           FESTIVALS & EVENTS
       ═══════════════════════════════════════════════════════ */}
-      {festivalsToShow.length > 0 && (
+      {festivals.length > 0 && (
         <section className="section">
           <SectionHeader
             eyebrow="Cultural calendar"
-            title={festivalHeading}
+            title="Festivals & Events"
             subtitle="Immerse yourself in Nepal's living traditions and celebrations."
             action={
               <Link href="/festivals" className="flex items-center gap-1.5 text-sm font-medium text-secondary hover:underline">
@@ -522,7 +533,7 @@ export default async function DistrictDetail({
             }
           />
           <RevealList className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {festivalsToShow.map((f) => (
+            {festivals.map((f) => (
               <RevealItem key={f.id}>
                 <FestivalCard f={f} />
               </RevealItem>
@@ -559,6 +570,47 @@ export default async function DistrictDetail({
       )}
 
       {/* ═══════════════════════════════════════════════════════
+          INTERACTIVE MAP
+      ═══════════════════════════════════════════════════════ */}
+      <section className="bg-brand-50 py-20">
+        <div className="container">
+          <SectionHeader
+            eyebrow="Get your bearings"
+            title={`${district.name} on the Map`}
+            subtitle="Every destination, attraction, trek, festival and guide located in the district."
+          />
+          <DistrictMap
+            district={district}
+            destinations={destinations}
+            attractions={attractions}
+            treks={treks}
+            festivals={festivals}
+            guides={guides}
+          />
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════
+          REVIEWS
+      ═══════════════════════════════════════════════════════ */}
+      {reviews.length > 0 && (
+        <section className="section">
+          <SectionHeader
+            eyebrow="Traveler voices"
+            title={`What Travelers Say About ${district.name}`}
+            subtitle="Recent approved reviews from destinations across the district."
+          />
+          <RevealList className="grid gap-4 sm:grid-cols-2">
+            {reviews.slice(0, 6).map((r) => (
+              <RevealItem key={r.id}>
+                <ReviewCard review={r} destinationName={destinationById[r.destinationId]?.name} />
+              </RevealItem>
+            ))}
+          </RevealList>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════
           NEARBY DISTRICTS
       ═══════════════════════════════════════════════════════ */}
       {nearbyDistricts.length > 0 && (
@@ -580,6 +632,28 @@ export default async function DistrictDetail({
               </RevealItem>
             ))}
           </RevealList>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════
+          RECOMMENDED PLACES (sparse-district fallback)
+      ═══════════════════════════════════════════════════════ */}
+      {destinations.length === 0 && recommended.length > 0 && (
+        <section className="bg-white py-20">
+          <div className="container">
+            <SectionHeader
+              eyebrow="Nearby recommendations"
+              title="You Might Also Like Nearby"
+              subtitle={`${district.name} doesn't have destinations listed yet — here are highlights from neighbouring districts in ${district.province} Province.`}
+            />
+            <RevealList className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {recommended.map((d) => (
+                <RevealItem key={d.id}>
+                  <DestinationCard destination={d} />
+                </RevealItem>
+              ))}
+            </RevealList>
+          </div>
         </section>
       )}
 
@@ -639,8 +713,8 @@ function FestivalCard({ f }: { f: Festival }) {
       className="group block overflow-hidden rounded-2xl border border-border bg-white shadow-soft card-hover"
     >
       <div className="relative h-44 overflow-hidden">
-        <Image
-          src={f.image}
+        <CloudinaryImage
+          image={f.image}
           alt={f.name}
           fill
           sizes="(max-width:640px) 100vw, 25vw"
@@ -655,6 +729,11 @@ function FestivalCard({ f }: { f: Festival }) {
         >
           {f.type}
         </span>
+        {f.isNationwide && (
+          <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-brand-600 backdrop-blur-sm">
+            National
+          </span>
+        )}
         <div className="absolute inset-x-3 bottom-3 text-white">
           <p className="font-display font-bold leading-tight">{f.name}</p>
           <p className="mt-0.5 flex items-center gap-1 text-[11px] text-white/80">
@@ -685,8 +764,8 @@ function GuideCard({ g }: { g: GuideArticle }) {
       className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-soft card-hover"
     >
       <div className="relative h-44 overflow-hidden">
-        <Image
-          src={g.cover}
+        <CloudinaryImage
+          image={g.cover}
           alt={g.title}
           fill
           sizes="(max-width:640px) 100vw, 33vw"
@@ -703,8 +782,8 @@ function GuideCard({ g }: { g: GuideArticle }) {
         </h3>
         <p className="mt-2 flex-1 line-clamp-2 text-xs text-muted-foreground">{g.excerpt}</p>
         <div className="mt-4 flex items-center gap-3 border-t border-border/50 pt-3 text-xs text-muted-foreground">
-          <Image
-            src={g.authorAvatar}
+          <CloudinaryImage
+            image={g.authorAvatar}
             alt={g.author}
             width={22}
             height={22}

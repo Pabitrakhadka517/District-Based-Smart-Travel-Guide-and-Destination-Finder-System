@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 
 const DEFAULT_AVATAR = "https://i.pravatar.cc/150?img=68";
@@ -24,12 +23,15 @@ import { Badge } from "@/components/ui/badge";
 import { ReviewCard } from "@/components/cards/review-card";
 import { DestinationCard } from "@/components/cards/destination-card";
 import { EmptyState } from "@/components/shared/empty-state";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
+import { ImageUploader } from "@/components/dashboard/image-uploader";
 import { useAuth } from "@/store/auth-store";
 import {
   usePlans, useWishlistApi, useUpdateProfile,
   useUserReviews, useDestinations,
 } from "@/hooks/use-content";
 import { formatDate } from "@/lib/utils";
+import type { CloudinaryImage as CloudinaryImageType } from "@/types";
 
 type Section = "trips" | "wishlist" | "reviews";
 
@@ -44,7 +46,7 @@ export default function ProfilePage() {
   const [activeSection, setActiveSection] = useState<Section>("trips");
   const [editing, setEditing]     = useState(false);
   const [editName, setEditName]   = useState(user?.name ?? "");
-  const [editAvatar, setEditAvatar] = useState(user?.avatar ?? "");
+  const [editAvatar, setEditAvatar] = useState<CloudinaryImageType | null>(user?.avatar ?? null);
   const [editError, setEditError]   = useState<string | null>(null);
   const [editSuccess, setEditSuccess] = useState(false);
 
@@ -55,7 +57,7 @@ export default function ProfilePage() {
 
   const startEdit = () => {
     setEditName(user?.name ?? "");
-    setEditAvatar(user?.avatar ?? "");
+    setEditAvatar(user?.avatar ?? null);
     setEditError(null);
     setEditSuccess(false);
     setEditing(true);
@@ -64,7 +66,10 @@ export default function ProfilePage() {
   const saveEdit = async () => {
     setEditError(null);
     try {
-      await updateProfile.mutateAsync({ name: editName, avatar: editAvatar });
+      await updateProfile.mutateAsync({
+        name: editName,
+        avatar: editAvatar ?? { url: DEFAULT_AVATAR, publicId: null, alt: "" },
+      });
       setEditSuccess(true);
       setEditing(false);
     } catch (err) {
@@ -88,16 +93,15 @@ export default function ProfilePage() {
         <div className="flex flex-col items-start gap-4 px-6 pb-6 sm:flex-row sm:items-end">
           <div className="relative -mt-12 shrink-0">
             {(() => {
-              const avatarUrl = editing ? editAvatar : user.avatar;
-              const hasCustom = avatarUrl && avatarUrl !== DEFAULT_AVATAR;
+              const avatar = editing ? editAvatar : user.avatar;
+              const hasCustom = avatar?.url && avatar.url !== DEFAULT_AVATAR;
               return hasCustom ? (
-                <Image
-                  src={avatarUrl}
+                <CloudinaryImage
+                  image={avatar}
                   alt={user.name}
                   width={96}
                   height={96}
                   className="h-24 w-24 rounded-2xl border-4 border-white shadow-soft object-cover"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                 />
               ) : (
                 <div className="flex h-24 w-24 items-center justify-center rounded-2xl border-4 border-white bg-gradient-to-br from-brand-600 to-secondary shadow-soft">
@@ -115,26 +119,17 @@ export default function ProfilePage() {
                   <Label className="text-xs">Display name</Label>
                   <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="mt-1 h-9 max-w-xs" />
                 </div>
-                <div>
-                  <Label className="text-xs">Avatar URL <span className="text-muted-foreground font-normal">(optional)</span></Label>
-                  <div className="mt-1 flex max-w-sm gap-2">
-                    <Input
-                      value={editAvatar === DEFAULT_AVATAR ? "" : editAvatar}
-                      onChange={(e) => setEditAvatar(e.target.value)}
-                      className="h-9 flex-1"
-                      placeholder="https://example.com/photo.jpg"
+                <div className="max-w-[160px]">
+                  <Label className="text-xs">Avatar <span className="text-muted-foreground font-normal">(optional)</span></Label>
+                  <div className="mt-1">
+                    <ImageUploader
+                      type="avatar"
+                      value={editAvatar?.url && editAvatar.url !== DEFAULT_AVATAR ? editAvatar : null}
+                      onChange={(img) => setEditAvatar(img ?? { url: DEFAULT_AVATAR, publicId: null, alt: "" })}
+                      alt={editName}
+                      label=""
+                      aspectClassName="aspect-square"
                     />
-                    {editAvatar && editAvatar !== DEFAULT_AVATAR && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        className="h-9 shrink-0"
-                        onClick={() => setEditAvatar("")}
-                      >
-                        <X size={13} /> Remove
-                      </Button>
-                    )}
                   </div>
                   <p className="mt-1 text-[11px] text-muted-foreground">Leave empty to use your initials.</p>
                 </div>

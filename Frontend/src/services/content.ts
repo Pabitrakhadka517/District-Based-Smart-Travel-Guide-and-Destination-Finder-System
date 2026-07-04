@@ -1,4 +1,4 @@
-import type { District, Destination, Review, Trek, Festival, GuideArticle, TouristAttraction, RatingBreakdown } from "@/types";
+import type { District, Destination, Review, Trek, Festival, GuideArticle, TouristAttraction, RatingBreakdown, WeatherInsight } from "@/types";
 
 export interface PlatformStats {
   destinations: number;
@@ -27,8 +27,33 @@ export const getDistrict = async (slug: string): Promise<District | null> => {
     const res = await fetch(`${API}/districts/${slug}`, { cache: "no-store" });
     if (!res.ok) return null;
     const json = await res.json();
-    // Backend returns { district, cities } — extract just the district
+    // Backend returns the full district hub payload — extract just the district
     return (json.data?.district as District) ?? null;
+  } catch {
+    return null;
+  }
+};
+
+export interface DistrictFull {
+  district: District;
+  destinations: Destination[];
+  attractions: TouristAttraction[];
+  treks: Trek[];
+  festivals: Festival[];
+  guides: GuideArticle[];
+  reviews: Review[];
+  weather: WeatherInsight;
+  nearbyDistricts: District[];
+  recommended: Destination[];
+  counts: { cityCount: number; destinationCount: number; attractionCount: number };
+}
+
+export const getDistrictFull = async (slug: string): Promise<DistrictFull | null> => {
+  try {
+    const res = await fetch(`${API}/districts/${slug}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data ?? null;
   } catch {
     return null;
   }

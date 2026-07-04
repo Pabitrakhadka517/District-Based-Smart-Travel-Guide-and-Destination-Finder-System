@@ -129,11 +129,11 @@ export const CHECKLIST_CATEGORY_STYLE: Record<ChecklistCategory, string> = {
   General: "bg-muted text-muted-foreground"
 };
 
-/** Content "kind" chip (destination/attraction/trek/festival/guide) — an entity-type axis, distinct from tourism category. */
+/** Content "kind" chip (destination/attraction/trek/festival/guide) — an entity-type axis, distinct from tourism category. Matches the map's marker-pin colors exactly. */
 export const KIND_STYLE: Record<"destination" | "attraction" | "trek" | "festival" | "guide", string> = {
   destination: "bg-accent/10 text-accent border-accent/20",
   attraction: "bg-secondary/10 text-secondary border-secondary/20",
-  trek: "bg-brand-50 text-brand-600 border-brand-200",
-  festival: "bg-crimson/10 text-crimson border-crimson/20",
-  guide: "bg-info/10 text-info-foreground border-info/20"
+  trek: "bg-success/10 text-success border-success/20",
+  festival: "bg-purple/10 text-purple border-purple/20",
+  guide: "bg-teal/10 text-teal border-teal/20"
 };

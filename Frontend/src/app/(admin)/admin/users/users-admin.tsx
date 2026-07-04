@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
-import Image from "next/image";
 import { Trash2, ShieldCheck, ShieldOff, X } from "lucide-react";
 import { AdminTable, type Column } from "@/components/dashboard/admin-table";
 import { Badge } from "@/components/ui/badge";
 import { Alert } from "@/components/ui/alert";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { cn } from "@/lib/utils";
 import { apiGet, apiPatch, apiDelete } from "@/services/api-client";
+import type { CloudinaryImage as CloudinaryImageType } from "@/types";
 
 interface UserRow {
   id: string;
@@ -14,7 +15,7 @@ interface UserRow {
   email: string;
   role: "user" | "admin";
   joinedAt: string;
-  avatar?: string;
+  avatar?: CloudinaryImageType;
 }
 
 type RoleFilter = "all" | "user" | "admin";
@@ -99,7 +100,7 @@ export function UsersAdmin() {
       render: (u) => (
         <div className="flex items-center gap-3">
           {u.avatar
-            ? <Image src={u.avatar} alt="" width={32} height={32} className="shrink-0 rounded-full" />
+            ? <CloudinaryImage image={u.avatar} alt="" width={32} height={32} className="shrink-0 rounded-full" />
             : (
               <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-50 text-xs font-bold text-brand-600">
                 {u.name[0]?.toUpperCase() ?? "?"}

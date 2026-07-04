@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -10,6 +9,7 @@ import { getAttraction, getAttractions } from "@/services/content";
 import { AttractionActions } from "./attraction-actions";
 import { AttractionCard } from "@/components/cards/attraction-card";
 import { GallerySlider } from "@/components/shared/gallery-slider";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { MiniMap } from "@/components/maps/mini-map";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Badge } from "@/components/ui/badge";
@@ -71,7 +71,7 @@ export default async function AttractionPage({ params }: { params: Promise<{ slu
 
       {/* Hero image */}
       <div className="relative h-72 w-full overflow-hidden rounded-3xl sm:h-96">
-        <Image src={a.heroImage} alt={a.name} fill priority className="object-cover" />
+        <CloudinaryImage image={a.heroImage} alt={a.name} fill priority className="object-cover" />
       </div>
 
       {/* Gallery */}

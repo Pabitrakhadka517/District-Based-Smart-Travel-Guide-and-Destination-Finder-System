@@ -9,15 +9,15 @@ import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
 const hotels = [
-  { id: "h1", name: "Himalaya Heritage Hotel", location: "Thamel, Kathmandu", price: 78, rating: 4.6, img: img(PHOTO.hotel1, 700), perks: ["Free breakfast", "Rooftop view", "Airport pickup"] },
-  { id: "h2", name: "Lakeside Resort Pokhara", location: "Lakeside, Pokhara", price: 95, rating: 4.8, img: img(PHOTO.hotel2, 700), perks: ["Lake view", "Pool", "Spa"] },
-  { id: "h3", name: "Everest View Lodge", location: "Namche Bazaar", price: 120, rating: 4.7, img: img(PHOTO.lodge1, 700), perks: ["Mountain view", "Heated rooms", "Trek support"] }
+  { id: "h1", name: "Himalaya Heritage Hotel", location: "Thamel, Kathmandu", price: 10400, rating: 4.6, img: img(PHOTO.hotel1, 700), perks: ["Free breakfast", "Rooftop view", "Airport pickup"] },
+  { id: "h2", name: "Lakeside Resort Pokhara", location: "Lakeside, Pokhara", price: 12600, rating: 4.8, img: img(PHOTO.hotel2, 700), perks: ["Lake view", "Pool", "Spa"] },
+  { id: "h3", name: "Everest View Lodge", location: "Namche Bazaar", price: 16000, rating: 4.7, img: img(PHOTO.lodge1, 700), perks: ["Mountain view", "Heated rooms", "Trek support"] }
 ];
 
 const transport = [
-  { id: "t1", name: "Tourist Coach — KTM to Pokhara", type: "Bus", price: 25, duration: "6h", time: "07:00" },
-  { id: "t2", name: "Domestic Flight — KTM to Lukla", type: "Flight", price: 185, duration: "35m", time: "06:30" },
-  { id: "t3", name: "Private Jeep — KTM to Chitwan", type: "Jeep", price: 90, duration: "5h", time: "08:00" }
+  { id: "t1", name: "Tourist Coach — KTM to Pokhara", type: "Bus", price: 3300, duration: "6h", time: "07:00" },
+  { id: "t2", name: "Domestic Flight — KTM to Lukla", type: "Flight", price: 24600, duration: "35m", time: "06:30" },
+  { id: "t3", name: "Private Jeep — KTM to Chitwan", type: "Jeep", price: 12000, duration: "5h", time: "08:00" }
 ];
 
 export function BookingClient() {

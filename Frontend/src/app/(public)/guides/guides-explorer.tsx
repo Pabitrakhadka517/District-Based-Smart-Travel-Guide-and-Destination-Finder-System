@@ -1,11 +1,11 @@
 "use client";
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Clock, ArrowUpRight } from "lucide-react";
 import type { GuideArticle } from "@/types";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Badge } from "@/components/ui/badge";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { formatDate, cn } from "@/lib/utils";
 
 const CATS = ["All", "Tips", "Itineraries", "Culture", "Food", "Trekking"];
@@ -30,14 +30,14 @@ export function GuidesExplorer({ guides }: { guides: GuideArticle[] }) {
         <section className="section-tight">
           <Link href={`/guides/${featured.slug}`} className="group grid overflow-hidden rounded-3xl border border-border/70 bg-white shadow-soft md:grid-cols-2">
             <div className="relative h-64 md:h-auto">
-              <Image src={featured.cover} alt={featured.title} fill sizes="50vw" className="object-cover transition duration-[600ms] group-hover:scale-[1.05]" />
+              <CloudinaryImage image={featured.cover} alt={featured.title} fill sizes="50vw" className="object-cover transition duration-[600ms] group-hover:scale-[1.05]" />
             </div>
             <div className="flex flex-col justify-center p-8">
               <Badge variant="accent" className="w-fit bg-accent/10">{featured.category}</Badge>
               <h2 className="mt-3 font-display text-2xl font-bold text-brand-600 group-hover:text-secondary">{featured.title}</h2>
               <p className="mt-2 text-muted-foreground">{featured.excerpt}</p>
               <div className="mt-4 flex items-center gap-3 text-sm text-muted-foreground">
-                <Image src={featured.authorAvatar} alt={featured.author} width={28} height={28} className="rounded-full" />
+                <CloudinaryImage image={featured.authorAvatar} alt={featured.author} width={28} height={28} className="rounded-full" />
                 {featured.author} · {formatDate(featured.date)} · {featured.readMinutes} min read
               </div>
             </div>
@@ -60,7 +60,7 @@ export function GuidesExplorer({ guides }: { guides: GuideArticle[] }) {
           {list.map((g) => (
             <Link key={g.id} href={`/guides/${g.slug}`} className="group overflow-hidden rounded-3xl border border-border/70 bg-white shadow-soft card-hover">
               <div className="relative h-48 overflow-hidden">
-                <Image src={g.cover} alt={g.title} fill sizes="33vw" className="object-cover transition duration-[600ms] group-hover:scale-[1.07]" />
+                <CloudinaryImage image={g.cover} alt={g.title} fill sizes="33vw" className="object-cover transition duration-[600ms] group-hover:scale-[1.07]" />
                 <Badge className="absolute left-3 top-3 bg-white/95 text-brand-600">{g.category}</Badge>
               </div>
               <div className="p-5">

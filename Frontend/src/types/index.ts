@@ -6,13 +6,23 @@ export type Season = "Spring" | "Summer" | "Autumn" | "Winter";
 
 export interface Coordinates { lat: number; lng: number; }
 
+/** Structured image metadata returned by the backend for every image field. */
+export interface CloudinaryImage {
+  url: string;
+  publicId: string | null;
+  alt: string;
+  width?: number;
+  height?: number;
+  blurDataUrl?: string;
+}
+
 export interface District {
   id: string;
   slug: string;
   name: string;
   province: string;
   description: string;
-  heroImage: string;
+  heroImage: CloudinaryImage;
   coordinates: Coordinates;
   cityCount: number;
   destinationCount: number;
@@ -43,8 +53,8 @@ export interface Destination {
   description: string;
   category: Category;
   tags: string[];
-  heroImage: string;
-  gallery: string[];
+  heroImage: CloudinaryImage;
+  gallery: CloudinaryImage[];
   coordinates: Coordinates;
   rating: number;
   reviewCount: number;
@@ -78,14 +88,14 @@ export interface Review {
   destinationId: string;
   userId?: string;
   author: string;
-  avatar: string;
+  avatar: CloudinaryImage;
   rating: number;
   title: string;
   body: string;
   date: string;
   helpful: number;
   status: "approved" | "pending" | "rejected";
-  photos?: string[];
+  photos?: CloudinaryImage[];
   verifiedTraveler?: boolean;
 }
 
@@ -106,7 +116,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  avatar: string;
+  avatar: CloudinaryImage;
   role: "user" | "admin";
   joinedAt: string;
   lastLogin: string;
@@ -178,8 +188,8 @@ export interface Trek {
   region: string;
   tagline: string;
   description: string;
-  heroImage: string;
-  gallery: string[];
+  heroImage: CloudinaryImage;
+  gallery: CloudinaryImage[];
   difficulty: Difficulty;
   durationDays: number;
   maxAltitude: number;
@@ -188,9 +198,11 @@ export interface Trek {
   permits: string[];
   highlights: string[];
   itinerary: TrekDay[];
+  coordinates: Coordinates;
   rating: number;
   priceFrom: number;
   featured: boolean;
+  districtIds: string[];
 }
 
 export interface Festival {
@@ -201,9 +213,12 @@ export interface Festival {
   season: Season;
   type: "Religious" | "Cultural" | "Harvest" | "National";
   description: string;
-  image: string;
+  image: CloudinaryImage;
   where: string;
   duration: string;
+  coordinates: Coordinates;
+  districtId?: string;
+  isNationwide: boolean;
 }
 
 export type AttractionCategory =
@@ -225,8 +240,8 @@ export interface TouristAttraction {
   tagline: string;
   description: string;
   history: string;
-  heroImage: string;
-  gallery: string[];
+  heroImage: CloudinaryImage;
+  gallery: CloudinaryImage[];
   coordinates: Coordinates;
   rating: number;
   reviewCount: number;
@@ -259,12 +274,14 @@ export interface GuideArticle {
   title: string;
   excerpt: string;
   category: "Tips" | "Itineraries" | "Culture" | "Food" | "Trekking";
-  cover: string;
+  cover: CloudinaryImage;
   author: string;
-  authorAvatar: string;
+  authorAvatar: CloudinaryImage;
   date: string;
   readMinutes: number;
   tags: string[];
   body: string[];
   featured: boolean;
+  coordinates: Coordinates;
+  districtId?: string;
 }

@@ -5,7 +5,7 @@ import Image from "next/image";
 import {
   MapPin, CheckCircle2, CalendarDays, Users, TrendingUp, Route,
   Flame, CheckSquare, ChevronRight, Play, Trophy, BarChart2, Loader2,
-  PencilLine, Camera, DollarSign, Clock, ImagePlus, X, Star,
+  PencilLine, Camera, Wallet, Clock, ImagePlus, X, Star,
   Circle, BarChart, Compass, Save, PenSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -446,7 +446,7 @@ function OngoingTripCard({ trip, updatePlan }: { trip: TripPlan; updatePlan: Upd
           <div className="rounded-xl border border-border bg-white p-4 space-y-3">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold text-foreground flex items-center gap-1.5">
-                <DollarSign size={14} className="text-accent" /> Budget tracker
+                <Wallet size={14} className="text-accent" /> Budget tracker
               </p>
               <span className="text-xs text-muted-foreground">Estimated burn rate</span>
             </div>
@@ -961,7 +961,7 @@ function AnalyticsTab({ allTrips }: { allTrips: TripPlan[] }) {
       {/* Secondary stats */}
       <div className="grid gap-4 sm:grid-cols-3">
         {[
-          { label: "Total budget spent",   value: formatCurrency(totalSpent),             icon: DollarSign, color: "text-secondary"  },
+          { label: "Total budget spent",   value: formatCurrency(totalSpent),             icon: Wallet, color: "text-secondary"  },
           { label: "Average trip budget",  value: avgBudget > 0 ? formatCurrency(avgBudget) : "–", icon: BarChart, color: "text-maroon" },
           { label: "Favourite travel type",value: topType,                                 icon: Star,       color: "text-accent" },
         ].map(({ label, value, icon: SIcon, color }) => (

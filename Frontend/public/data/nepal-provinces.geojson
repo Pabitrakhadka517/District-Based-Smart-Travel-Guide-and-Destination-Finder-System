@@ -1,0 +1,75 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Sudurpashchim" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [80.05, 28.00], [80.05, 30.45], [81.60, 30.45], [81.60, 28.00], [80.05, 28.00]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Karnali" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [81.60, 27.80], [81.60, 30.45], [83.40, 30.45], [83.40, 27.80], [81.60, 27.80]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Lumbini" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [81.60, 26.35], [81.60, 27.80], [84.60, 27.80], [84.60, 26.35], [81.60, 26.35]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Gandaki" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [83.40, 27.30], [83.40, 30.45], [85.30, 30.45], [85.30, 27.30], [83.40, 27.30]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Bagmati" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [85.30, 27.30], [85.30, 30.45], [86.60, 30.45], [86.60, 27.30], [85.30, 27.30]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Koshi" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [86.60, 27.30], [86.60, 30.45], [88.20, 30.45], [88.20, 27.30], [86.60, 27.30]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "name": "Madhesh" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [84.60, 26.35], [84.60, 27.30], [88.20, 27.30], [88.20, 26.35], [84.60, 26.35]
+        ]]
+      }
+    }
+  ]
+}

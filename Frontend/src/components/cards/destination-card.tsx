@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Star, ArrowUpRight } from "lucide-react";
 import type { Destination } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { WishlistButton } from "@/components/shared/wishlist-button";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { formatCurrency } from "@/lib/utils";
 import { categorySolidBadge } from "@/lib/category-colors";
 import { cn } from "@/lib/utils";
@@ -12,7 +12,7 @@ export function DestinationCard({ destination: d }: { destination: Destination }
   return (
     <Link href={`/destinations/${d.slug}`} className="group block overflow-hidden rounded-3xl border border-border/70 bg-white shadow-soft card-hover">
       <div className="relative h-56 overflow-hidden">
-        <Image src={d.heroImage} alt={d.name} fill sizes="(max-width:768px) 100vw, 33vw" className="object-cover transition duration-[600ms] group-hover:scale-[1.07]" />
+        <CloudinaryImage image={d.heroImage} alt={d.name} fill sizes="(max-width:768px) 100vw, 33vw" className="object-cover transition duration-[600ms] group-hover:scale-[1.07]" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/0 to-black/10" />
         <div className="absolute left-3.5 top-3.5 flex gap-2">
           <Badge className={cn("shadow-soft", categorySolidBadge(d.category))}>{d.category}</Badge>

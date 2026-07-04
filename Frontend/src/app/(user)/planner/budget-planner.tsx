@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { DollarSign, Bed, UtensilsCrossed, Bus, Ticket, MoreHorizontal, Users, CalendarDays } from "lucide-react";
+import { Wallet, Bed, UtensilsCrossed, Bus, Ticket, MoreHorizontal, Users, CalendarDays } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Alert } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
@@ -57,11 +57,11 @@ export function BudgetPlanner({ budget, breakdown, travelers = 1, tripDays = 1, 
       {/* Total budget + quick stats */}
       <div className="rounded-2xl border border-border bg-white p-5 shadow-soft">
         <p className="mb-3 text-sm font-semibold text-foreground flex items-center gap-1.5">
-          <DollarSign size={15} className="text-accent" /> Total budget
+          <Wallet size={15} className="text-accent" /> Total budget
         </p>
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-bold text-accent">$</span>
+            <span className="text-xl font-bold text-accent">NPR</span>
             <Input
               value={rawBudget}
               onChange={(e) => setRawBudget(e.target.value)}
@@ -69,7 +69,7 @@ export function BudgetPlanner({ budget, breakdown, travelers = 1, tripDays = 1, 
               onKeyDown={(e) => e.key === "Enter" && commitBudget()}
               className="text-xl font-bold w-40"
             />
-            <span className="text-sm text-muted-foreground">USD total</span>
+            <span className="text-sm text-muted-foreground">NPR total</span>
           </div>
 
           {/* Per-person / per-day quick stats */}
@@ -78,14 +78,14 @@ export function BudgetPlanner({ budget, breakdown, travelers = 1, tripDays = 1, 
               {perPerson !== null && (
                 <div className="flex items-center gap-1.5 rounded-xl bg-muted px-3 py-2 text-sm">
                   <Users size={13} className="text-muted-foreground" />
-                  <span className="font-semibold text-foreground">${fmt(perPerson)}</span>
+                  <span className="font-semibold text-foreground">NPR {fmt(perPerson)}</span>
                   <span className="text-xs text-muted-foreground">/ person</span>
                 </div>
               )}
               {perDay !== null && (
                 <div className="flex items-center gap-1.5 rounded-xl bg-muted px-3 py-2 text-sm">
                   <CalendarDays size={13} className="text-muted-foreground" />
-                  <span className="font-semibold text-foreground">${fmt(perDay)}</span>
+                  <span className="font-semibold text-foreground">NPR {fmt(perDay)}</span>
                   <span className="text-xs text-muted-foreground">/ day</span>
                 </div>
               )}
@@ -105,7 +105,7 @@ export function BudgetPlanner({ budget, breakdown, travelers = 1, tripDays = 1, 
                 key={key}
                 className={cn("transition-all duration-300", bar)}
                 style={{ width: `${Math.min(pct, 100)}%` }}
-                title={`${key}: $${fmt(breakdown[key] ?? 0)}`}
+                title={`${key}: NPR ${fmt(breakdown[key] ?? 0)}`}
               />
             );
           })}
@@ -113,7 +113,7 @@ export function BudgetPlanner({ budget, breakdown, travelers = 1, tripDays = 1, 
             <div
               className="bg-muted"
               style={{ width: `${(remaining / budget) * 100}%` }}
-              title={`Unallocated: $${fmt(remaining)}`}
+              title={`Unallocated: NPR ${fmt(remaining)}`}
             />
           )}
         </div>
@@ -135,10 +135,10 @@ export function BudgetPlanner({ budget, breakdown, travelers = 1, tripDays = 1, 
         {/* Summary */}
         <div className="flex items-center justify-between rounded-xl bg-muted/50 px-4 py-2.5 text-sm">
           <span className="text-muted-foreground">Allocated</span>
-          <span className="font-semibold text-foreground">${fmt(spent)}</span>
+          <span className="font-semibold text-foreground">NPR {fmt(spent)}</span>
           <span className="text-muted-foreground">Remaining</span>
           <span className={cn("font-semibold", remaining < 0 ? "text-destructive" : "text-success")}>
-            {remaining < 0 ? "-" : ""}${fmt(Math.abs(remaining))}
+            {remaining < 0 ? "-" : ""}NPR {fmt(Math.abs(remaining))}
           </span>
         </div>
       </div>
@@ -160,7 +160,7 @@ export function BudgetPlanner({ budget, breakdown, travelers = 1, tripDays = 1, 
                     <p className="text-sm font-medium text-foreground">{label}</p>
                     <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       {ppVal !== null && (
-                        <span className="hidden sm:block">${fmt(ppVal)}/pp</span>
+                        <span className="hidden sm:block">NPR {fmt(ppVal)}/pp</span>
                       )}
                       <span>{pct}%</span>
                     </div>
@@ -173,7 +173,7 @@ export function BudgetPlanner({ budget, breakdown, travelers = 1, tripDays = 1, 
                   </div>
                 </div>
                 <div className="flex items-center gap-1 shrink-0">
-                  <span className="text-sm text-muted-foreground">$</span>
+                  <span className="text-sm text-muted-foreground">NPR</span>
                   <input
                     type="number"
                     min={0}
@@ -191,7 +191,7 @@ export function BudgetPlanner({ budget, breakdown, travelers = 1, tripDays = 1, 
 
       {remaining < 0 && (
         <Alert variant="error">
-          You are <strong>${fmt(Math.abs(remaining))}</strong> over budget. Reduce category allocations or increase your total budget.
+          You are <strong>NPR {fmt(Math.abs(remaining))}</strong> over budget. Reduce category allocations or increase your total budget.
         </Alert>
       )}
     </div>

@@ -8,6 +8,7 @@ import { Alert } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/utils";
 import { apiDelete, apiPatch } from "@/services/api-client";
+import { DestinationForm } from "./destination-form";
 
 type FeaturedFilter = "all" | "featured" | "not-featured";
 type SortKey        = "rating" | "reviews" | "name" | "budget";
@@ -26,6 +27,19 @@ export function DestinationsAdmin({ destinations: initial }: { destinations: Des
   const [categoryFilter,  setCategoryFilter]  = useState<CategoryFilter>("All");
   const [featuredFilter,  setFeaturedFilter]  = useState<FeaturedFilter>("all");
   const [sortBy,          setSortBy]          = useState<SortKey>("rating");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing,  setEditing]  = useState<Destination | null>(null);
+
+  const openAdd  = () => { setEditing(null); setFormOpen(true); };
+  const openEdit = (d: Destination) => { setEditing(d); setFormOpen(true); };
+  const closeForm = () => setFormOpen(false);
+  const handleSaved = (saved: Destination) => {
+    setRows((prev) => {
+      const exists = prev.some((d) => d.id === saved.id);
+      return exists ? prev.map((d) => (d.id === saved.id ? saved : d)) : [saved, ...prev];
+    });
+    setFormOpen(false);
+  };
 
   const handleDelete = async (dest: Destination) => {
     setError(null);
@@ -204,6 +218,8 @@ export function DestinationsAdmin({ destinations: initial }: { destinations: Des
         searchPlaceholder="Search by name or tagline…"
         rows={filtered}
         columns={columns}
+        onAdd={openAdd}
+        onEdit={openEdit}
         onDelete={handleDelete}
         emptyMessage={
           search || categoryFilter !== "All" || featuredFilter !== "all"
@@ -211,6 +227,10 @@ export function DestinationsAdmin({ destinations: initial }: { destinations: Des
             : "No destinations found."
         }
       />
+
+      {formOpen && (
+        <DestinationForm destination={editing} onClose={closeForm} onSaved={handleSaved} />
+      )}
     </div>
   );
 }

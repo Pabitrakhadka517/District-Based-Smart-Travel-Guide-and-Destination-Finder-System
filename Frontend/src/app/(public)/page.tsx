@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { NewsletterForm } from "@/components/shared/newsletter-form";
 import { TopoLines } from "@/components/shared/topo-lines";
+import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import {
   getDistricts, getTrending, getFeatured, getFeaturedTreks,
   getFeaturedGuides, getStats, getTopReviews, getAttractions, getFestivals,
@@ -58,8 +59,8 @@ function FestivalCard({ f }: { f: Festival }) {
       className="group block overflow-hidden rounded-2xl border border-border/70 bg-white shadow-soft card-hover"
     >
       <div className="relative h-44 overflow-hidden">
-        <Image
-          src={f.image} alt={f.name} fill
+        <CloudinaryImage
+          image={f.image} alt={f.name} fill
           sizes="(max-width:640px) 100vw, (max-width:1024px) 50vw, 25vw"
           className="object-cover transition duration-[600ms] group-hover:scale-[1.06]"
         />
@@ -454,7 +455,7 @@ export default async function HomePage() {
           Authentic social proof from verified travellers
       ══════════════════════════════════════════════════════ */}
       {testimonials.length > 0 && (
-        <section className="bg-brand-600 py-20 text-white">
+        <section className="mesh-brand py-20 text-white">
           <div className="container">
             <SectionHeader
               center
@@ -479,8 +480,8 @@ export default async function HomePage() {
                       {r.body.length > 200 ? `${r.body.slice(0, 200)}…` : r.body}
                     </p>
                     <div className="mt-5 flex items-center gap-3 border-t border-white/15 pt-4">
-                      <Image
-                        src={r.avatar} alt={r.author}
+                      <CloudinaryImage
+                        image={r.avatar} alt={r.author}
                         width={40} height={40}
                         className="rounded-full ring-2 ring-white/20"
                       />
@@ -529,7 +530,7 @@ export default async function HomePage() {
               <RevealItem key={g.id}>
                 <Link href={`/guides/${g.slug}`} className="group block overflow-hidden rounded-3xl border border-border/70 bg-white shadow-soft card-hover">
                   <div className="relative h-44 overflow-hidden">
-                    <Image src={g.cover} alt={g.title} fill sizes="33vw" className="object-cover transition duration-[600ms] group-hover:scale-[1.07]" />
+                    <CloudinaryImage image={g.cover} alt={g.title} fill sizes="33vw" className="object-cover transition duration-[600ms] group-hover:scale-[1.07]" />
                     <Badge className="absolute left-3 top-3 bg-white/95 text-brand-600">{g.category}</Badge>
                   </div>
                   <div className="p-5">

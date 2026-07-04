@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { apiDelete } from "@/services/api-client";
+import { DistrictForm } from "./district-form";
 
 type SortKey = "name" | "rating" | "destinations" | "attractions";
 
@@ -16,6 +17,8 @@ export function DistrictsAdmin({ districts: initial }: { districts: District[] }
   const [search,          setSearch]          = useState("");
   const [provinceFilter,  setProvinceFilter]  = useState("all");
   const [sortBy,          setSortBy]          = useState<SortKey>("name");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing,  setEditing]  = useState<District | null>(null);
 
   const handleDelete = async (district: District) => {
     setError(null);
@@ -25,6 +28,17 @@ export function DistrictsAdmin({ districts: initial }: { districts: District[] }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to delete district");
     }
+  };
+
+  const openAdd  = () => { setEditing(null); setFormOpen(true); };
+  const openEdit = (d: District) => { setEditing(d); setFormOpen(true); };
+  const closeForm = () => setFormOpen(false);
+  const handleSaved = (saved: District) => {
+    setRows((prev) => {
+      const exists = prev.some((d) => d.id === saved.id);
+      return exists ? prev.map((d) => (d.id === saved.id ? saved : d)) : [saved, ...prev];
+    });
+    setFormOpen(false);
   };
 
   /* unique provinces for the filter dropdown */
@@ -97,7 +111,7 @@ export function DistrictsAdmin({ districts: initial }: { districts: District[] }
       {/* Header */}
       <div>
         <h1 className="h2 text-brand-600">District management</h1>
-        <p className="lead mt-1">Create, edit and remove districts across Nepal's 7 provinces.</p>
+        <p className="lead mt-1">Create, edit and remove districts across Nepal&apos;s 7 provinces.</p>
       </div>
 
       {/* Error */}
@@ -151,6 +165,8 @@ export function DistrictsAdmin({ districts: initial }: { districts: District[] }
         searchPlaceholder="Search by name or province…"
         rows={filtered}
         columns={columns}
+        onAdd={openAdd}
+        onEdit={openEdit}
         onDelete={handleDelete}
         emptyMessage={
           search || provinceFilter !== "all"
@@ -158,6 +174,10 @@ export function DistrictsAdmin({ districts: initial }: { districts: District[] }
             : "No districts found."
         }
       />
+
+      {formOpen && (
+        <DistrictForm district={editing} onClose={closeForm} onSaved={handleSaved} />
+      )}
     </div>
   );
 }
