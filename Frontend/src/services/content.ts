@@ -1,4 +1,4 @@
-import type { District, Destination, Review, Trek, Festival, GuideArticle, TouristAttraction, RatingBreakdown, WeatherInsight } from "@/types";
+import type { District, Destination, Review, Trek, Festival, GuideArticle, TouristAttraction, RatingBreakdown, WeatherInsight, TravelAlert, PackingChecklist } from "@/types";
 
 export interface PlatformStats {
   destinations: number;
@@ -115,6 +115,10 @@ export const getAttractions = (params = "") => get<TouristAttraction[]>(`/attrac
 
 export const getDistrictAttractions = (districtSlug: string) =>
   get<TouristAttraction[]>(`/districts/${districtSlug}/attractions`);
+
+export const getTravelAlerts = () => get<TravelAlert[]>("/travel-alerts");
+export const getPackingChecklists = () => get<PackingChecklist[]>("/checklists");
+export const getPopularSearches = () => get<string[]>("/search/popular");
 
 export const getAttraction = async (
   slug: string

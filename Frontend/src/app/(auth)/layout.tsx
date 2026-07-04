@@ -2,10 +2,12 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import { Logo } from "@/components/shared/logo";
 import { img, PHOTO } from "@/data/images";
+import { AuthOnlyGuard } from "./auth-only-guard";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
+      <AuthOnlyGuard />
 
       {/* ── Left: brand / imagery side ────────────────────────────────── */}
       <div className="relative hidden lg:block">

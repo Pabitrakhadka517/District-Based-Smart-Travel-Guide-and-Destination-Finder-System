@@ -2,6 +2,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/store/auth-store";
+import { useWishlist } from "@/store/wishlist-store";
+import { apiGet } from "@/services/api-client";
 import type { User } from "@/types";
 
 /**
@@ -10,7 +12,7 @@ import type { User } from "@/types";
  *  - "nepayatra:token-refresh" → syncs new token + user into the store
  */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { clearAuth, setAuth, user } = useAuth();
+  const { clearAuth, setAuth, user, token } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -33,6 +35,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener("nepayatra:token-refresh", onRefresh as EventListener);
     };
   }, [clearAuth, setAuth, router]);
+
+  // Pulls the server-side wishlist into the local store once per login, so the
+  // heart icon reflects saved destinations everywhere (not just the /wishlist
+  // page) even on a browser/device that never saved them locally before.
+  useEffect(() => {
+    if (!token) return;
+    apiGet<{ ids: string[] }>("/wishlist", true)
+      .then(({ ids }) => useWishlist.getState().merge(ids))
+      .catch(() => {});
+  }, [token]);
 
   return <>{children}</>;
 }

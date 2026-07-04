@@ -17,11 +17,11 @@ export type UploadType =
   | "review";
 
 const MAX_FILE_SIZE_MB = 5;
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/gif"];
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export function validateImageFile(file: File): string | null {
   if (!ALLOWED_TYPES.includes(file.type)) {
-    return "Only JPEG, PNG, WebP, AVIF and GIF images are allowed.";
+    return "Only JPG, JPEG, PNG and WEBP images are allowed.";
   }
   if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
     return `Image must be smaller than ${MAX_FILE_SIZE_MB}MB.`;

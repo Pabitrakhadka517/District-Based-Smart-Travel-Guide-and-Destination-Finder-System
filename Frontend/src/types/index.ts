@@ -221,6 +221,20 @@ export interface Festival {
   isNationwide: boolean;
 }
 
+export interface TravelAlert {
+  id: string;
+  level: "Info" | "Advisory" | "Warning";
+  text: string;
+  districtId?: string;
+  isActive: boolean;
+}
+
+export interface PackingChecklist {
+  id: string;
+  category: string;
+  items: string[];
+}
+
 export type AttractionCategory =
   | "Religious Sites" | "Historical Sites" | "Natural Attractions"
   | "Lakes & Rivers" | "Mountains & Trekking Routes" | "Adventure Activities"

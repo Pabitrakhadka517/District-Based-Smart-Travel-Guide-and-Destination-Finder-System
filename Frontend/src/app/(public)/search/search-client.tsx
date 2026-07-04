@@ -8,7 +8,7 @@ import {
   ArrowRight, ChevronRight, Filter, TrendingUp, Drama, CheckCircle2,
   Sun, Activity, LayoutGrid, Globe,
 } from "lucide-react";
-import { useSearch, useDistricts, useSearchAutocomplete } from "@/hooks/use-content";
+import { useSearch, useDistricts, useSearchAutocomplete, usePopularSearches } from "@/hooks/use-content";
 import { useDebouncedValue } from "@/hooks/use-debounced";
 import { DestinationCard } from "@/components/cards/destination-card";
 import { AttractionCard } from "@/components/cards/attraction-card";
@@ -18,7 +18,6 @@ import { Badge } from "@/components/ui/badge";
 import { CloudinaryImage } from "@/components/shared/cloudinary-image";
 import { cn } from "@/lib/utils";
 import { categoryStyle } from "@/lib/category-colors";
-import { POPULAR_SEARCHES } from "@/data/popular-searches";
 import type { Festival, GuideArticle, District } from "@/types";
 
 /* ─── constants ──────────────────────────────────────────────────────── */
@@ -302,6 +301,7 @@ export function SearchClient() {
   /* ── data ── */
   const { data: autocomplete } = useSearchAutocomplete(autocompleteQ);
   const { data: allDistricts = [] } = useDistricts();
+  const { data: popularSearches = [] } = usePopularSearches();
 
   /* ── snapshot of current filter state for URL building ── */
   const currentParams = useCallback(() => ({
@@ -371,7 +371,7 @@ export function SearchClient() {
     if (q.length < 2) {
       return [
         ...recent.map(s => ({ id: `rec:${s}`,  label: s,      type: "recent"   as SuggType })),
-        ...POPULAR_SEARCHES.slice(0, 12).map(s => ({ id: `pop:${s}`, label: s, type: "popular" as SuggType })),
+        ...popularSearches.slice(0, 12).map(s => ({ id: `pop:${s}`, label: s, type: "popular" as SuggType })),
       ];
     }
     return [
@@ -382,7 +382,7 @@ export function SearchClient() {
       ...(autocomplete?.festivals    ?? []).slice(0, 2).map(f => ({ id: `fest:${f.id}`,  label: f.name,  type: "festival"    as SuggType, meta: f.type       })),
       ...(autocomplete?.guides       ?? []).slice(0, 2).map(g => ({ id: `guide:${g.id}`, label: g.title, type: "guide"       as SuggType, meta: g.category   })),
     ];
-  }, [q, recent, autocomplete]);
+  }, [q, recent, autocomplete, popularSearches]);
 
   /* ── sync URL → state (back/forward nav & Link clicks) ── */
   useEffect(() => {
@@ -597,7 +597,7 @@ export function SearchClient() {
                 <div>
                   <p className="mb-2 px-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Popular in Nepal</p>
                   <div className="flex flex-wrap gap-1.5 px-1 pb-1">
-                    {POPULAR_SEARCHES.slice(0, 12).map(s => {
+                    {popularSearches.slice(0, 12).map(s => {
                       const sugg: Sugg = { id: `pop:${s}`, label: s, type: "popular" };
                       const focused = isFocused(sugg);
                       return (
@@ -729,7 +729,7 @@ export function SearchClient() {
               </Link>
             </div>
             <div className="flex flex-wrap gap-3">
-              {POPULAR_SEARCHES.map(s => (
+              {popularSearches.map(s => (
                 <button
                   key={s}
                   onClick={() => applySearch(s)}
@@ -1215,7 +1215,7 @@ export function SearchClient() {
                 <div className="mt-8">
                   <p className="mb-3 text-sm font-medium text-muted-foreground">Try these popular searches:</p>
                   <div className="flex flex-wrap gap-2">
-                    {POPULAR_SEARCHES.slice(0, 8).map(s => (
+                    {popularSearches.slice(0, 8).map(s => (
                       <button
                         key={s}
                         onClick={() => applySearch(s)}

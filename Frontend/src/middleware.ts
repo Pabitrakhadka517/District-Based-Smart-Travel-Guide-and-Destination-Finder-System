@@ -4,8 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 const PROTECTED = ["/dashboard", "/profile", "/settings", "/wishlist", "/planner", "/tracking"];
 // Routes that require admin role
 const ADMIN_ONLY = ["/admin"];
-// Routes that authenticated users should be redirected away from
-const AUTH_ONLY = ["/login", "/register", "/forgot-password", "/reset-password"];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -19,10 +17,10 @@ export function middleware(req: NextRequest) {
   const isLoggedIn = session === "1";
   const isAdmin = role === "admin";
 
-  // Authenticated users don't need to see login/register pages
-  if (AUTH_ONLY.some((p) => pathname.startsWith(p)) && isLoggedIn) {
-    return NextResponse.redirect(new URL(isAdmin ? "/admin" : "/dashboard", req.url));
-  }
+  // Note: bouncing an already-logged-in user away from /login and /register
+  // is handled client-side (AuthOnlyGuard) instead of here, since this cookie
+  // can outlive the actual session (e.g. a backend reseed invalidates the
+  // token but not this cookie) and a middleware redirect would trap them.
 
   // Protect user-only routes
   if (PROTECTED.some((p) => pathname.startsWith(p)) && !isLoggedIn) {
@@ -56,10 +54,6 @@ export const config = {
     "/wishlist/:path*",
     "/planner/:path*",
     "/tracking/:path*",
-    "/admin/:path*",
-    "/login",
-    "/register",
-    "/forgot-password",
-    "/reset-password"
+    "/admin/:path*"
   ]
 };

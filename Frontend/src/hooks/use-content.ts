@@ -15,7 +15,7 @@ import { useAuth } from "@/store/auth-store";
 import type {
   Destination, District, Review, Trek,
   Festival, GuideArticle, TripPlan, User, WeatherDay, TouristAttraction, ActivityEvent,
-  WeatherInsight, CloudinaryImage,
+  WeatherInsight, CloudinaryImage, TravelAlert, PackingChecklist,
 } from "@/types";
 import type { PlatformStats } from "@/services/content";
 
@@ -105,6 +105,39 @@ export function useGuides(params = "", initialData?: GuideArticle[]) {
     queryKey: ["guides", params],
     queryFn: () => apiGet<GuideArticle[]>(`/guides${params}`),
     initialData,
+  });
+}
+
+/* ----------------------------- Travel Alerts ----------------------------- */
+
+export function useTravelAlerts(initialData?: TravelAlert[]) {
+  return useQuery({
+    queryKey: ["travel-alerts"],
+    queryFn: () => apiGet<TravelAlert[]>("/travel-alerts"),
+    initialData,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+/* ----------------------------- Checklists -------------------------------- */
+
+export function usePackingChecklists(initialData?: PackingChecklist[]) {
+  return useQuery({
+    queryKey: ["checklists"],
+    queryFn: () => apiGet<PackingChecklist[]>("/checklists"),
+    initialData,
+    staleTime: 30 * 60 * 1000,
+  });
+}
+
+/* ----------------------------- Popular Searches --------------------------- */
+
+export function usePopularSearches(initialData?: string[]) {
+  return useQuery({
+    queryKey: ["popular-searches"],
+    queryFn: () => apiGet<string[]>("/search/popular"),
+    initialData,
+    staleTime: 15 * 60 * 1000,
   });
 }
 

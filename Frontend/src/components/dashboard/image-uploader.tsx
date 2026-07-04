@@ -28,13 +28,13 @@ export function ImageUploader({
     if (invalid) { setError(invalid); return; }
     setError(null);
     setProgress(0);
-    const previousPublicId = value?.publicId ?? null;
     try {
+      // Deliberately does not delete the replaced image here — the caller may
+      // still Cancel without saving, and this component has no way to know.
+      // The owning save handler (or the backend, e.g. profile updates) is
+      // responsible for cleaning up the old asset once the change is committed.
       const uploaded = await uploadService.uploadImageWithProgress(file, type, setProgress, alt);
       onChange(uploaded);
-      if (previousPublicId && previousPublicId !== uploaded.publicId) {
-        void uploadService.deleteImage(previousPublicId);
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -49,7 +49,6 @@ export function ImageUploader({
   };
 
   const remove = () => {
-    if (value?.publicId) void uploadService.deleteImage(value.publicId);
     onChange(null);
   };
 
@@ -111,7 +110,7 @@ export function ImageUploader({
         </p>
       )}
 
-      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif" className="hidden" onChange={onFileInput} />
+      <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={onFileInput} />
     </div>
   );
 }
@@ -159,8 +158,6 @@ export function GalleryUploader({
   };
 
   const removeAt = (i: number) => {
-    const img = value[i];
-    if (img?.publicId) void uploadService.deleteImage(img.publicId);
     onChange(value.filter((_, idx) => idx !== i));
   };
 
@@ -208,7 +205,7 @@ export function GalleryUploader({
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+        accept="image/jpeg,image/png,image/webp"
         multiple
         className="hidden"
         onChange={onFileInput}

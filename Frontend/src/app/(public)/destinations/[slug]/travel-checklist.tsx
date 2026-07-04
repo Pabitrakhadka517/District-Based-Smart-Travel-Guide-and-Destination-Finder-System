@@ -1,10 +1,11 @@
 "use client";
 import { useState } from "react";
 import { CheckSquare, Square, RotateCcw, ClipboardList } from "lucide-react";
-import { CATEGORY_CHECKLISTS } from "@/data/checklists";
+import { usePackingChecklists } from "@/hooks/use-content";
 
 export function TravelChecklist({ category }: { category: string }) {
-  const items = CATEGORY_CHECKLISTS[category] ?? [];
+  const { data: checklists = [] } = usePackingChecklists();
+  const items = checklists.find((c) => c.category === category)?.items ?? [];
   const [checked, setChecked] = useState<Set<number>>(new Set());
 
   if (items.length === 0) return null;

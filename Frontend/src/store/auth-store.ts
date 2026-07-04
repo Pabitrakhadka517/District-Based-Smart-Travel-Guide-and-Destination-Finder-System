@@ -2,6 +2,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User } from "@/types";
+import { useWishlist } from "@/store/wishlist-store";
 
 const SESSION_COOKIE = "nepayatra_session";
 const ROLE_COOKIE = "nepayatra_role";
@@ -52,6 +53,9 @@ export const useAuth = create<AuthState>()(
         clearCookie(SESSION_COOKIE);
         clearCookie(ROLE_COOKIE);
         set({ token: null, user: null });
+        // Prevents the next person on a shared/public browser from seeing (or
+        // accidentally re-saving into their own account) the previous user's wishlist.
+        useWishlist.getState().clear();
       },
 
       isAdmin: () => get().user?.role === "admin",

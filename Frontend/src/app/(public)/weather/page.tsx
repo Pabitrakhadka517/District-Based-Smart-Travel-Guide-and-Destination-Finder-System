@@ -3,7 +3,7 @@ import { AlertTriangle, Star, Snowflake, Sun } from "lucide-react";
 import { SectionHeader } from "@/components/shared/section-header";
 import { WeatherCard } from "@/components/cards/weather-card";
 import { Reveal } from "@/components/shared/reveal";
-import { useWeather } from "@/hooks/use-content";
+import { useWeather, useTravelAlerts } from "@/hooks/use-content";
 
 // Kathmandu Valley coordinates
 const KTM_LAT = 27.7172;
@@ -23,13 +23,9 @@ const trekkingSeasons = [
   { name: "Monsoon (Jun–Aug)", note: "Rain in most regions; ideal only for rain-shadow Mustang & Dolpo.", rating: 2 }
 ];
 
-const alerts = [
-  { level: "Info", text: "Lukla flights are weather-dependent — build buffer days into Everest itineraries." },
-  { level: "Advisory", text: "Monsoon landslides can disrupt highland roads from June to August." }
-];
-
 export default function WeatherPage() {
   const { data: forecast } = useWeather(KTM_LAT, KTM_LNG);
+  const { data: alerts = [] } = useTravelAlerts();
 
   return (
     <section className="container py-10">
@@ -79,7 +75,7 @@ export default function WeatherPage() {
         <SectionHeader title="Travel alerts" />
         <div className="space-y-3">
           {alerts.map((a) => (
-            <div key={a.text} className="flex items-start gap-3 rounded-2xl border border-accent/30 bg-accent/5 p-5">
+            <div key={a.id} className="flex items-start gap-3 rounded-2xl border border-accent/30 bg-accent/5 p-5">
               <AlertTriangle className="mt-0.5 shrink-0 text-accent" size={20} />
               <p className="text-sm text-foreground"><span className="font-semibold">{a.level}:</span> {a.text}</p>
             </div>
