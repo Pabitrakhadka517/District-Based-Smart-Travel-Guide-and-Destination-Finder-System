@@ -175,3 +175,21 @@ export interface ITripPlan {
   itinerary: ITripDay[];
   checklist: IChecklistItem[];
 }
+
+export type AccommodationType = "Budget" | "Standard" | "Luxury";
+export type TransportPreference = "Local Bus" | "Private Jeep" | "Domestic Flight";
+
+export interface IBooking {
+  id: string;
+  userId: string;
+  destinationId: string;
+  travelDate: string; // YYYY-MM-DD
+  travelers: number;
+  budget: number;
+  accommodationType: AccommodationType;
+  transportPreference: TransportPreference;
+  estimatedCost: number;
+  status: "pending" | "confirmed" | "cancelled";
+  notes: string;
+  createdAt: string;
+}

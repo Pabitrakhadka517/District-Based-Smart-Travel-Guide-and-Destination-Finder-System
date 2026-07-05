@@ -6,6 +6,7 @@ import { ok, fail } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
 import { genId } from "../utils/ids";
 import { pick, qs, sanitizeImage } from "../utils/sanitize";
+import { cleanupReplacedImages } from "../services/cloudinary.service";
 
 const CITY_FIELDS = [
   "slug", "districtId", "name", "description", "image", "coordinates",
@@ -49,17 +50,21 @@ export const createCity = asyncHandler(async (req: Request, res: Response) => {
 export const updateCity = asyncHandler(async (req: Request, res: Response) => {
   const body = pick(req.body as Record<string, unknown>, CITY_FIELDS);
   if (body.image !== undefined) body.image = sanitizeImage(body.image);
+
+  const existing = await City.findOne({ id: req.params.id }).select("image");
   const city = await City.findOneAndUpdate(
     { id: req.params.id },
     { $set: body },
     { new: true, runValidators: true }
   );
   if (!city) return fail(res, "City not found", 404);
+  cleanupReplacedImages([existing?.image], [city.image]);
   ok(res, city);
 });
 
 export const deleteCity = asyncHandler(async (req: Request, res: Response) => {
   const city = await City.findOneAndDelete({ id: req.params.id });
   if (!city) return fail(res, "City not found", 404);
+  cleanupReplacedImages([city.image], []);
   ok(res, { id: req.params.id, deleted: true });
 });

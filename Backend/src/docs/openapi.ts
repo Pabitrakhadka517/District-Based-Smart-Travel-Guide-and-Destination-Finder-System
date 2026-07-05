@@ -54,6 +54,9 @@ const ENUM_TRIP_STATUS    = ["planned", "ongoing", "completed"];
 const ENUM_ROLE           = ["user", "admin"];
 const ENUM_GUIDE_CATEGORY = ["Tips", "Itineraries", "Culture", "Food", "Trekking"];
 const ENUM_FESTIVAL_TYPE  = ["Religious", "Cultural", "Harvest", "National"];
+const ENUM_BOOKING_STATUS = ["pending", "confirmed", "cancelled"];
+const ENUM_ACCOMMODATION  = ["Budget", "Standard", "Luxury"];
+const ENUM_TRANSPORT      = ["Local Bus", "Private Jeep", "Domestic Flight"];
 
 // ─── OpenAPI document ─────────────────────────────────────────────────────────
 
@@ -113,6 +116,7 @@ export const openapiSpec = {
     { name: "Travel Alerts",description: "Admin-managed travel advisories shown on the weather page" },
     { name: "Checklists",   description: "Admin-managed packing checklists, one per destination category" },
     { name: "Planner",      description: "Personal trip planner (requires auth)" },
+    { name: "Bookings",     description: "Destination bookings with cost estimates (requires auth)" },
     { name: "Wishlist",     description: "Personal wishlist (requires auth)" },
     { name: "Admin",        description: "Admin-only: analytics, user management, content moderation" },
     { name: "Stats",        description: "Public platform statistics" }
@@ -497,6 +501,24 @@ export const openapiSpec = {
           budget:         { type: "number", example: 450, description: "Total budget in USD" },
           status:         { type: "string", enum: ENUM_TRIP_STATUS, example: "planned" },
           notes:          { type: "string", example: "Focus on UNESCO sites. Hire a guide for day 1." }
+        }
+      },
+
+      Booking: {
+        type: "object",
+        properties: {
+          id:                   { type: "string", example: "bk1" },
+          userId:                { type: "string", example: "u1" },
+          destinationId:         { type: "string", example: "p1" },
+          travelDate:            { type: "string", format: "date", example: "2026-09-15" },
+          travelers:             { type: "integer", example: 2, minimum: 1 },
+          budget:                { type: "number", example: 60000, description: "Traveller's stated budget in NPR" },
+          accommodationType:     { type: "string", enum: ENUM_ACCOMMODATION, example: "Standard" },
+          transportPreference:   { type: "string", enum: ENUM_TRANSPORT, example: "Private Jeep" },
+          estimatedCost:         { type: "number", example: 20000, description: "Server-computed estimate (NPR), based on travelers × per-person accommodation and transport rates" },
+          status:                { type: "string", enum: ENUM_BOOKING_STATUS, example: "pending" },
+          notes:                 { type: "string", example: "Prefer a window seat if flying." },
+          createdAt:             { type: "string", format: "date-time" }
         }
       },
 
@@ -1719,6 +1741,91 @@ export const openapiSpec = {
         operationId: "deleteTrip",
         security: bearerSec,
         parameters: [pathParam("id", "Trip plan ID", "t1")],
+        responses: {
+          ...jsonResponse("Delete confirmation.", $ref("DeleteResult")),
+          401: r401, 404: r404
+        }
+      }
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // BOOKINGS
+    // ══════════════════════════════════════════════════════════════════════
+
+    "/bookings": {
+      get: {
+        tags: ["Bookings"],
+        summary: "Get the authenticated user's bookings",
+        operationId: "listBookings",
+        security: bearerSec,
+        responses: {
+          ...jsonResponse("List of bookings.", arrayOf("Booking")),
+          401: r401
+        }
+      },
+      post: {
+        tags: ["Bookings"],
+        summary: "Create a booking",
+        description: "estimatedCost is always computed server-side from travelers × per-person accommodation and transport rates — any client-supplied value is ignored.",
+        operationId: "createBooking",
+        security: bearerSec,
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["destinationId", "travelDate"],
+                properties: {
+                  destinationId:        { type: "string", example: "p1" },
+                  travelDate:           { type: "string", format: "date", example: "2026-09-15" },
+                  travelers:            { type: "integer", example: 2, minimum: 1 },
+                  budget:               { type: "number", example: 60000 },
+                  accommodationType:    { type: "string", enum: ENUM_ACCOMMODATION, example: "Standard" },
+                  transportPreference:  { type: "string", enum: ENUM_TRANSPORT, example: "Private Jeep" },
+                  notes:                { type: "string", example: "Prefer a window seat if flying." }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          ...jsonResponse("Booking created.", $ref("Booking"), 201),
+          400: r400, 401: r401, 404: r404
+        }
+      }
+    },
+
+    "/bookings/{id}": {
+      patch: {
+        tags: ["Bookings"],
+        summary: "Update a booking's status (e.g. cancel)",
+        operationId: "updateBookingStatus",
+        security: bearerSec,
+        parameters: [pathParam("id", "Booking ID", "bk1")],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["status"],
+                properties: { status: { type: "string", enum: ENUM_BOOKING_STATUS, example: "cancelled" } }
+              }
+            }
+          }
+        },
+        responses: {
+          ...jsonResponse("Updated booking.", $ref("Booking")),
+          400: r400, 401: r401, 404: r404
+        }
+      },
+      delete: {
+        tags: ["Bookings"],
+        summary: "Delete a booking",
+        operationId: "deleteBooking",
+        security: bearerSec,
+        parameters: [pathParam("id", "Booking ID", "bk1")],
         responses: {
           ...jsonResponse("Delete confirmation.", $ref("DeleteResult")),
           401: r401, 404: r404

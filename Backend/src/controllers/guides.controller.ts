@@ -4,6 +4,7 @@ import { ok, fail } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
 import { genId } from "../utils/ids";
 import { pick, qs, sanitizeImage } from "../utils/sanitize";
+import { cleanupReplacedImages } from "../services/cloudinary.service";
 
 const GUIDE_FIELDS = [
   "slug", "title", "category", "excerpt", "body", "cover", "authorAvatar",
@@ -51,17 +52,21 @@ export const updateGuide = asyncHandler(async (req: Request, res: Response) => {
   const body = pick(req.body as Record<string, unknown>, GUIDE_FIELDS);
   if (body.cover !== undefined) body.cover = sanitizeImage(body.cover);
   if (body.authorAvatar !== undefined) body.authorAvatar = sanitizeImage(body.authorAvatar);
+
+  const existing = await Guide.findOne({ id: req.params.id }).select("cover authorAvatar");
   const guide = await Guide.findOneAndUpdate(
     { id: req.params.id },
     { $set: body },
     { new: true, runValidators: true }
   );
   if (!guide) return fail(res, "Guide not found", 404);
+  cleanupReplacedImages([existing?.cover, existing?.authorAvatar], [guide.cover, guide.authorAvatar]);
   ok(res, guide);
 });
 
 export const deleteGuide = asyncHandler(async (req: Request, res: Response) => {
   const guide = await Guide.findOneAndDelete({ id: req.params.id });
   if (!guide) return fail(res, "Guide not found", 404);
+  cleanupReplacedImages([guide.cover, guide.authorAvatar], []);
   ok(res, { id: req.params.id, deleted: true });
 });

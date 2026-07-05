@@ -45,7 +45,7 @@ export const PHOTO = {
   himalayaLake:  "1715935257216-fdba0eadd42a",
   sacredLake:    "1715935564077-bc4e06915d8c",
   brickTemple:   "1760366621342-5c4703099c2c",
-  janakpur:      "1760973179127-414475da8dcc",
+  janakpur:      "1540996654611-699b763e8a1f",
   nuwakotPalace: "1669557582081-274a568aff4d",
   namobuddha:    "1540961286473-8ad1368dc1bd",
   nepalHills:    "1599751229070-854ae5c90869",

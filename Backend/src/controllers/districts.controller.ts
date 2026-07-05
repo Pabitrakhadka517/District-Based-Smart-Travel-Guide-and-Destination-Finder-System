@@ -12,6 +12,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { genId } from "../utils/ids";
 import { pick, sanitizeImage } from "../utils/sanitize";
 import { getWeatherInsight } from "../services/weather";
+import { cleanupReplacedImages } from "../services/cloudinary.service";
 
 const DISTRICT_FIELDS = [
   "slug", "name", "province", "description", "heroImage", "coordinates",
@@ -94,17 +95,21 @@ export const updateDistrict = asyncHandler(async (req: Request, res: Response) =
     const conflict = await District.findOne({ slug: body.slug, id: { $ne: req.params.id } });
     if (conflict) return fail(res, `Slug "${body.slug}" is already used by another district.`, 409);
   }
+
+  const existing = await District.findOne({ id: req.params.id }).select("heroImage");
   const district = await District.findOneAndUpdate(
     { id: req.params.id },
     { $set: body },
     { new: true, runValidators: true }
   );
   if (!district) return fail(res, "District not found", 404);
+  cleanupReplacedImages([existing?.heroImage], [district.heroImage]);
   ok(res, district);
 });
 
 export const deleteDistrict = asyncHandler(async (req: Request, res: Response) => {
   const district = await District.findOneAndDelete({ id: req.params.id });
   if (!district) return fail(res, "District not found", 404);
+  cleanupReplacedImages([district.heroImage], []);
   ok(res, { id: req.params.id, deleted: true });
 });

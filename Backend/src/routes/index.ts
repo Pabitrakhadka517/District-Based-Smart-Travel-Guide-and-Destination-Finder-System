@@ -1,6 +1,6 @@
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
-import { requireAuth, requireAdmin } from "../middleware/auth";
+import { requireAuth, requireAdmin, optionalAuth } from "../middleware/auth";
 import { uploadSingle, uploadGallery } from "../middleware/upload";
 
 import * as districts    from "../controllers/districts.controller";
@@ -21,6 +21,7 @@ import * as recs        from "../controllers/recommendations.controller";
 import * as upload       from "../controllers/upload.controller";
 import * as travelAlerts from "../controllers/travelAlerts.controller";
 import * as checklists   from "../controllers/packingChecklists.controller";
+import * as bookings     from "../controllers/booking.controller";
 
 const router = Router();
 
@@ -66,7 +67,7 @@ router.get("/festivals/:slug",           publicLimiter, festivals.getFestival);
 router.get("/guides",                    publicLimiter, guides.listGuides);
 router.get("/guides/:slug",              publicLimiter, guides.getGuide);
 
-router.get("/reviews",                   publicLimiter, reviews.listReviews);
+router.get("/reviews",                   publicLimiter, optionalAuth, reviews.listReviews);
 router.post("/reviews",                  requireAuth,   reviews.createReview);
 router.post("/reviews/:id/helpful",      requireAuth,   reviews.voteHelpful);
 
@@ -103,6 +104,11 @@ router.delete("/planner/:id", requireAuth, planner.deleteTrip);
 router.get(   "/wishlist",                    requireAuth, wishlist.getWishlist);
 router.post(  "/wishlist",                    requireAuth, wishlist.addToWishlist);
 router.delete("/wishlist/:destinationId",     requireAuth, wishlist.removeFromWishlist);
+
+router.get(   "/bookings",     requireAuth, bookings.listBookings);
+router.post(  "/bookings",     requireAuth, bookings.createBooking);
+router.patch( "/bookings/:id", requireAuth, bookings.updateBookingStatus);
+router.delete("/bookings/:id", requireAuth, bookings.deleteBooking);
 
 /* ------------------------------ Uploads ----------------------------------- */
 // Rate-limited to slow down abuse of the (relatively expensive) Cloudinary upload path

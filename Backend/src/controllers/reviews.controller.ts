@@ -59,8 +59,11 @@ export const createReview = asyncHandler(async (req: Request, res: Response) => 
   const existing = await Review.findOne({ destinationId, userId });
   if (existing) return fail(res, "You have already submitted a review for this destination", 409);
 
-  // Check if the user has a trip plan that includes this destination (verified traveler)
+  // Only users who have this destination in one of their trip plans may review it
   const hasTrip = await TripPlan.exists({ userId, destinationIds: destinationId });
+  if (!hasTrip) {
+    return fail(res, "You can only review destinations that are part of one of your trip plans", 403);
+  }
 
   // Validate photos: accept array of image objects (already uploaded via /api/upload/gallery), max 5
   const photos = sanitizeGallery(body.photos, 5);
@@ -81,7 +84,7 @@ export const createReview = asyncHandler(async (req: Request, res: Response) => 
     helpful:          0,
     status:           "pending",
     photos,
-    verifiedTraveler: Boolean(hasTrip)
+    verifiedTraveler: true
   });
 
   ok(res, created, 201);

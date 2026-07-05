@@ -127,3 +127,37 @@ export async function deleteImage(publicId: string | null | undefined): Promise<
     console.error("[cloudinary] Failed to delete asset", publicId, err);
   }
 }
+
+/**
+ * Deliberately untyped input: callers pass Mongoose (sub)document image fields
+ * whose inferred TS shape varies by model (some models type their nested
+ * `imageSchema` fields precisely, others don't — see `Attraction`/`User`
+ * for the difference). Only `.publicId` is ever read, so narrow at runtime.
+ */
+type ImageOrGallery = unknown;
+
+function collectPublicIds(groups: ImageOrGallery[]): Set<string> {
+  const ids = new Set<string>();
+  for (const group of groups) {
+    if (!group) continue;
+    for (const img of Array.isArray(group) ? group : [group]) {
+      const publicId = (img as { publicId?: unknown } | null | undefined)?.publicId;
+      if (typeof publicId === "string" && publicId) ids.add(publicId);
+    }
+  }
+  return ids;
+}
+
+/**
+ * Best-effort cleanup for admin content updates/deletes: deletes any Cloudinary
+ * asset present in `before` (the document's image fields prior to the write)
+ * that is no longer present in `after` (the fields after the write, or `[]`
+ * when the whole document was deleted). Never throws — fire-and-forget.
+ */
+export function cleanupReplacedImages(before: ImageOrGallery[], after: ImageOrGallery[]): void {
+  const beforeIds = collectPublicIds(before);
+  const afterIds = collectPublicIds(after);
+  for (const id of beforeIds) {
+    if (!afterIds.has(id)) void deleteImage(id);
+  }
+}

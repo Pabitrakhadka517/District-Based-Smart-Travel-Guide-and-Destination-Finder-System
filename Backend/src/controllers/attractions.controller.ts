@@ -5,6 +5,7 @@ import { ok, fail } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
 import { genId } from "../utils/ids";
 import { escapeRegex, pick, qs, sanitizeImage, sanitizeGallery } from "../utils/sanitize";
+import { cleanupReplacedImages } from "../services/cloudinary.service";
 
 const ATTRACTION_FIELDS = [
   "slug", "districtId", "name", "category", "tagline", "description", "history",
@@ -69,17 +70,23 @@ export const updateAttraction = asyncHandler(async (req: Request, res: Response)
   const body = pick(req.body as Record<string, unknown>, ATTRACTION_FIELDS);
   if (body.heroImage !== undefined) body.heroImage = sanitizeImage(body.heroImage);
   if (body.gallery !== undefined) body.gallery = sanitizeGallery(body.gallery);
+  const existing = await Attraction.findOne({ id: req.params.id }).select("heroImage gallery");
   const attraction = await Attraction.findOneAndUpdate(
     { id: req.params.id },
     { $set: body },
     { new: true, runValidators: true }
   );
   if (!attraction) return fail(res, "Attraction not found", 404);
+  cleanupReplacedImages(
+    [existing?.heroImage, existing?.gallery],
+    [attraction.heroImage, attraction.gallery]
+  );
   ok(res, attraction);
 });
 
 export const deleteAttraction = asyncHandler(async (req: Request, res: Response) => {
   const attraction = await Attraction.findOneAndDelete({ id: req.params.id });
   if (!attraction) return fail(res, "Attraction not found", 404);
+  cleanupReplacedImages([attraction.heroImage, attraction.gallery], []);
   ok(res, { id: req.params.id, deleted: true });
 });

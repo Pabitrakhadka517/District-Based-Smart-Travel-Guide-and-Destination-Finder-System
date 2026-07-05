@@ -12,14 +12,14 @@ export const districts = [
     coordinates: { lat: 27.7833, lng: 86.7167 },
     cityCount: 2, destinationCount: 2, rating: 4.9,
     popularFor: ["Trekking", "Everest", "Sherpa Culture", "Adventure"],
-    bestSeason: "Autumn", attractionCount: 4
+    bestSeason: "Autumn", attractionCount: 6
   },
   {
     id: "d7", slug: "taplejung", name: "Taplejung", province: "Koshi",
     description: "The far-eastern mountain district bordering Sikkim, home to Kanchenjunga Base Camp and rich Limbu culture.",
     heroImage: img("1627119703136-3964f14b7325", 1600),
     coordinates: { lat: 27.3535, lng: 87.6697 },
-    cityCount: 1, destinationCount: 2, rating: 4.3, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 4.3, attractionCount: 6,
     popularFor: ["Trekking", "Kanchenjunga", "Limbu Culture", "Nature"]
   },
   {
@@ -43,7 +43,7 @@ export const districts = [
     description: "Celebrated for its master khukuri smiths and panoramic Himalayan views across a ridge-top bazaar town.",
     heroImage: img("1671327744316-e6393cb03ad8", 1600),
     coordinates: { lat: 27.1744, lng: 87.0516 },
-    cityCount: 1, destinationCount: 1, rating: 3.8, attractionCount: 3,
+    cityCount: 1, destinationCount: 1, rating: 3.8, attractionCount: 4,
     popularFor: ["Crafts", "Khukuri", "Nature", "Heritage"]
   },
   {
@@ -83,7 +83,7 @@ export const districts = [
     description: "Nepal's premier tea district — rolling green gardens, misty ridges and the tranquil Mai Pokhari lake.",
     heroImage: img("1742106856193-5cc3424ac450", 1600),
     coordinates: { lat: 26.9104, lng: 87.9244 },
-    cityCount: 2, destinationCount: 2, rating: 4.2, attractionCount: 4,
+    cityCount: 2, destinationCount: 2, rating: 4.2, attractionCount: 5,
     popularFor: ["Tea Gardens", "Nature", "Trekking", "Lakes"]
   },
   {
@@ -115,7 +115,7 @@ export const districts = [
     description: "A mid-hill district bridging the Terai plains and the higher ranges, with the Triyuga River and forested hills.",
     heroImage: img("1746597062342-db07616ead50", 1600),
     coordinates: { lat: 26.9294, lng: 86.5160 },
-    cityCount: 1, destinationCount: 1, rating: 3.6, attractionCount: 2,
+    cityCount: 1, destinationCount: 1, rating: 3.6, attractionCount: 3,
     popularFor: ["Nature", "Hills", "River", "Trekking"]
   },
 
@@ -125,7 +125,7 @@ export const districts = [
     description: "A Terai district on the Koshi flood plains, known for Rajbiraj bazaar and traditional Maithili art and culture.",
     heroImage: img("1707235164873-e11203d35a74", 1600),
     coordinates: { lat: 26.5435, lng: 86.7498 },
-    cityCount: 1, destinationCount: 1, rating: 3.5, attractionCount: 3,
+    cityCount: 1, destinationCount: 1, rating: 3.5, attractionCount: 4,
     popularFor: ["Culture", "Maithili Art", "Agriculture", "River"]
   },
   {
@@ -139,7 +139,7 @@ export const districts = [
   {
     id: "d22", slug: "dhanusha", name: "Dhanusha", province: "Madhesh",
     description: "Sacred birthplace of Sita — Janakpur, the Maithili cultural capital, draws pilgrims for its ornate temples and the Vivaha Panchami festival.",
-    heroImage: img("1760973179127-414475da8dcc", 1600),
+    heroImage: img(PHOTO.janakpur, 1600),
     coordinates: { lat: 26.7271, lng: 85.9241 },
     cityCount: 1, destinationCount: 2, rating: 4.2, attractionCount: 5,
     popularFor: ["Pilgrimage", "Janakpur", "Culture", "Heritage"]
@@ -220,7 +220,7 @@ export const districts = [
     coordinates: { lat: 27.5291, lng: 84.3542 },
     cityCount: 1, destinationCount: 2, rating: 4.7,
     popularFor: ["Wildlife", "Safari", "Nature", "Jungle"],
-    bestSeason: "Winter", attractionCount: 4
+    bestSeason: "Winter", attractionCount: 5
   },
   {
     id: "d28", slug: "sindhuli", name: "Sindhuli", province: "Bagmati",
@@ -235,7 +235,7 @@ export const districts = [
     description: "Home to the Everest-region domestic airport at Ramechhap, with Manthali as its hub and dramatic Tamakoshi gorges.",
     heroImage: img("1731491435516-566d6d1e3141", 1600),
     coordinates: { lat: 27.3908, lng: 86.0972 },
-    cityCount: 1, destinationCount: 2, rating: 3.8, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 3.8, attractionCount: 5,
     popularFor: ["Trekking", "River", "Nature", "Adventure"]
   },
   {
@@ -251,7 +251,7 @@ export const districts = [
     description: "Spanning the Helambu and Langtang valley approaches with the ancient trade route to Tibet through Tatopani.",
     heroImage: img("1713670959170-176c7d31b93f", 1600),
     coordinates: { lat: 27.7748, lng: 85.6837 },
-    cityCount: 1, destinationCount: 2, rating: 3.9, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 3.9, attractionCount: 5,
     popularFor: ["Trekking", "Nature", "Mountains", "Culture"]
   },
   {
@@ -267,7 +267,7 @@ export const districts = [
     description: "Prithvi Narayan Shah's historic fortress district with the Trishuli River valley, white-water rafting and a majestic seven-storey palace.",
     heroImage: img("1669557582081-274a568aff4d", 1600),
     coordinates: { lat: 27.9093, lng: 85.1695 },
-    cityCount: 1, destinationCount: 2, rating: 3.9, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 3.9, attractionCount: 5,
     popularFor: ["Heritage", "Rafting", "History", "Nature"]
   },
   {
@@ -291,7 +291,7 @@ export const districts = [
     description: "A forested buffer zone south of Kathmandu with Hetauda industrial city, the Kulekhani reservoir and Chure hills.",
     heroImage: img("1622725859789-8e9ccf920693", 1600),
     coordinates: { lat: 27.4232, lng: 85.0297 },
-    cityCount: 1, destinationCount: 2, rating: 3.8, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 3.8, attractionCount: 5,
     popularFor: ["Nature", "Industry", "Hills", "Wildlife"]
   },
 
@@ -303,7 +303,7 @@ export const districts = [
     coordinates: { lat: 28.2096, lng: 83.9856 },
     cityCount: 2, destinationCount: 3, rating: 4.9,
     popularFor: ["Lakes", "Adventure", "Trekking", "Nature"],
-    bestSeason: "Autumn", attractionCount: 7
+    bestSeason: "Autumn", attractionCount: 8
   },
   {
     id: "d6", slug: "mustang", name: "Mustang", province: "Gandaki",
@@ -312,14 +312,14 @@ export const districts = [
     coordinates: { lat: 29.1892, lng: 83.9311 },
     cityCount: 1, destinationCount: 1, rating: 4.8,
     popularFor: ["Trekking", "Tibetan Culture", "Adventure", "Nature"],
-    bestSeason: "Summer", attractionCount: 1
+    bestSeason: "Summer", attractionCount: 3
   },
   {
     id: "d38", slug: "gorkha", name: "Gorkha", province: "Gandaki",
     description: "The ancestral homeland of Nepal's unifiers — the hilltop Gorkha Durbar palace and the trail to Manaslu Base Camp.",
     heroImage: img("1610912335893-b996d1743610", 1600),
     coordinates: { lat: 28.0000, lng: 84.6333 },
-    cityCount: 1, destinationCount: 2, rating: 4.1, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 4.1, attractionCount: 5,
     popularFor: ["Heritage", "Manaslu Trek", "History", "Mountains"]
   },
   {
@@ -327,7 +327,7 @@ export const districts = [
     description: "The classic Annapurna Circuit starting point, with Besisahar as its hub and the dramatic Marsyangdi River gorge.",
     heroImage: img("1653043506251-05cecdfe9cfd", 1600),
     coordinates: { lat: 28.2333, lng: 84.3833 },
-    cityCount: 1, destinationCount: 2, rating: 4.0, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 4.0, attractionCount: 5,
     popularFor: ["Trekking", "Annapurna Circuit", "Mountains", "Nature"]
   },
   {
@@ -359,7 +359,7 @@ export const districts = [
     description: "Beneath the colossal Dhaulagiri massif — Beni is the gateway to the Annapurna Circuit and the remote Dolpa trail.",
     heroImage: img("1678213193578-d667ccc3e7b8", 1600),
     coordinates: { lat: 28.3500, lng: 83.5667 },
-    cityCount: 1, destinationCount: 2, rating: 4.2, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 4.2, attractionCount: 5,
     popularFor: ["Trekking", "Dhaulagiri", "Adventure", "Mountains"]
   },
   {
@@ -367,7 +367,7 @@ export const districts = [
     description: "A district of rushing rivers, suspension bridges and the road to Dolpa — Baglung town sits above the Kali Gandaki gorge.",
     heroImage: img("1678984815159-5490cf0296ea", 1600),
     coordinates: { lat: 28.2709, lng: 83.5870 },
-    cityCount: 1, destinationCount: 2, rating: 3.8, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 3.8, attractionCount: 5,
     popularFor: ["Nature", "Trekking", "River", "Adventure"]
   },
   {
@@ -433,7 +433,7 @@ export const districts = [
     description: "The western Nawalparasi district along the Terai, with Parasi as its hub and the Chitwan-bordering Mahabharat forest foothills.",
     heroImage: img("1710254058475-9377afd4fdcf", 1600),
     coordinates: { lat: 27.5500, lng: 84.0167 },
-    cityCount: 1, destinationCount: 2, rating: 3.6, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 3.6, attractionCount: 6,
     popularFor: ["Nature", "Wildlife", "Agriculture", "Culture"]
   },
   {
@@ -473,7 +473,7 @@ export const districts = [
     description: "Home to Nepalgunj, the main city of mid-western Nepal and gateway to Bardia, Jumla and Humla with a busy airport.",
     heroImage: img("1534215782964-d58601aa091c", 1600),
     coordinates: { lat: 28.0500, lng: 81.6167 },
-    cityCount: 1, destinationCount: 2, rating: 3.9, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 3.9, attractionCount: 5,
     popularFor: ["Gateway", "Culture", "Trade", "Nature"]
   },
   {
@@ -491,7 +491,7 @@ export const districts = [
     description: "Nepal's largest and most remote district — the high-altitude Phoksundo Lake, the hidden Bon kingdom of Shey and ancient salt-trade trails.",
     heroImage: img("1609224584184-893bc7157d54", 1600),
     coordinates: { lat: 29.0000, lng: 82.9667 },
-    cityCount: 1, destinationCount: 2, rating: 4.6, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 4.6, attractionCount: 5,
     popularFor: ["Trekking", "Phoksundo Lake", "Remote", "Tibetan Culture"]
   },
   {
@@ -563,7 +563,7 @@ export const districts = [
     description: "The provincial capital of Karnali — Birendranagar is a fast-growing city with the Bulbule Lake, Kakrebihar temple and Karnali Highway.",
     heroImage: img("1636513988093-126e51dee32d", 1600),
     coordinates: { lat: 28.6000, lng: 81.6167 },
-    cityCount: 1, destinationCount: 2, rating: 4.0, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 4.0, attractionCount: 5,
     popularFor: ["Nature", "Lakes", "Culture", "Gateway"]
   },
 
@@ -581,7 +581,7 @@ export const districts = [
     description: "A wide high-valley district bordering China with the Saipal Himal range and the ancient Surnaya hot springs.",
     heroImage: img("1763480005970-2eb7653864ce", 1600),
     coordinates: { lat: 29.6000, lng: 81.2167 },
-    cityCount: 1, destinationCount: 2, rating: 3.9, attractionCount: 3,
+    cityCount: 1, destinationCount: 2, rating: 3.9, attractionCount: 4,
     popularFor: ["Trekking", "Remote", "Hot Springs", "Mountains"]
   },
   {
@@ -589,7 +589,7 @@ export const districts = [
     description: "The birthplace of Nepal's national hero Prithvi Narayan Shah's ancestors, with Mangalsen hill views and the Ramaroshan lake complex.",
     heroImage: img("1760366621225-55dceb1a3882", 1600),
     coordinates: { lat: 28.9500, lng: 81.2167 },
-    cityCount: 1, destinationCount: 2, rating: 3.7, attractionCount: 3,
+    cityCount: 1, destinationCount: 2, rating: 3.7, attractionCount: 4,
     popularFor: ["Heritage", "Lakes", "Nature", "Culture"]
   },
   {
@@ -597,7 +597,7 @@ export const districts = [
     description: "An ancient kingdom with Dipayal as modern HQ, the Shaileshwari temple and the forested Seti River valley.",
     heroImage: img("1762338896267-341965d5a9e8", 1600),
     coordinates: { lat: 29.2500, lng: 80.9333 },
-    cityCount: 1, destinationCount: 2, rating: 3.7, attractionCount: 3,
+    cityCount: 1, destinationCount: 2, rating: 3.7, attractionCount: 4,
     popularFor: ["Heritage", "Pilgrimage", "Nature", "Hills"]
   },
   {
@@ -613,7 +613,7 @@ export const districts = [
     description: "Nepal's far-western corner with Mahendranagar on the Sharda River, Shuklaphanta adjacency and the Tribhumi pilgrimage.",
     heroImage: img("1713429237605-8e09fed4db90", 1600),
     coordinates: { lat: 28.9663, lng: 80.1732 },
-    cityCount: 1, destinationCount: 2, rating: 3.9, attractionCount: 3,
+    cityCount: 1, destinationCount: 2, rating: 3.9, attractionCount: 4,
     popularFor: ["Nature", "Wildlife", "Pilgrimage", "Trade"]
   },
   {
@@ -637,7 +637,7 @@ export const districts = [
     description: "Nepal's tri-border corner where the Kali River meets India and China — the Api Himal and the Adi Kailash route draw adventurers.",
     heroImage: img("1763738174180-864366e10991", 1600),
     coordinates: { lat: 29.8500, lng: 80.5500 },
-    cityCount: 1, destinationCount: 2, rating: 4.0, attractionCount: 4,
+    cityCount: 1, destinationCount: 2, rating: 4.0, attractionCount: 5,
     popularFor: ["Adventure", "Trekking", "Mountains", "Remote"]
   }
 ];
@@ -667,7 +667,7 @@ export const cities = [
   // ── Madhesh Province ──────────────────────────────────────────────────────
   { id: "c28", slug: "rajbiraj", districtId: "d20", name: "Rajbiraj", description: "The bustling headquarters of Saptari, a commercial centre in the eastern Terai plains.", image: img(PHOTO.jungle1, 1000), coordinates: { lat: 26.5435, lng: 86.7498 }, categories: ["Trade", "Cultural"], rating: 3.4, destinationCount: 0, altitude: 79 },
   { id: "c29", slug: "siraha", districtId: "d21", name: "Siraha", description: "The district hub of Siraha with Maithili cultural traditions and fertile farmlands.", image: img(PHOTO.jungle1, 1000), coordinates: { lat: 26.6543, lng: 86.2097 }, categories: ["Cultural", "Agriculture"], rating: 3.4, destinationCount: 0, altitude: 82 },
-  { id: "c30", slug: "janakpur", districtId: "d22", name: "Janakpur", description: "The holy city of Sita — ornate temples, sacred ponds and the living Maithili art tradition of Mithila paintings.", image: img(PHOTO.stupa1, 1000), coordinates: { lat: 26.7271, lng: 85.9241 }, categories: ["Pilgrimage", "Heritage", "Cultural"], rating: 4.2, destinationCount: 0, altitude: 70 },
+  { id: "c30", slug: "janakpur", districtId: "d22", name: "Janakpur", description: "The holy city of Sita — ornate temples, sacred ponds and the living Maithili art tradition of Mithila paintings.", image: img(PHOTO.janakpur, 1000), coordinates: { lat: 26.7271, lng: 85.9241 }, categories: ["Pilgrimage", "Heritage", "Cultural"], rating: 4.2, destinationCount: 0, altitude: 70 },
   { id: "c31", slug: "jaleshwor", districtId: "d23", name: "Jaleshwor", description: "Headquarters of Mahottari, a growing Terai town on the Kamala River with traditional Maithili culture.", image: img(PHOTO.jungle1, 1000), coordinates: { lat: 26.6500, lng: 85.7958 }, categories: ["Cultural", "Agriculture"], rating: 3.4, destinationCount: 0, altitude: 75 },
   { id: "c32", slug: "malangwa", districtId: "d24", name: "Malangwa", description: "The administrative centre of Sarlahi district, situated on the Bagmati River plain.", image: img(PHOTO.jungle1, 1000), coordinates: { lat: 27.0089, lng: 85.5575 }, categories: ["Cultural", "Agriculture"], rating: 3.4, destinationCount: 0, altitude: 110 },
   { id: "c33", slug: "gaur", districtId: "d25", name: "Gaur", description: "Headquarters of Rautahat with an important sugar mill and historical connections to the Madhesh movement.", image: img(PHOTO.jungle1, 1000), coordinates: { lat: 27.0217, lng: 85.2810 }, categories: ["Cultural", "Industry"], rating: 3.4, destinationCount: 0, altitude: 120 },
@@ -2857,8 +2857,8 @@ export const destinations = [
   description: "Within a walled sacred garden, the Maya Devi Temple marks the exact spot where Queen Maya Devi gave birth to Siddhartha Gautama. Surrounding monastic zones built by Buddhist nations from around the world make Lumbini one of the most significant pilgrimage sites on Earth.",
   category: "Religious",
   tags: ["Buddhism", "UNESCO", "Pilgrimage", "Heritage"],
-  heroImage: img(PHOTO.stupa1, 1600),
-  gallery: gallery(PHOTO.stupa1, PHOTO.sacredLake, PHOTO.brickTemple),
+  heroImage: img("1708596571872-fe7ee0b8f945", 1600),
+  gallery: gallery("1708596571872-fe7ee0b8f945", "1578235107258-f6e405a4ffc0", "1609168959134-9914b77bd890"),
   coordinates: { lat: 27.4691, lng: 83.2755 },
   rating: 4.7, reviewCount: 382,
   bestTimeToVisit: ["Autumn", "Winter", "Spring"],
@@ -4303,6 +4303,838 @@ export const guides = [
       "Tourism is a lifeline for mountain communities, and how you travel makes a real difference. Hire local guides and porters, pay fair wages, and ensure porters carry safe loads and have proper gear.",
       "Cut waste at the source: carry a reusable water bottle with purification, refuse single-use plastics, and pack out what you pack in. Many trails now have refill stations.",
       "Respect local customs — walk clockwise around stupas and mani walls, ask before photographing people, and dress modestly at religious sites. A little cultural awareness goes a long way."
+    ]
+  },
+  // ── Koshi province ──────────────────────────────────────────────────────
+  {
+    id: "g6", slug: "kanchenjunga-taplejung-guide", title: "Taplejung: Gateway to Kanchenjunga's Wild Trails",
+    excerpt: "Nepal's remotest major trekking region — the world's third-highest mountain, a restricted-area permit, and a fraction of the crowds of Everest or Annapurna.",
+    coordinates: { lat: 27.3535, lng: 87.6697 }, districtId: "d7",
+    category: "Trekking", cover: img(PHOTO.kanchenjunga, 1200), author: "Pemba Sherpa", authorAvatar: AV(22),
+    date: "2026-01-10", readMinutes: 6, tags: ["Trekking", "Kanchenjunga", "Remote"], featured: false,
+    body: [
+      "Taplejung district sits in Nepal's far northeast, hard against the Sikkim border, and is the launch point for treks into the Kanchenjunga Conservation Area — home to the world's third-highest mountain. Because a restricted-area permit and registered guide are required, the trails see only a trickle of the traffic that Everest and Annapurna get.",
+      "Beyond the mountain itself, Taplejung is home to Pathivara Devi Temple, one of eastern Nepal's most important Hindu-Kirat pilgrimage sites, perched on a ridge with sweeping views. Expect long approach walks, genuine village homestays, and a much slower, quieter pace than Nepal's headline trekking regions."
+    ]
+  },
+  {
+    id: "g7", slug: "okhaldhunga-old-trail-guide", title: "Okhaldhunga: The Quiet Hills Between Kathmandu and Everest",
+    excerpt: "Long before flights to Lukla, this was the walking route to Everest. Today it's a peaceful hill district that most trekkers fly straight over.",
+    coordinates: { lat: 27.309, lng: 86.5015 }, districtId: "d8",
+    category: "Culture", cover: img(PHOTO.nepalHills, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-01-12", readMinutes: 5, tags: ["Hill culture", "Off the beaten path"], featured: false,
+    body: [
+      "Before domestic flights made Lukla the default starting point, trekkers walked for days through Okhaldhunga's terraced hills to reach the Everest region. That old route is quieter now, but the district itself hasn't lost any of its character.",
+      "Rai and Chhetri communities farm steep terraces across the hillsides, and the pace of life is unhurried. It's not a district built around a single headline attraction — it's a place to slow down, walk between villages, and see hill Nepal without a crowd."
+    ]
+  },
+  {
+    id: "g8", slug: "khotang-halesi-mahadev-guide", title: "Khotang and the Sacred Cave of Halesi Mahadev",
+    excerpt: "One of eastern Nepal's most significant pilgrimage sites — a natural limestone cave temple sacred to both Hindus and the Kirat community.",
+    coordinates: { lat: 27.0237, lng: 86.8497 }, districtId: "d9",
+    category: "Culture", cover: img(PHOTO.brickTemple, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-01-14", readMinutes: 5, tags: ["Pilgrimage", "Culture", "Halesi"], featured: false,
+    body: [
+      "Halesi Mahadev is a natural cave shrine dedicated to Lord Shiva, and one of the rare sites revered by both Hindu pilgrims and the region's Kirat communities as a sacred ancestral place. Pilgrims descend into the limestone cave to see rock formations believed to represent the deity.",
+      "Khotang itself is classic mid-hill Rai country — steep ridgelines, scattered villages, and a slower rhythm of life. Most visitors come specifically for Halesi, combining the pilgrimage with a night or two in the surrounding hills."
+    ]
+  },
+  {
+    id: "g9", slug: "bhojpur-khukuri-town-guide", title: "Bhojpur: Nepal's Khukuri-Making Hill Town",
+    excerpt: "A hill town famous across Nepal for hand-forged khukuris, reached by a short flight to Tumlingtar and a hillside walk up.",
+    coordinates: { lat: 27.1744, lng: 87.0516 }, districtId: "d10",
+    category: "Culture", cover: img(PHOTO.square1, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-01-16", readMinutes: 5, tags: ["Craftsmanship", "Culture", "Hill towns"], featured: false,
+    body: [
+      "Bhojpur bazaar has been known for generations as a centre of traditional khukuri (the curved Nepali blade) craftsmanship, with blacksmith families still forging blades by hand. The hillside town itself, with its old Newari-influenced architecture, is worth a wander in its own right.",
+      "Dantakali Temple sits above the bazaar and draws local pilgrims. Most visitors arrive via a short flight into Tumlingtar followed by a climb up into the hills — Bhojpur rewards travellers willing to take the slower route into eastern Nepal."
+    ]
+  },
+  {
+    id: "g10", slug: "dhankuta-bhedetar-guide", title: "Dhankuta: Orange Orchards and the Bhedetar Sunrise",
+    excerpt: "A tidy former regional headquarters town, famous orange orchards, and one of the east's best accessible Himalaya viewpoints.",
+    coordinates: { lat: 26.9829, lng: 87.3432 }, districtId: "d11",
+    category: "Tips", cover: img(PHOTO.teaHills, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-01-18", readMinutes: 5, tags: ["Viewpoint", "Hill towns", "Planning"], featured: false,
+    body: [
+      "Dhankuta was once the administrative seat for all of eastern Nepal's hills, and its well-planned stone-paved streets and orange orchards still reflect that history. The town makes a comfortable, low-key base for exploring the eastern hills.",
+      "Just outside town, Bhedetar straddles the Dhankuta-Sunsari border and is one of the region's most popular easily-reached viewpoints, with clear-morning views stretching to the eastern Himalaya. It's a favourite weekend trip for people from Dharan and Biratnagar."
+    ]
+  },
+  {
+    id: "g11", slug: "terhathum-limbu-hills-guide", title: "Terhathum: Limbu Heartland in the Eastern Hills",
+    excerpt: "One of the smallest hill districts in the east — quiet terraced ridgelines and a strong Limbu cultural identity.",
+    coordinates: { lat: 27.1239, lng: 87.5508 }, districtId: "d12",
+    category: "Culture", cover: img(PHOTO.nepalHills, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-01-20", readMinutes: 4, tags: ["Culture", "Off the beaten path"], featured: false,
+    body: [
+      "Terhathum is compact even by hill-district standards, and it rarely appears on standard itineraries — which is exactly its appeal for travellers who've already seen the busier eastern hill towns. Limbu culture is strong here, expressed in local festivals, food and dress.",
+      "The terrain is classic mid-hill Nepal: terraced fields cut into steep slopes, scattered settlements connected by ridge trails, and views toward the higher Kanchenjunga range on clear days."
+    ]
+  },
+  {
+    id: "g12", slug: "sankhuwasabha-makalu-guide", title: "Sankhuwasabha: In the Shadow of Mount Makalu",
+    excerpt: "Home to the world's fifth-highest mountain and the Makalu Barun National Park — a remote trekking region reached via Tumlingtar airstrip.",
+    coordinates: { lat: 27.3576, lng: 87.1427 }, districtId: "d13",
+    category: "Trekking", cover: img(PHOTO.himalaya7, 1200), author: "Dr. Marco Rossi", authorAvatar: AV(15),
+    date: "2026-01-22", readMinutes: 6, tags: ["Trekking", "Makalu", "National Park"], featured: false,
+    body: [
+      "Sankhuwasabha district is dominated by Mount Makalu, the world's fifth-highest peak, and by the Makalu Barun National Park that protects the forests and high valleys around it. The park spans an extraordinary range of altitude, from subtropical forest to permanent snow.",
+      "Treks here start with a flight to Tumlingtar and involve long, remote approach walks through rhododendron forest and Sherpa and Rai villages before reaching high alpine terrain. It's a serious undertaking, but one of the least crowded high-mountain trekking regions in Nepal."
+    ]
+  },
+  {
+    id: "g13", slug: "panchthar-hills-guide", title: "Panchthar: Cardamom and Tea on the Roof of the East",
+    excerpt: "A quiet Limbu hill district known for cardamom and tea farming, tucked between the better-known Ilam and Taplejung.",
+    coordinates: { lat: 27.1417, lng: 87.8079 }, districtId: "d14",
+    category: "Culture", cover: img(PHOTO.teaHills, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-01-24", readMinutes: 4, tags: ["Culture", "Farming", "Hills"], featured: false,
+    body: [
+      "Sandwiched between the tea gardens of Ilam and the high mountains of Taplejung, Panchthar is easy to pass over — but its cardamom and tea farms, and strong Limbu cultural traditions, reward a slower visit.",
+      "It's a district best explored as part of a broader eastern-hills loop rather than a standalone destination — rolling farmland, quiet villages, and a genuine, unhurried version of hill Nepal."
+    ]
+  },
+  {
+    id: "g14", slug: "ilam-tea-country-guide", title: "Ilam: Nepal's Tea Country",
+    excerpt: "Rolling green tea gardens, a sacred wetland lake, and the country's best-known sunrise viewpoint outside Pokhara.",
+    coordinates: { lat: 26.9104, lng: 87.9244 }, districtId: "d15",
+    category: "Food", cover: img(PHOTO.teaPickers, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-01-26", readMinutes: 5, tags: ["Tea", "Food", "Viewpoint"], featured: true,
+    body: [
+      "Ilam is the heart of Nepal's orthodox tea industry — the rolling, manicured tea gardens around Kanyam are among the most photographed farmland in the country. Guesthouses among the plantations let you wake up inside the view.",
+      "Mai Pokhari, a small sacred lake and wetland reserve, draws both pilgrims and birdwatchers, while Antu Danda is one of the east's best sunrise viewpoints over layered hills toward Kanchenjunga. Together they make Ilam one of the most rewarding short trips from the eastern Terai."
+    ]
+  },
+  {
+    id: "g15", slug: "jhapa-terai-guide", title: "Jhapa: Nepal's Easternmost Terai Plains",
+    excerpt: "Flat tea, jute and rice country on the Indian border — more agricultural transit hub than tourist destination, and useful to know as one.",
+    coordinates: { lat: 26.6385, lng: 87.9055 }, districtId: "d16",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-01-28", readMinutes: 4, tags: ["Terai", "Planning", "Border crossing"], featured: false,
+    body: [
+      "Jhapa is Nepal's easternmost Terai district, flat agricultural land given over to tea, jute and rice, and a common overland crossing point from India's Siliguri corridor. It's less a sightseeing destination than a practical gateway.",
+      "Most travellers pass through en route to the eastern hills (Ilam, Taplejung) or the Kanchenjunga region — worth knowing about for route planning even if you don't linger."
+    ]
+  },
+  {
+    id: "g16", slug: "morang-biratnagar-guide", title: "Morang and Biratnagar: Nepal's Eastern Industrial Hub",
+    excerpt: "Home to Biratnagar, Nepal's second-largest city and its original industrial town — a practical gateway rather than a scenic stop.",
+    coordinates: { lat: 26.4525, lng: 87.2718 }, districtId: "d17",
+    category: "Tips", cover: img(PHOTO.square1, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-01-30", readMinutes: 4, tags: ["City", "Planning", "Terai"], featured: false,
+    body: [
+      "Morang's flat Terai plains are centred on Biratnagar, Nepal's second-largest city and historically its first major industrial town, built up around jute mills in the early 20th century. It remains a key commercial and transport hub for the east.",
+      "Most travellers use it as a transit point — a domestic airport, road links across the eastern Terai, and a border crossing into India — rather than a destination to linger in."
+    ]
+  },
+  {
+    id: "g17", slug: "sunsari-koshi-guide", title: "Sunsari: Where the Koshi River Meets Pilgrimage and Wetlands",
+    excerpt: "Barah Chhetra's riverside pilgrimage site, the Koshi Barrage, and the wetlands of Koshi Tappu — a district defined by its rivers.",
+    coordinates: { lat: 26.6396, lng: 87.1713 }, districtId: "d18",
+    category: "Culture", cover: img(PHOTO.himalayaLake, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-02-01", readMinutes: 5, tags: ["Pilgrimage", "Wetlands", "Rivers"], featured: false,
+    body: [
+      "Sunsari's identity is shaped by water. Barah Chhetra, at the confluence of the Koshi and Barahi rivers, is a significant Hindu pilgrimage site, while the Koshi Barrage nearby regulates one of Nepal's biggest rivers for irrigation and flood control.",
+      "Just to the district's edge, the wetlands of Koshi Tappu Wildlife Reserve support wild water buffalo and some of the best birdwatching in the country — a quieter, water-based counterpart to the Chitwan safari experience further west."
+    ]
+  },
+  {
+    id: "g18", slug: "udayapur-chure-guide", title: "Udayapur: Between the Hills and the Terai",
+    excerpt: "A transitional Chure-range district along the Sunkoshi river, quiet and rarely visited compared to its neighbours.",
+    coordinates: { lat: 26.9294, lng: 86.516 }, districtId: "d19",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-02-03", readMinutes: 4, tags: ["Off the beaten path", "Rivers"], featured: false,
+    body: [
+      "Udayapur sits in the transition zone between the eastern hills and the Terai plains, straddling the low Chure range along the Sunkoshi river. It's one of the least-touristed districts in the east, with no single headline attraction pulling in visitors.",
+      "For travellers moving overland between the eastern hills and the Terai, it's worth a stop for the river scenery and a genuinely unhurried slice of transitional Nepal."
+    ]
+  },
+  // ── Madhesh province ─────────────────────────────────────────────────────
+  {
+    id: "g19", slug: "saptari-maithili-guide", title: "Saptari: Maithili Culture in Nepal's Eastern Terai",
+    excerpt: "One of Nepal's oldest planned towns, Rajbiraj, anchors this Maithili-speaking agricultural district in the eastern plains.",
+    coordinates: { lat: 26.5435, lng: 86.7498 }, districtId: "d20",
+    category: "Culture", cover: img(PHOTO.square1, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-02-05", readMinutes: 4, tags: ["Culture", "Terai", "Maithili"], featured: false,
+    body: [
+      "Saptari sits deep in Nepal's Maithili-speaking eastern Terai, an agricultural district of rice and jute fields. Rajbiraj, its main town, is one of the earliest planned municipalities in the Terai, with a distinct grid layout from its founding era.",
+      "Festivals here follow the Maithili calendar — Chhath, celebrated on the region's riverbanks and ponds, is the most visually striking, with pilgrims wading into the water at dawn and dusk."
+    ]
+  },
+  {
+    id: "g20", slug: "siraha-terai-guide", title: "Siraha: Terai Farmland in Janakpur's Cultural Orbit",
+    excerpt: "Rice fields, the market town of Lahan, and a Maithili culture that shares deep roots with neighbouring Dhanusha.",
+    coordinates: { lat: 26.6543, lng: 86.2097 }, districtId: "d21",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-02-07", readMinutes: 4, tags: ["Terai", "Culture"], featured: false,
+    body: [
+      "Siraha is flat Terai farmland, culturally and linguistically bound to the Maithili world centred on nearby Janakpur. Lahan is its busiest market town, a practical stop rather than a sightseeing destination.",
+      "Most visitors pass through as part of a wider Madhesh Terai route — it's worth knowing about for road planning between the eastern hills and Janakpur rather than as a standalone stop."
+    ]
+  },
+  {
+    id: "g21", slug: "janakpur-dhanusha-guide", title: "Janakpur: The Spiritual Heart of the Maithili Terai",
+    excerpt: "Home to the ornate Janaki Mandir, said to mark Sita's birthplace, and one of Nepal's most important Hindu pilgrimage cities.",
+    coordinates: { lat: 26.7271, lng: 85.9241 }, districtId: "d22",
+    category: "Culture", cover: img(PHOTO.brickTemple, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-02-09", readMinutes: 6, tags: ["Pilgrimage", "Culture", "Janakpur"], featured: true,
+    body: [
+      "Janakpur, Dhanusha's main city, is one of the most important pilgrimage destinations in the Hindu world — traditionally identified as the birthplace of Sita and the site of her marriage to Lord Rama. The white-and-gold Janaki Mandir, built in a distinctive Mughal-influenced style, is the city's centrepiece.",
+      "The Vivaha Panchami festival, re-enacting Rama and Sita's wedding, draws huge crowds of pilgrims each year. Beyond the temple, Janakpur's old quarter, its many sacred ponds, and its strong Maithili art tradition (including the distinctive Mithila painting style) make it one of the Terai's richest cultural stops."
+    ]
+  },
+  {
+    id: "g22", slug: "mahottari-jaleshwor-guide", title: "Mahottari: The Shiva Temple Town of Jaleshwor",
+    excerpt: "A Terai district centred on Jaleshwor, home to a historic Mahadev temple and a strong Maithili farming tradition.",
+    coordinates: { lat: 26.65, lng: 85.7958 }, districtId: "d23",
+    category: "Culture", cover: img(PHOTO.brickTemple, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-02-11", readMinutes: 4, tags: ["Pilgrimage", "Terai"], featured: false,
+    body: [
+      "Mahottari's main town, Jaleshwor, takes its name from its historic Jaleshwor Mahadev temple, a local Shiva shrine that draws regional pilgrims, especially during Shivaratri. The surrounding district is classic Maithili Terai — rice paddies, market towns and village fairs.",
+      "It's not a district built for international tourism, but for travellers exploring the Maithili cultural belt alongside Janakpur, Jaleshwor adds another layer of local religious life."
+    ]
+  },
+  {
+    id: "g23", slug: "sarlahi-terai-guide", title: "Sarlahi: Farmland on the Kathmandu-Terai Corridor",
+    excerpt: "An agricultural Terai district around Malangwa, most often seen from the road between the capital and the eastern plains.",
+    coordinates: { lat: 27.0089, lng: 85.5575 }, districtId: "d24",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-02-13", readMinutes: 4, tags: ["Terai", "Planning"], featured: false,
+    body: [
+      "Sarlahi is Terai farmland — rice, wheat and sugarcane — with Malangwa as its main market town. It sits along a well-travelled corridor connecting Kathmandu to the eastern Terai and India border crossings.",
+      "As with much of the central Madhesh, it functions mainly as agricultural heartland and transit country rather than a tourist destination in its own right."
+    ]
+  },
+  {
+    id: "g24", slug: "rautahat-terai-guide", title: "Rautahat: Sugarcane Country on the Indian Border",
+    excerpt: "A Terai border district around Gaur, known for sugarcane farming and cross-border trade with Bihar, India.",
+    coordinates: { lat: 27.0217, lng: 85.281 }, districtId: "d25",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-02-15", readMinutes: 4, tags: ["Terai", "Border"], featured: false,
+    body: [
+      "Rautahat lies directly on the Indian border in the central Terai, with Gaur as its district seat. Sugarcane is the defining crop here, and the district's economy is closely tied to cross-border trade with neighbouring Bihar.",
+      "There's little in the way of formal tourism infrastructure — this is a working agricultural border district best understood as part of the wider Madhesh plains rather than a destination stop."
+    ]
+  },
+  {
+    id: "g25", slug: "bara-gadhimai-guide", title: "Bara and the Gadhimai Temple Festival",
+    excerpt: "Home to the Gadhimai Temple at Bariyarpur, the site of one of the world's largest periodic religious gatherings.",
+    coordinates: { lat: 27.0378, lng: 84.9986 }, districtId: "d26",
+    category: "Culture", cover: img(PHOTO.brickTemple, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-02-17", readMinutes: 5, tags: ["Pilgrimage", "Festival", "Culture"], featured: false,
+    body: [
+      "Bara district is best known for the Gadhimai Temple at Bariyarpur, where a mass festival held roughly every five years draws millions of pilgrims from Nepal and India — among the largest periodic religious gatherings anywhere in the world.",
+      "Outside festival years, Bara is quiet Terai farmland, with Kalaiya as its main town. Its position between Chitwan and Parsa's protected forests also gives it patches of genuine wilderness along its northern edge."
+    ]
+  },
+  {
+    id: "g26", slug: "parsa-birgunj-guide", title: "Parsa: Birgunj, Nepal's Gateway City, and a Forgotten National Park",
+    excerpt: "Home to Birgunj, Nepal's main overland trade gateway with India, and Parsa National Park's rhino and tiger habitat.",
+    coordinates: { lat: 27.0126, lng: 84.8792 }, districtId: "d27",
+    category: "Tips", cover: img(PHOTO.tiger, 1200), author: "Dr. Marco Rossi", authorAvatar: AV(15),
+    date: "2026-02-19", readMinutes: 5, tags: ["Wildlife", "Border", "National Park"], featured: false,
+    body: [
+      "Parsa's main city, Birgunj, is Nepal's busiest land port — the primary overland crossing for goods and travellers moving between Nepal and India. For most visitors, it's a transit point rather than a destination.",
+      "North of the city, Parsa National Park protects an eastern extension of the same lowland forest and grassland ecosystem as Chitwan, with resident tigers, rhinos and wild elephants — a quieter, less-visited alternative to its more famous neighbour."
+    ]
+  },
+  // ── Bagmati province ─────────────────────────────────────────────────────
+  {
+    id: "g27", slug: "patan-lalitpur-guide", title: "Patan: The Artisan City Across the River from Kathmandu",
+    excerpt: "Lalitpur's ancient Newar core, Patan Durbar Square, is Nepal's living centre of traditional metal and stone craftsmanship.",
+    coordinates: { lat: 27.6588, lng: 85.3247 }, districtId: "d5",
+    category: "Culture", cover: img(PHOTO.patanDurbar, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-02-21", readMinutes: 6, tags: ["Heritage", "Culture", "Patan"], featured: true,
+    body: [
+      "Just across the Bagmati river from Kathmandu, Patan (the historic core of Lalitpur district) is often considered the valley's most architecturally refined city. Patan Durbar Square packs an extraordinary density of temples, courtyards and the former royal palace — now home to the excellent Patan Museum — into a compact, walkable space.",
+      "The city is still Nepal's centre for traditional metalwork and stone carving; workshops around the square continue crafts passed down for generations. The gilded Kumbeshwar Temple and the ornate Hiranya Varna Mahavihar (Golden Temple) are two of many quieter highlights beyond the main square."
+    ]
+  },
+  {
+    id: "g28", slug: "bhaktapur-durbar-square-guide", title: "Bhaktapur: The Best-Preserved Medieval City in the Valley",
+    excerpt: "Nyatapola's five-tiered pagoda, pottery square, and Nepal's famous juju dhau — Bhaktapur feels like stepping into another century.",
+    coordinates: { lat: 27.671, lng: 85.4298 }, districtId: "d33",
+    category: "Culture", cover: img(PHOTO.bhaktapurSq, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-02-23", readMinutes: 6, tags: ["Heritage", "Culture", "Bhaktapur"], featured: true,
+    body: [
+      "Of the three former royal cities in the Kathmandu Valley, Bhaktapur has kept the most consistent medieval character — car-free brick lanes, timber-carved windows, and squares that still function as working public space rather than museum pieces. Nyatapola Temple, a five-tiered pagoda, is the tallest in Nepal and dominates its own square.",
+      "Pottery Square is still a working craft district where potters shape clay on foot-powered wheels much as they always have. And no visit is complete without trying juju dhau — Bhaktapur's famously rich 'king curd' — from a clay-pot stall near Durbar Square."
+    ]
+  },
+  {
+    id: "g29", slug: "chitwan-safari-guide", title: "Chitwan: Nepal's Original Jungle Safari",
+    excerpt: "Nepal's first national park, a UNESCO World Heritage Site, home to rhinos, tigers and gharial crocodiles — plus deep Tharu culture.",
+    coordinates: { lat: 27.5291, lng: 84.3542 }, districtId: "d4",
+    category: "Trekking", cover: img(PHOTO.chitwan, 1200), author: "Dr. Marco Rossi", authorAvatar: AV(15),
+    date: "2026-02-25", readMinutes: 6, tags: ["Wildlife", "Safari", "Chitwan"], featured: true,
+    body: [
+      "Chitwan National Park, established in 1973, was Nepal's first national park and remains its flagship wildlife destination — one of the last strongholds of the greater one-horned rhinoceros, with a recovering tiger population and resident gharial crocodiles. Jeep safaris, canoe trips and guided jungle walks from Sauraha are the standard way to see it.",
+      "The district is also the heartland of the Tharu people, the Indigenous community of the inner Terai, whose stick dance performances and distinctive mud-and-thatch architecture are as much a part of a Chitwan visit as the wildlife. At Devghat, where the Kali Gandaki and Trishuli rivers meet to form the Narayani, elderly Hindu pilgrims come to spend their final years — one of the region's quieter, more contemplative sites."
+    ]
+  },
+  {
+    id: "g30", slug: "sindhuli-gadhi-guide", title: "Sindhuli: The Fort That Turned Back an Empire",
+    excerpt: "Home to Sindhuli Gadhi, the historic hill fort where Nepali forces repelled a British East India Company invasion in 1767.",
+    coordinates: { lat: 27.254, lng: 85.9717 }, districtId: "d28",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-02-27", readMinutes: 4, tags: ["History", "Fort", "Hills"], featured: false,
+    body: [
+      "Sindhuli district sits along the old and new highways linking Kathmandu to the eastern Terai. Its best-known landmark, Sindhuli Gadhi, is a hilltop fort where Nepali forces successfully repelled an invading British East India Company army in 1767 — a rare pre-unification military victory that's a genuine point of national historical pride.",
+      "Beyond the fort, the district is quiet hill farmland straddling the road corridor — most travellers pass through rather than staying, but the fort itself is a worthwhile detour for anyone interested in Nepali history."
+    ]
+  },
+  {
+    id: "g31", slug: "ramechhap-gateway-guide", title: "Ramechhap: The Backup Gateway to Everest",
+    excerpt: "When Kathmandu's airport gets congested, flights to Lukla reroute through this quiet hill district's small airstrip at Manthali.",
+    coordinates: { lat: 27.3908, lng: 86.0972 }, districtId: "d29",
+    category: "Tips", cover: img(PHOTO.himalaya4, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-03-01", readMinutes: 4, tags: ["Trekking logistics", "Everest", "Planning"], featured: false,
+    body: [
+      "Ramechhap rarely makes headlines on its own, but its small airstrip at Manthali has become a well-known name to Everest-region trekkers — during Kathmandu's peak season congestion, Lukla flights are frequently rerouted here, adding a road transfer to the journey.",
+      "Beyond its role as a trekking logistics hub, the district borders the Gaurishankar Conservation Area, protecting the high peaks and valleys around Gauri Shankar — a quieter northern extension of hill Nepal that sees far fewer visitors than the trekking routes it feeds into."
+    ]
+  },
+  {
+    id: "g32", slug: "dolakha-kalinchok-guide", title: "Dolakha: Kalinchok's Pilgrimage Cable Car and the Old Everest Trail",
+    excerpt: "A hugely popular Bhagwati temple reached by cable car, and Jiri — the traditional starting point of the classic Everest trek.",
+    coordinates: { lat: 27.6717, lng: 86.0829 }, districtId: "d30",
+    category: "Trekking", cover: img(PHOTO.himalaya5, 1200), author: "Pemba Sherpa", authorAvatar: AV(22),
+    date: "2026-03-03", readMinutes: 5, tags: ["Pilgrimage", "Trekking", "Jiri"], featured: false,
+    body: [
+      "Kalinchok Bhagwati, a temple perched at over 3,800m, has become one of the most-visited pilgrimage sites near Kathmandu thanks to a cable car that cuts what was once a demanding hike down to minutes — though many pilgrims still climb on foot for merit.",
+      "Dolakha is also home to Jiri, the roadhead where the classic Everest trek used to begin before Lukla flights took over — the multi-day walk from Jiri through Solu's hills is still done today by trekkers who want the original, slower approach."
+    ]
+  },
+  {
+    id: "g33", slug: "sindhupalchok-helambu-guide", title: "Sindhupalchok: Helambu's Hyolmo Villages and the Melamchi Valley",
+    excerpt: "A moderate, monastery-dotted trekking region and the valley that supplies much of Kathmandu's drinking water.",
+    coordinates: { lat: 27.7748, lng: 85.6837 }, districtId: "d31",
+    category: "Trekking", cover: img(PHOTO.himalaya6, 1200), author: "Dr. Marco Rossi", authorAvatar: AV(15),
+    date: "2026-03-05", readMinutes: 5, tags: ["Trekking", "Helambu", "Culture"], featured: false,
+    body: [
+      "The Helambu region in Sindhupalchok is one of the most accessible moderate treks near Kathmandu, winding through Hyolmo villages, monasteries and rhododendron forest without requiring the altitude or time commitment of Everest or Annapurna.",
+      "The district's Melamchi valley also supplies a significant share of Kathmandu Valley's drinking water via a major diversion project. Northward, the terrain rises into the Langtang range, sharing high alpine country with neighbouring Rasuwa."
+    ]
+  },
+  {
+    id: "g34", slug: "kavre-dhulikhel-namobuddha-guide", title: "Kavrepalanchok: Dhulikhel's Views and the Pilgrimage of Namobuddha",
+    excerpt: "A hill town famous for Himalaya sunrises, a major Buddhist pilgrimage site, and one of the valley's best-preserved Newar towns.",
+    coordinates: { lat: 27.6244, lng: 85.5365 }, districtId: "d32",
+    category: "Culture", cover: img(PHOTO.namobuddha, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-03-07", readMinutes: 5, tags: ["Pilgrimage", "Viewpoint", "Culture"], featured: false,
+    body: [
+      "Dhulikhel, less than an hour from Kathmandu, is a favourite weekend escape for its wide Himalaya panorama and cooler hill air. From here, a popular day or overnight hike leads to Namobuddha, a major Buddhist pilgrimage site and monastery built around the legend of the Buddha, in a past life, offering his body to a starving tigress.",
+      "Nearby Panauti is one of the valley's least-visited but best-preserved medieval Newar towns, with an old temple complex at the confluence of two rivers that rivals the bigger Durbar Squares for atmosphere, minus the crowds."
+    ]
+  },
+  {
+    id: "g35", slug: "nuwakot-durbar-guide", title: "Nuwakot: The Palace Where Nepal Was Unified",
+    excerpt: "The seven-storey Nuwakot Durbar, Prithvi Narayan Shah's historic base for unifying Nepal, overlooking the Trishuli river.",
+    coordinates: { lat: 27.9093, lng: 85.1695 }, districtId: "d34",
+    category: "Tips", cover: img(PHOTO.nuwakotPalace, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-03-09", readMinutes: 5, tags: ["History", "Heritage", "Palace"], featured: false,
+    body: [
+      "Nuwakot Durbar, a distinctive seven-storey palace overlooking the Trishuli river valley, served as King Prithvi Narayan Shah's strategic base during his 18th-century campaign to unify Nepal's fractured hill kingdoms. It remains one of the country's most significant historical monuments outside Kathmandu.",
+      "The district sits along the old trade route toward Tibet and the modern road to Langtang and Rasuwa, making it a natural, historically rich stop for travellers heading north out of the Kathmandu Valley."
+    ]
+  },
+  {
+    id: "g36", slug: "rasuwa-gosaikunda-langtang-guide", title: "Rasuwa: Gosaikunda's Sacred Lake and the Langtang Valley",
+    excerpt: "A high alpine lake at the centre of a major Hindu pilgrimage, and one of the most accessible Himalayan trekking valleys from Kathmandu.",
+    coordinates: { lat: 28.0804, lng: 85.3737 }, districtId: "d35",
+    category: "Trekking", cover: img(PHOTO.himalaya2, 1200), author: "Pemba Sherpa", authorAvatar: AV(22),
+    date: "2026-03-11", readMinutes: 5, tags: ["Trekking", "Pilgrimage", "Lake"], featured: false,
+    body: [
+      "Gosaikunda, a sacred alpine lake above 4,300m, is one of Nepal's most important Hindu pilgrimage sites — thousands of pilgrims climb to its shores during the Janai Purnima festival each August. It sits within Langtang National Park, protecting glacier-fed valleys close enough to Kathmandu to reach by road in a single day.",
+      "The Langtang Valley trek itself is one of the most accessible ways to experience genuine high-Himalaya scenery on a shorter timeline than Everest or Annapurna, passing through Tamang villages and rhododendron forest en route to glacier-rimmed high pasture."
+    ]
+  },
+  {
+    id: "g37", slug: "dhading-ganesh-himal-guide", title: "Dhading: Quiet Hills on the Road to Pokhara",
+    excerpt: "A hill farming district along the Kathmandu-Pokhara highway, in the shadow of the lesser-visited Ganesh Himal range.",
+    coordinates: { lat: 27.8584, lng: 84.8814 }, districtId: "d36",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-03-13", readMinutes: 4, tags: ["Hills", "Off the beaten path"], featured: false,
+    body: [
+      "Dhading is mostly known to travellers as a stretch of highway between Kathmandu and Pokhara, but the district's northern reaches climb toward the Ganesh Himal range — a much quieter alternative to the region's famous trekking areas.",
+      "The Ankhu Khola and Trishuli river valleys cut through terraced hill farmland, and the district makes a natural, uncrowded add-on for travellers wanting to see rural hill life without detouring far from the main highway."
+    ]
+  },
+  {
+    id: "g38", slug: "makwanpur-daman-guide", title: "Makwanpur: Daman's Panoramic Himalaya Viewpoint",
+    excerpt: "One of the widest roadside Himalaya panoramas in Nepal, plus the Kulekhani reservoir and the hill-Terai town of Hetauda.",
+    coordinates: { lat: 27.4232, lng: 85.0297 }, districtId: "d37",
+    category: "Tips", cover: img(PHOTO.himalaya1, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-03-15", readMinutes: 4, tags: ["Viewpoint", "Reservoir", "Planning"], featured: false,
+    body: [
+      "Daman, perched on the Tribhuvan Highway between Kathmandu and the Terai, offers one of the widest mountain panoramas visible from any roadside point in Nepal — on a clear day the view stretches across a vast stretch of the Himalayan range, from Dhaulagiri to Everest.",
+      "Lower down, the Kulekhani reservoir is a popular spot for boating and fishing, built for one of Nepal's earliest hydropower dams. Hetauda, the district's main town, marks the transition from hills to Terai and is a common overnight stop on the Kathmandu-Chitwan road route."
+    ]
+  },
+  // ── Gandaki province ─────────────────────────────────────────────────────
+  {
+    id: "g39", slug: "pokhara-adventure-guide", title: "Pokhara: Nepal's Adventure Sports Capital",
+    excerpt: "Beyond the lake and the mountain views, Kaski district's Pokhara has become Nepal's biggest hub for paragliding, zip-lining and ultralight flights.",
+    coordinates: { lat: 28.2096, lng: 83.9856 }, districtId: "d2",
+    category: "Tips", cover: img(PHOTO.phewa, 1200), author: "Dr. Marco Rossi", authorAvatar: AV(15),
+    date: "2026-03-17", readMinutes: 5, tags: ["Adventure", "Paragliding", "Pokhara"], featured: true,
+    body: [
+      "Pokhara's combination of a launch-friendly hillside (Sarangkot), a landing zone right on Phewa Lake, and near-guaranteed Annapurna views has made it one of the world's most accessible paragliding destinations — tandem flights need no experience and run most mornings when conditions are stable.",
+      "The same geography supports zip-lining (one of the longest and steepest in the world runs here), ultralight mountain flights, and canyoning nearby — making Kaski district as much an adventure-sports base as a scenic one. Most operators cluster around Lakeside, making it easy to book same-day."
+    ]
+  },
+  {
+    id: "g40", slug: "mustang-muktinath-guide", title: "Mustang: High Desert, Ancient Kingdoms and a Sacred Temple",
+    excerpt: "A Tibetan-plateau landscape behind the Annapurna rain shadow, home to Muktinath Temple and the walled city of Lo Manthang.",
+    coordinates: { lat: 29.1892, lng: 83.9311 }, districtId: "d6",
+    category: "Trekking", cover: img(PHOTO.mustangDesert, 1200), author: "Pemba Sherpa", authorAvatar: AV(22),
+    date: "2026-03-19", readMinutes: 6, tags: ["Trekking", "Pilgrimage", "Desert landscape"], featured: true,
+    body: [
+      "Mustang sits in the rain shadow of the Annapurna and Dhaulagiri massifs, giving it a stark, high-desert landscape that looks more like the Tibetan plateau than the rest of Nepal. Muktinath Temple, sacred to both Hindus and Buddhists, is one of the country's most significant pilgrimage sites and the goal of many Annapurna Circuit trekkers crossing Thorong La.",
+      "Further north, Upper Mustang requires a restricted-area permit and protects the walled former kingdom capital of Lo Manthang, with centuries-old monasteries and cave systems. Lower down, Marpha's whitewashed streets and apple orchards (and the local apple brandy) mark the transition back toward greener country."
+    ]
+  },
+  {
+    id: "g41", slug: "gorkha-durbar-manaslu-guide", title: "Gorkha: Birthplace of Unified Nepal",
+    excerpt: "The hilltop palace where Prithvi Narayan Shah launched the campaign that unified Nepal, and gateway to the Manaslu region.",
+    coordinates: { lat: 28.0, lng: 84.6333 }, districtId: "d38",
+    category: "Culture", cover: img(PHOTO.himalaya9, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-03-21", readMinutes: 5, tags: ["History", "Heritage", "Manaslu"], featured: false,
+    body: [
+      "Gorkha Durbar, a fortress-palace on a ridge above the modern town, is where King Prithvi Narayan Shah was born and began the 18th-century campaign that unified Nepal's many small kingdoms — giving the country, and its famous Gurkha soldiers, their name.",
+      "North of the historic town, Gorkha district also gives access to the Manaslu Conservation Area, home to the world's eighth-highest mountain. The Manaslu circuit is one of Nepal's great restricted-area treks — quieter than Everest or Annapurna, with a similar range of dramatic high-mountain scenery."
+    ]
+  },
+  {
+    id: "g42", slug: "lamjung-gurkha-guide", title: "Lamjung: Gurkha Heartland Beneath the Annapurna Circuit",
+    excerpt: "Home villages of Nepal's famous Gurkha soldiers, and a district the Annapurna Circuit trek passes directly through.",
+    coordinates: { lat: 28.2333, lng: 84.3833 }, districtId: "d39",
+    category: "Culture", cover: img(PHOTO.himalaya8, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-03-23", readMinutes: 5, tags: ["Culture", "Gurkha heritage", "Trekking"], featured: false,
+    body: [
+      "Lamjung is one of the traditional recruiting heartlands for Nepal's Gurkha soldiers, a history still visible in the district's villages and remittance-built houses. Ghale Gaun, a well-preserved traditional Gurung village, has become a popular homestay destination for travellers wanting an authentic, low-key hill-culture experience.",
+      "The Annapurna Circuit trek passes directly through Lamjung on its way toward Manang, giving the district a role as an early, lower-altitude stage of one of Nepal's most famous long treks — lush terraced hills rather than high alpine terrain."
+    ]
+  },
+  {
+    id: "g43", slug: "tanahun-bandipur-guide", title: "Tanahun: Bandipur, the Hill Town Time Forgot",
+    excerpt: "A beautifully preserved Newar trading town on a ridge above the Kathmandu-Pokhara highway, and the birthplace of Nepal's first great poet.",
+    coordinates: { lat: 27.9213, lng: 84.2433 }, districtId: "d40",
+    category: "Culture", cover: img(PHOTO.tanahun, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-03-25", readMinutes: 5, tags: ["Heritage", "Hill towns", "Bandipur"], featured: true,
+    body: [
+      "Bandipur was once a thriving Newar trading post on the old India-Tibet trade route, bypassed and largely frozen in time when the modern highway routed traffic through the valley below. Its car-free main street of restored brick-and-timber buildings has since made it one of Nepal's most rewarding short hill-town stops.",
+      "Tanahun district is also the birthplace of Bhanubhakta Acharya, revered as the first poet to translate the Ramayana into Nepali — a foundational figure in Nepali literature. The district's Seti River gorge and terraced hills round out a quietly rich, underrated part of Gandaki province."
+    ]
+  },
+  {
+    id: "g44", slug: "syangja-hills-guide", title: "Syangja: Terraced Hills on the Kathmandu-Pokhara Highway",
+    excerpt: "A Gurung and Magar hill district known for terraced farmland, hillside waterfalls and a long history of Gurkha service.",
+    coordinates: { lat: 28.0836, lng: 83.8764 }, districtId: "d41",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-03-27", readMinutes: 4, tags: ["Hills", "Culture"], featured: false,
+    body: [
+      "Syangja is prime terraced-hill country along the main Kathmandu-Pokhara highway, home to Gurung and Magar communities with a long tradition of Gurkha military service reflected in the district's remittance-built villages.",
+      "It's not built around a single headline site, but its layered green hillsides, scattered waterfalls, and easy access from the highway make it a worthwhile stop for travellers wanting a slower look at rural hill life between the two big cities."
+    ]
+  },
+  {
+    id: "g45", slug: "manang-tilicho-guide", title: "Manang: Tilicho Lake and the High Desert Valley",
+    excerpt: "A dramatic Tibetan-influenced valley on the Annapurna Circuit, home to one of the highest large lakes in the world.",
+    coordinates: { lat: 28.6333, lng: 84.2333 }, districtId: "d42",
+    category: "Trekking", cover: img(PHOTO.himalayaLake, 1200), author: "Pemba Sherpa", authorAvatar: AV(22),
+    date: "2026-03-29", readMinutes: 5, tags: ["Trekking", "Lake", "Annapurna Circuit"], featured: false,
+    body: [
+      "Manang district sits in the rain shadow behind the Annapurna massif, giving it a high, dry, Tibetan-influenced landscape very different from the lush hills most trekkers pass through to reach it. The valley is a key acclimatisation stop on the Annapurna Circuit before the crossing of Thorong La pass.",
+      "A side trip to Tilicho Lake, among the highest large lakes in the world, is one of the trek's most rewarding detours — a turquoise expanse set in a stark, high-altitude amphitheatre of rock and scree."
+    ]
+  },
+  {
+    id: "g46", slug: "myagdi-dhaulagiri-guide", title: "Myagdi: Dhaulagiri's Base District and Rupse Waterfall",
+    excerpt: "Home to the world's seventh-highest mountain, the classic Poon Hill sunrise viewpoint, and a dramatic roadside waterfall.",
+    coordinates: { lat: 28.35, lng: 83.5667 }, districtId: "d43",
+    category: "Trekking", cover: img(PHOTO.himalaya3, 1200), author: "Dr. Marco Rossi", authorAvatar: AV(15),
+    date: "2026-03-31", readMinutes: 5, tags: ["Trekking", "Waterfall", "Dhaulagiri"], featured: false,
+    body: [
+      "Myagdi is dominated by Dhaulagiri, the world's seventh-highest mountain, and gives access to some of the more demanding trekking routes that circle its base. The gentler, hugely popular Poon Hill sunrise viewpoint sits on the district's border, reached via Ghorepani.",
+      "On the Beni-Jomsom road, Rupse Chhahara tumbles down beside the highway in a dramatic multi-tier drop — one of the most accessible large waterfalls in the Annapurna region, easily seen without leaving the road."
+    ]
+  },
+  {
+    id: "g47", slug: "baglung-kalika-guide", title: "Baglung: Kalika Temple and the Only Hunting Reserve in Nepal",
+    excerpt: "A regional pilgrimage temple above the bazaar town, and the country's sole hunting reserve, Dhorpatan, in the district's high country.",
+    coordinates: { lat: 28.2709, lng: 83.587 }, districtId: "d44",
+    category: "Culture", cover: img(PHOTO.brickTemple, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-04-02", readMinutes: 4, tags: ["Pilgrimage", "Wildlife", "Reserve"], featured: false,
+    body: [
+      "Baglung Kalika Temple, on a hill above Baglung bazaar, is a well-known regional pilgrimage site for the surrounding hill districts, especially during Dashain. The bazaar itself sits on the main Beni road, a common staging point for onward travel toward Myagdi and Mustang.",
+      "In the district's higher country, Dhorpatan Hunting Reserve is Nepal's only reserve of its kind, protecting alpine pasture and forest shared with neighbouring Myagdi and Rukum West — a remote, little-visited landscape even by Nepal's own standards."
+    ]
+  },
+  {
+    id: "g48", slug: "parbat-hills-guide", title: "Parbat: Quiet Hill Country Between Pokhara and Ghorepani",
+    excerpt: "A small hill district along the approach routes to the Annapurna foothills, better known as a through-route than a destination.",
+    coordinates: { lat: 28.2333, lng: 83.7 }, districtId: "d45",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-04-04", readMinutes: 4, tags: ["Hills", "Off the beaten path"], featured: false,
+    body: [
+      "Parbat is one of the smaller hill districts in Gandaki province, sitting along the road and trail approaches between Pokhara and the Ghorepani-Poon Hill area. Kushma, its district seat on the Kali Gandaki, is a common stop for travellers heading toward Myagdi and Baglung.",
+      "The district doesn't have a single standout attraction of its own, but its terraced hillsides and river valley make it a pleasant, unhurried stretch for anyone travelling overland rather than flying between destinations."
+    ]
+  },
+  {
+    id: "g49", slug: "nawalpur-terai-guide", title: "Nawalpur: The Young District Bridging Hills and Terai",
+    excerpt: "One of Nepal's newest districts, carved from Nawalparasi in 2017, spanning the transition from Terai plains to Gandaki's hills.",
+    coordinates: { lat: 27.75, lng: 84.1333 }, districtId: "d46",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-04-06", readMinutes: 4, tags: ["Terai", "Planning"], featured: false,
+    body: [
+      "Nawalpur is one of Nepal's newest districts, split off from the former Nawalparasi district in 2017 as part of federal restructuring. Kawasoti and Gaindakot are its main towns, sitting along the East-West Highway where the flat Terai begins to rise into Gandaki's hills.",
+      "It functions mainly as a transit and agricultural district for travellers moving between Chitwan and Pokhara, without a major standalone tourist site of its own yet on the map."
+    ]
+  },
+  // ── Lumbini province ─────────────────────────────────────────────────────
+  {
+    id: "g50", slug: "gulmi-ridi-guide", title: "Gulmi: The Rishikesh of Nepal at Ridi Bazaar",
+    excerpt: "A district of endless hills, centred on Ridi Bazaar's riverside Rishikesh Temple at the meeting of two rivers.",
+    coordinates: { lat: 28.0669, lng: 83.2638 }, districtId: "d47",
+    category: "Culture", cover: img(PHOTO.brickTemple, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-04-08", readMinutes: 4, tags: ["Pilgrimage", "Hills"], featured: false,
+    body: [
+      "Gulmi is sometimes called Nepal's 'district of hills' for its relentlessly folded terrain — nearly every village sits on its own ridge with views to the next. Ridi Bazaar, where the Ridi Khola meets the Kali Gandaki, is home to the Rishikesh Temple, a Vishnu shrine significant enough to have earned the town the nickname 'the Rishikesh of Nepal'.",
+      "Pilgrims come to bathe at the sacred confluence (a triveni) before visiting the temple, particularly during Baisakh Purnima. Away from Ridi, the district is quiet, terraced hill farmland with sweeping long-distance views on clear days."
+    ]
+  },
+  {
+    id: "g51", slug: "palpa-tansen-guide", title: "Palpa: Tansen's Hill Heritage and the Rani Mahal",
+    excerpt: "A historic Newar-Magar hill town famous for Dhaka weaving, and Nepal's own 'Taj Mahal' on the banks of the Kali Gandaki.",
+    coordinates: { lat: 27.8671, lng: 83.5454 }, districtId: "d48",
+    category: "Culture", cover: img(PHOTO.tansen, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-04-10", readMinutes: 5, tags: ["Heritage", "Craft", "Viewpoint"], featured: false,
+    body: [
+      "Tansen, Palpa's hill-town capital, blends Newar and Magar influence in its steep brick lanes, old palace grounds, and long tradition of handwoven Dhaka fabric and metal karuwa water vessels. Shreenagar hill above town gives one of the finest panoramic viewpoints in western Nepal.",
+      "Down on the Kali Gandaki river, Rani Mahal is a riveside palace built by a Rana-era governor in memory of his wife — its European-influenced architecture and riverside setting have earned it an informal nickname as 'the Taj Mahal of Nepal', though it sees a fraction of the visitors."
+    ]
+  },
+  {
+    id: "g52", slug: "arghakhanchi-hills-guide", title: "Arghakhanchi: Understated Hills West of Palpa",
+    excerpt: "A small hill district around Sandhikharka, best known locally for its layered ridgelines rather than a single headline site.",
+    coordinates: { lat: 27.95, lng: 83.1333 }, districtId: "d49",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-04-12", readMinutes: 4, tags: ["Hills", "Off the beaten path"], featured: false,
+    body: [
+      "Arghakhanchi sits quietly between the more visited hill districts of Palpa and Gulmi, with Sandhikharka as its main town. It doesn't have a marquee attraction of its own, but its terraced ridgelines and unhurried village life are typical of the best of western hill Nepal.",
+      "Most travellers see it as a stretch of scenery on longer overland routes through the Lumbini hills rather than a planned stop — worth a look if you're already passing through."
+    ]
+  },
+  {
+    id: "g53", slug: "kapilvastu-tilaurakot-guide", title: "Kapilvastu: Where the Buddha Grew Up",
+    excerpt: "Tilaurakot's ancient ruins are believed to be the palace of the historical Buddha's childhood, part of the wider Lumbini Buddhist circuit.",
+    coordinates: { lat: 27.5704, lng: 83.0547 }, districtId: "d50",
+    category: "Culture", cover: img(PHOTO.square1, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-04-14", readMinutes: 5, tags: ["Buddhist heritage", "Archaeology", "History"], featured: false,
+    body: [
+      "Kapilvastu district is home to Tilaurakot, an extensive archaeological site of moated ruins believed by many scholars to be the ancient palace where Siddhartha Gautama — the future Buddha — spent his childhood before renouncing royal life. Excavations continue to reveal walls, gates and monastery remains dating back over two millennia.",
+      "The site forms part of the broader Buddhist pilgrimage circuit alongside Lumbini in neighbouring Rupandehi, and is far quieter — a good stop for travellers wanting the historical context of the Buddha's early life without Lumbini's crowds."
+    ]
+  },
+  {
+    id: "g54", slug: "lumbini-rupandehi-guide", title: "Lumbini: The Birthplace of the Buddha",
+    excerpt: "A UNESCO World Heritage Site marking the exact birthplace of Siddhartha Gautama, and one of the most important pilgrimage sites on Earth.",
+    coordinates: { lat: 27.5036, lng: 83.4494 }, districtId: "d51",
+    category: "Culture", cover: img("1708596571872-fe7ee0b8f945", 1200), author: "Dr. Marco Rossi", authorAvatar: AV(15),
+    date: "2026-04-16", readMinutes: 6, tags: ["Buddhist heritage", "UNESCO", "Pilgrimage"], featured: true,
+    body: [
+      "Lumbini, in Rupandehi district, is revered as the birthplace of Siddhartha Gautama, the historical Buddha, around the 6th century BCE. The Maya Devi Temple marks the exact spot, alongside the sacred pool where his mother is said to have bathed, and a pillar erected by the Indian emperor Ashoka in 249 BCE confirming the site's identity.",
+      "The surrounding Lumbini Development Zone hosts dozens of monasteries built by Buddhist countries from around the world, each in its own national architectural style — making a walk through the zone a survey of global Buddhist tradition in one place. It's one of Nepal's four UNESCO World Heritage Sites and a pilgrimage destination on the scale of Mecca or Jerusalem for Buddhists worldwide."
+    ]
+  },
+  {
+    id: "g55", slug: "nawalparasi-triveni-guide", title: "Nawalparasi: River Confluences and Chitwan's Western Buffer",
+    excerpt: "Home to the sacred Triveni confluence on the Gandak river and the Madi valley's share of the Chitwan ecosystem.",
+    coordinates: { lat: 27.55, lng: 84.0167 }, districtId: "d52",
+    category: "Tips", cover: img(PHOTO.himalayaLake, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-04-18", readMinutes: 4, tags: ["Rivers", "Wildlife", "Terai"], featured: false,
+    body: [
+      "Nawalparasi (the remaining district after Nawalpur split off in 2017) includes Triveni, a sacred river confluence and bathing site on the Gandak (Narayani) river near the Indian border, visited during major Hindu festivals.",
+      "Its Madi valley forms part of the greater Chitwan ecosystem's buffer zone, giving the district a share of the same wildlife corridor — a quieter, less commercialised edge of Nepal's flagship national park landscape."
+    ]
+  },
+  {
+    id: "g56", slug: "dang-deukhuri-guide", title: "Dang: The Wide Deukhuri Valley",
+    excerpt: "An inner Terai valley ringed by the Sivalik hills, home to deep Tharu roots and Lumbini province's twin cities of Ghorahi and Tulsipur.",
+    coordinates: { lat: 28.025, lng: 82.4708 }, districtId: "d53",
+    category: "Culture", cover: img(PHOTO.nepalHills, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-04-20", readMinutes: 4, tags: ["Tharu culture", "Valley", "Terai"], featured: false,
+    body: [
+      "Dang district sits inside the wide, flat Deukhuri and Rapti valleys, tucked between ranges of the Sivalik (Chure) hills rather than the open Terai further south — giving it a distinct inner-valley climate and landscape. It's one of the ancestral heartlands of the Tharu people.",
+      "Ghorahi and Tulsipur, the district's twin main towns, serve as commercial and administrative centres for Lumbini province's hill districts, making Dang more a regional hub than a sightseeing destination on its own."
+    ]
+  },
+  {
+    id: "g57", slug: "pyuthan-swargadwari-guide", title: "Pyuthan: Swargadwari's Gateway to Heaven",
+    excerpt: "A remote hilltop pilgrimage complex whose name literally translates to 'the door to heaven'.",
+    coordinates: { lat: 28.1, lng: 82.8667 }, districtId: "d54",
+    category: "Culture", cover: img(PHOTO.brickTemple, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-04-22", readMinutes: 4, tags: ["Pilgrimage", "Hills"], featured: false,
+    body: [
+      "Swargadwari — literally 'door to heaven' — is a significant Hindu pilgrimage complex set on a forested hilltop in Pyuthan district, drawing pilgrims from across western Nepal, especially around Maghe Sankranti.",
+      "Beyond the pilgrimage site, Pyuthan is quiet Magar and Chhetri hill country, with terraced farmland typical of the mid-hills stretching between the Rapti valley and the higher ranges toward Rolpa."
+    ]
+  },
+  {
+    id: "g58", slug: "rolpa-magar-hills-guide", title: "Rolpa: Magar Culture in Nepal's Rugged Mid-Hills",
+    excerpt: "A remote hill district with a strong Magar cultural identity, historically significant in Nepal's modern political history.",
+    coordinates: { lat: 28.2333, lng: 82.6667 }, districtId: "d55",
+    category: "Culture", cover: img(PHOTO.nepalHills, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-04-24", readMinutes: 4, tags: ["Culture", "Hills", "Off the beaten path"], featured: false,
+    body: [
+      "Rolpa is one of the more remote hill districts in Lumbini province, with a strong Magar cultural identity expressed in local language, dress and festivals. It played a significant role in Nepal's recent political history as a centre of the movement that reshaped the country's governance in the early 2000s.",
+      "Today it remains rugged, sparsely visited hill country — steep terrain, scattered Magar villages, and a genuinely off-the-beaten-path feel for travellers exploring beyond Lumbini's plains."
+    ]
+  },
+  {
+    id: "g59", slug: "rukum-west-sisne-guide", title: "Rukum West: Remote Magar Highlands Beneath Sisne Himal",
+    excerpt: "A rugged, high-altitude Magar district sharing the wild Dhorpatan Hunting Reserve landscape with its Gandaki neighbours.",
+    coordinates: { lat: 28.55, lng: 82.3667 }, districtId: "d56",
+    category: "Tips", cover: img(PHOTO.himalaya4, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-04-26", readMinutes: 4, tags: ["Remote", "Culture", "Hills"], featured: false,
+    body: [
+      "Rukum West is high, rugged Magar country beneath Sisne Himal, one of the more remote districts in Lumbini province with limited road access even by Nepali standards. Villages like Maikot sit at real altitude, surrounded by forest and alpine pasture.",
+      "The district shares part of the wild Dhorpatan Hunting Reserve landscape with neighbouring Baglung and Myagdi — a landscape of forest and high pasture that sees very few outside visitors."
+    ]
+  },
+  {
+    id: "g60", slug: "banke-nepalgunj-guide", title: "Banke: Nepalgunj's Bageshwori Temple and a Quiet National Park",
+    excerpt: "Western Nepal's biggest city, an important Bhagwati temple, and a lesser-known national park sharing Bardiya's tiger habitat.",
+    coordinates: { lat: 28.05, lng: 81.6167 }, districtId: "d57",
+    category: "Tips", cover: img(PHOTO.brickTemple, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-04-28", readMinutes: 4, tags: ["Pilgrimage", "Wildlife", "City"], featured: false,
+    body: [
+      "Nepalgunj, Banke's main city, is the commercial and transport hub of western Nepal, with a large multicultural population and strong trade ties across the nearby Indian border. Bageshwori Temple, dedicated to the goddess Bhagwati, is one of the city's most visited religious sites.",
+      "Banke National Park, established more recently than its famous neighbour Bardiya, protects an adjoining stretch of Terai forest and shares the same tiger and wildlife population — a quieter, far less-visited safari option for travellers already in the region."
+    ]
+  },
+  {
+    id: "g61", slug: "bardiya-tiger-guide", title: "Bardiya: Nepal's Best Wild Tiger Sightings",
+    excerpt: "A national park with one of Asia's healthiest wild tiger populations, on the banks of the Karnali river — and a fraction of Chitwan's crowds.",
+    coordinates: { lat: 28.3333, lng: 81.3333 }, districtId: "d58",
+    category: "Trekking", cover: img(PHOTO.tiger, 1200), author: "Dr. Marco Rossi", authorAvatar: AV(15),
+    date: "2026-04-30", readMinutes: 5, tags: ["Wildlife", "Safari", "Tiger"], featured: true,
+    body: [
+      "Bardiya National Park is widely considered Nepal's best chance of a genuine wild tiger sighting, thanks to a healthy, growing population and far fewer vehicles on its tracks than Chitwan. The park's forest and grassland stretch along the Karnali river, also supporting rhinos, wild elephants and Gangetic dolphins in the river itself.",
+      "Because it takes more effort to reach — a longer overland journey or a domestic flight into Nepalgunj — Bardiya sees a fraction of Chitwan's visitor numbers, rewarding travellers willing to go a little further west with a genuinely wild, uncrowded safari experience."
+    ]
+  },
+  // ── Karnali province ─────────────────────────────────────────────────────
+  {
+    id: "g62", slug: "dolpa-phoksundo-guide", title: "Dolpa: Shey Phoksundo's Turquoise Lake and Upper Dolpo",
+    excerpt: "Nepal's deepest lake, its largest national park, and the remote trans-Himalayan region made famous by 'The Snow Leopard'.",
+    coordinates: { lat: 29.0, lng: 82.9667 }, districtId: "d59",
+    category: "Trekking", cover: img(PHOTO.sacredLake, 1200), author: "Pemba Sherpa", authorAvatar: AV(22),
+    date: "2026-05-02", readMinutes: 6, tags: ["Trekking", "Lake", "Remote"], featured: true,
+    body: [
+      "Dolpa is home to Shey Phoksundo Lake, an intensely turquoise glacial lake and Nepal's deepest, set inside Shey Phoksundo National Park — the country's largest protected area. The surrounding Upper Dolpo region, a restricted trans-Himalayan landscape of Tibetan Buddhist and Bon culture, was the setting for Peter Matthiessen's classic travel book 'The Snow Leopard' and the Oscar-nominated film 'Himalaya (Caravan)'.",
+      "This is among the most remote inhabited parts of Nepal — reached by flight to Juphal followed by days of trekking — with salt-caravan trading traditions and monasteries that have changed little in centuries. It rewards serious trekkers looking for landscapes and culture well beyond Nepal's standard circuits."
+    ]
+  },
+  {
+    id: "g63", slug: "mugu-rara-guide", title: "Mugu: Rara Lake, Nepal's Largest",
+    excerpt: "A pristine high-altitude lake ringed by pine forest inside Rara National Park, in one of Nepal's least-developed districts.",
+    coordinates: { lat: 29.5167, lng: 82.3833 }, districtId: "d60",
+    category: "Trekking", cover: img(PHOTO.himalayaLake, 1200), author: "Dr. Marco Rossi", authorAvatar: AV(15),
+    date: "2026-05-04", readMinutes: 5, tags: ["Lake", "National Park", "Remote"], featured: false,
+    body: [
+      "Rara Lake, Nepal's largest, sits at nearly 3,000m inside Rara National Park, its still blue water ringed by pine and fir forest with virtually no development on its shores. Mugu, one of the country's least-developed districts, is where most of the park and lake lie.",
+      "Getting here takes real effort — a flight followed by a multi-day trek — which is exactly why it remains one of the most untouched landscapes in Nepal, far removed from the infrastructure of the Everest or Annapurna regions."
+    ]
+  },
+  {
+    id: "g64", slug: "humla-kailash-guide", title: "Humla: The Overland Route to Mount Kailash",
+    excerpt: "Simikot, Humla's roadless district capital, is the starting point for the classic pilgrim trail to Tibet's sacred Mount Kailash.",
+    coordinates: { lat: 29.97, lng: 81.8167 }, districtId: "d61",
+    category: "Trekking", cover: img(PHOTO.himalaya9, 1200), author: "Pemba Sherpa", authorAvatar: AV(22),
+    date: "2026-05-06", readMinutes: 5, tags: ["Pilgrimage", "Remote", "Tibet border"], featured: false,
+    body: [
+      "Humla is Nepal's northwesternmost district and among its most isolated — Simikot, the district capital, has no road connection to the rest of Nepal and is reached only by small aircraft. For centuries it has served as a trade and pilgrimage corridor toward Tibet.",
+      "Many pilgrims heading overland to Mount Kailash and Lake Mansarovar — sacred to Hindus, Buddhists, Jains and Bon practitioners alike — trek from Simikot to the Tibet border before continuing by vehicle on the Tibetan side. The route through Humla's gorges and villages is itself one of Nepal's great remote-trekking experiences."
+    ]
+  },
+  {
+    id: "g65", slug: "jumla-khasa-kingdom-guide", title: "Jumla: Capital of a Forgotten Himalayan Kingdom",
+    excerpt: "Once the seat of the medieval Khasa Malla kingdom, Jumla is now the practical gateway to Rara Lake and Karnali's apple orchards.",
+    coordinates: { lat: 29.275, lng: 82.1833 }, districtId: "d62",
+    category: "Culture", cover: img(PHOTO.himalaya5, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-05-08", readMinutes: 5, tags: ["History", "Gateway", "Apples"], featured: false,
+    body: [
+      "Centuries before it became a remote corner of modern Nepal, Jumla was the capital of the Khasa Malla kingdom, a powerful medieval trans-Himalayan realm that once stretched across much of far-western Nepal and parts of Tibet. Chandannath Temple, an important Shiva shrine in Jumla bazaar, dates from that era.",
+      "Today Jumla is best known as a flight-and-trek gateway to Rara Lake, and for its high-altitude apple orchards — a surprising sight this deep in the Karnali hills, and one of the district's main modern exports."
+    ]
+  },
+  {
+    id: "g66", slug: "kalikot-hills-guide", title: "Kalikot: Karnali's Remote Middle Hills",
+    excerpt: "A rugged, sparsely visited hill district named for the goddess Kali, between Jumla's plateau and Surkhet's valley.",
+    coordinates: { lat: 29.1417, lng: 81.65 }, districtId: "d63",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-05-10", readMinutes: 4, tags: ["Remote", "Hills"], featured: false,
+    body: [
+      "Kalikot, named for the goddess Kali, is rugged, sparsely populated hill country in the heart of Karnali province, with Manma as its district seat. It sits on the overland route between Surkhet's valley and the high plateau districts of Jumla and Mugu.",
+      "Very little formal tourism infrastructure exists here — this is a district best understood as part of the wider Karnali highland journey rather than a standalone stop, and travel here still requires real self-sufficiency."
+    ]
+  },
+  {
+    id: "g67", slug: "dailekh-hills-guide", title: "Dailekh: Terraced Ridgelines in Nepal's Mid-West",
+    excerpt: "A historic hill district in Karnali province, its terraced slopes and old temple towns still rarely visited by outsiders.",
+    coordinates: { lat: 28.8417, lng: 81.7167 }, districtId: "d64",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-05-12", readMinutes: 4, tags: ["Hills", "Off the beaten path"], featured: false,
+    body: [
+      "Dailekh is classic Karnali mid-hill country — steep terraced farmland, scattered stone-and-timber villages, and a slower pace of life than anywhere on Nepal's standard tourist trail. Narayan Temple and other old shrines around the district reflect a long-settled religious history.",
+      "For now, Dailekh remains a district travellers pass through on overland routes across the mid-west rather than one they seek out directly — but that also means an unusually unfiltered look at rural Karnali life."
+    ]
+  },
+  {
+    id: "g68", slug: "jajarkot-bheri-guide", title: "Jajarkot: Along the Bheri River in Nepal's Mid-West",
+    excerpt: "A remote hill district straddling the Bheri river valley, connecting Karnali's highlands to the Terai further south.",
+    coordinates: { lat: 28.7, lng: 82.15 }, districtId: "d65",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-05-14", readMinutes: 4, tags: ["Rivers", "Remote"], featured: false,
+    body: [
+      "Jajarkot sits along the Bheri river valley in Nepal's mid-west, connecting the high Karnali hills to the lowlands further south. It's a district defined more by geography and river travel routes than by any single landmark attraction.",
+      "As with much of Karnali province, infrastructure is limited and visitor numbers are low — Jajarkot is a place for travellers already committed to exploring Nepal's least-developed region rather than a standalone destination."
+    ]
+  },
+  {
+    id: "g69", slug: "rukum-east-sisne-guide", title: "Rukum East: Magar Highlands Beneath Putha Hiunchuli",
+    excerpt: "A remote eastern extension of Rukum's Magar hill country, sharing the Sisne Himal wilderness with its western counterpart.",
+    coordinates: { lat: 28.5667, lng: 82.8167 }, districtId: "d66",
+    category: "Culture", cover: img(PHOTO.himalaya6, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-05-16", readMinutes: 4, tags: ["Culture", "Remote", "Hills"], featured: false,
+    body: [
+      "Rukum East, separated administratively from Rukum West but sharing the same Magar cultural heartland and Sisne Himal wilderness, is high, remote hill country in Karnali province. Putha Hiunchuli, a 7,000m-plus peak, rises along the district's northern edge.",
+      "Villages here maintain strong Magar language and tradition, and the terrain — steep, forested, and sparsely served by roads — keeps outside visitor numbers very low."
+    ]
+  },
+  {
+    id: "g70", slug: "salyan-hills-guide", title: "Salyan: Quiet Hills on Karnali's Southern Edge",
+    excerpt: "A mid-hill district bridging the Rapti valley and Karnali's highlands, with little formal tourism infrastructure.",
+    coordinates: { lat: 28.35, lng: 82.1667 }, districtId: "d67",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-05-18", readMinutes: 4, tags: ["Hills", "Off the beaten path"], featured: false,
+    body: [
+      "Salyan sits on Karnali province's southern edge, bridging the lower Rapti valley near Dang with the province's higher hill districts further north. It's quiet, terraced farming country without a major standalone attraction.",
+      "As with several of its Karnali neighbours, Salyan is best approached as part of a longer regional overland route rather than a specific destination in its own right."
+    ]
+  },
+  {
+    id: "g71", slug: "surkhet-valley-guide", title: "Surkhet: Karnali Province's Provincial Capital Valley",
+    excerpt: "A broad, fertile valley home to Birendranagar, Karnali's provincial capital, and the ancient temple ruins of Kakre Bihar.",
+    coordinates: { lat: 28.6, lng: 81.6167 }, districtId: "d68",
+    category: "Tips", cover: img(PHOTO.brickTemple, 1200), author: "Dr. Marco Rossi", authorAvatar: AV(15),
+    date: "2026-05-20", readMinutes: 5, tags: ["Valley", "Heritage", "Gateway"], featured: false,
+    body: [
+      "Surkhet's broad, fertile valley is the most developed part of Karnali province, home to Birendranagar, the provincial capital, and serving as the main air and road gateway to the rest of Karnali's remote highlands.",
+      "Kakre Bihar, an atmospheric complex of stone temple ruins dating to the medieval period, is one of the district's more significant heritage sites — a quiet reminder that this valley was a settled crossroads long before it became a modern administrative hub."
+    ]
+  },
+  // ── Sudurpashchim province ───────────────────────────────────────────────
+  {
+    id: "g72", slug: "bajura-khaptad-guide", title: "Bajura: On the Edge of Khaptad's High Meadows",
+    excerpt: "A remote far-western hill district sharing the serene highland plateau of Khaptad National Park with three neighbouring districts.",
+    coordinates: { lat: 29.5167, lng: 81.5667 }, districtId: "d69",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-05-22", readMinutes: 4, tags: ["Remote", "National Park"], featured: false,
+    body: [
+      "Bajura is remote even by far-western Nepal's standards, its steep hill terrain cut by the Budhiganga river. Part of Khaptad National Park's rolling high-altitude plateau — a landscape of open meadows and forest unlike the sharp peaks further east — falls within the district's borders.",
+      "Very little tourism infrastructure exists here, and travel takes real time and self-sufficiency, but that isolation is also what keeps Khaptad's meadows so undisturbed."
+    ]
+  },
+  {
+    id: "g73", slug: "bajhang-khaptad-guide", title: "Bajhang: Khaptad's Sacred Plateau and Saipal Himal",
+    excerpt: "Home to most of Khaptad National Park's meadows and the hermitage of Khaptad Baba, beneath the remote Saipal Himal range.",
+    coordinates: { lat: 29.6, lng: 81.2167 }, districtId: "d70",
+    category: "Culture", cover: img(PHOTO.himalaya2, 1200), author: "Pemba Sherpa", authorAvatar: AV(22),
+    date: "2026-05-24", readMinutes: 5, tags: ["National Park", "Pilgrimage", "Remote"], featured: false,
+    body: [
+      "Bajhang holds the largest share of Khaptad National Park, a unique high-altitude plateau of rolling grassland and forest rather than the jagged peaks typical of Nepal's other parks. The park takes its popular name from Khaptad Baba, a revered hermit-saint who lived and meditated here for decades, and whose ashram remains a pilgrimage site.",
+      "To the north, the remote Saipal Himal marks the district's high border country — one of the least-visited significant peaks in Nepal, in a district that sees very few outside travellers of any kind."
+    ]
+  },
+  {
+    id: "g74", slug: "achham-khaptad-guide", title: "Achham: Far-Western Hills on Khaptad's Southern Flank",
+    excerpt: "One of the most remote and least-visited districts in Nepal, sharing Khaptad National Park's landscape with its northern neighbours.",
+    coordinates: { lat: 28.95, lng: 81.2167 }, districtId: "d71",
+    category: "Tips", cover: img(PHOTO.nepalHills, 1200), author: "Sita Thapa", authorAvatar: AV(9),
+    date: "2026-05-26", readMinutes: 4, tags: ["Remote", "National Park"], featured: false,
+    body: [
+      "Achham sits on the southern edge of the Khaptad plateau, sharing part of the national park's forest and meadow landscape with Bajhang, Bajura and Doti. It's one of the most remote and, historically, least-developed districts in Nepal.",
+      "There's no single headline tourist site here — Achham is better understood as authentic, unfiltered far-western hill country, valuable to travellers specifically seeking a part of Nepal well outside any established circuit."
+    ]
+  },
+  {
+    id: "g75", slug: "doti-kingdom-guide", title: "Doti: Seat of a Forgotten Far-Western Kingdom",
+    excerpt: "Once capital of the historic Doti Kingdom, this hill district also holds a share of Khaptad National Park's high plateau.",
+    coordinates: { lat: 29.25, lng: 80.9333 }, districtId: "d72",
+    category: "Culture", cover: img(PHOTO.nepalHills, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-05-28", readMinutes: 4, tags: ["History", "National Park"], featured: false,
+    body: [
+      "Long before Nepal's unification, Doti was the seat of its own regional kingdom, one of several medieval hill states that once controlled the far west. Silgadhi, the modern district headquarters, carries that older history in its name and setting.",
+      "Doti also shares a portion of Khaptad National Park's plateau landscape with its neighbours — grassland and forest at altitude, a gentler high-country counterpart to Nepal's better-known Himalayan parks."
+    ]
+  },
+  {
+    id: "g76", slug: "kailali-ghodaghodi-guide", title: "Kailali: Ghodaghodi Lake and the Road to Sudurpashchim",
+    excerpt: "A Ramsar-listed wetland lake system near Dhangadhi, the gateway city to Nepal's far-western province.",
+    coordinates: { lat: 28.699, lng: 80.5996 }, districtId: "d73",
+    category: "Tips", cover: img(PHOTO.himalayaLake, 1200), author: "Priya Sharma", authorAvatar: AV(5),
+    date: "2026-05-30", readMinutes: 4, tags: ["Wetlands", "Lake", "Gateway"], featured: false,
+    body: [
+      "Kailali is centred on Dhangadhi, the commercial gateway to Nepal's far-western Terai. Ghodaghodi Lake, a Ramsar-listed wetland complex of interconnected ponds and marshland nearby, supports significant birdlife and is one of the district's most notable natural sites.",
+      "Most international travellers pass through Kailali en route to Bardiya or Shuklaphanta further west, but the lake is a worthwhile stop for anyone with an extra half-day and an interest in wetland wildlife."
+    ]
+  },
+  {
+    id: "g77", slug: "kanchanpur-shuklaphanta-guide", title: "Kanchanpur: Shuklaphanta's Grasslands and Swamp Deer",
+    excerpt: "Nepal's far-western national park, protecting the country's largest population of swamp deer on open grassland plains.",
+    coordinates: { lat: 28.9663, lng: 80.1732 }, districtId: "d74",
+    category: "Trekking", cover: img(PHOTO.tiger, 1200), author: "Dr. Marco Rossi", authorAvatar: AV(15),
+    date: "2026-06-01", readMinutes: 5, tags: ["Wildlife", "National Park", "Grassland"], featured: false,
+    body: [
+      "Shuklaphanta National Park, in Nepal's far-western corner, protects some of the country's largest open grasslands — a habitat that supports the biggest population of swamp deer (barasingha) in Nepal, alongside tigers, wild elephants and rich birdlife.",
+      "Mahendranagar (Bhimdatta), the district's main city, sits near the Gaddachauki border crossing into India, making Kanchanpur both a wildlife destination and a practical gateway for travellers entering or leaving Nepal's far west overland."
+    ]
+  },
+  {
+    id: "g78", slug: "dadeldhura-highland-guide", title: "Dadeldhura: The Highest District Headquarters in the Far West",
+    excerpt: "A cool hilltop town on the Mahakali Highway, home to the fierce goddess shrine of Ugratara Temple.",
+    coordinates: { lat: 29.3, lng: 80.5833 }, districtId: "d75",
+    category: "Culture", cover: img(PHOTO.brickTemple, 1200), author: "Hannah Schmidt", authorAvatar: AV(31),
+    date: "2026-06-03", readMinutes: 4, tags: ["Pilgrimage", "Hills"], featured: false,
+    body: [
+      "Dadeldhura sits at one of the highest elevations of any district headquarters town in far-western Nepal, giving it a notably cooler climate than the Terai below. It's a natural rest stop on the long Mahakali Highway connecting Kathmandu to the far west.",
+      "Ugratara Temple, dedicated to a fierce form of the goddess, is among the district's most visited religious sites — set on a hill above town with views over the surrounding ridgelines."
+    ]
+  },
+  {
+    id: "g79", slug: "baitadi-baise-rajya-guide", title: "Baitadi: One of the Historic Baise Rajya Hill Kingdoms",
+    excerpt: "A remote far-western district that was once among the 22 small princely hill states that ruled this region before Nepal's unification.",
+    coordinates: { lat: 29.5333, lng: 80.4333 }, districtId: "d76",
+    category: "Culture", cover: img(PHOTO.nepalHills, 1200), author: "Aarav Shrestha", authorAvatar: AV(68),
+    date: "2026-06-05", readMinutes: 4, tags: ["History", "Remote"], featured: false,
+    body: [
+      "Baitadi was once one of the Baise Rajya — the 'twenty-two kingdoms' — a confederation of small hill principalities that governed far-western Nepal before Prithvi Narayan Shah's campaign of unification absorbed them into a single nation.",
+      "Today it remains remote, mountainous hill country near the Indian border, with Melauli as its district seat — a district for travellers genuinely committed to exploring Nepal's least-visited far-western corner."
+    ]
+  },
+  {
+    id: "g80", slug: "darchula-api-nampa-guide", title: "Darchula: Api Nampa's High Peaks and the Tinker Pass to Kailash",
+    excerpt: "Nepal's northwesternmost district, home to the Api and Nampa peaks, the Byanshi community, and an alternate route toward Mount Kailash.",
+    coordinates: { lat: 29.85, lng: 80.55 }, districtId: "d77",
+    category: "Trekking", cover: img(PHOTO.himalaya1, 1200), author: "Pemba Sherpa", authorAvatar: AV(22),
+    date: "2026-06-07", readMinutes: 5, tags: ["Trekking", "Remote", "Pilgrimage"], featured: false,
+    body: [
+      "Darchula occupies Nepal's northwesternmost corner, where the Api and Nampa peaks rise within the Api Nampa Conservation Area — a rugged, little-visited high-mountain landscape at the meeting point of Nepal, India and the Tibetan plateau.",
+      "The district's Tinker valley is home to the Byanshi (Shauka) community, whose traditional trans-border trade routes once linked far-western Nepal to Tibet. Some Kailash-Mansarovar pilgrims also use an eastern route through Darchula's high passes as an alternative to the more common Humla approach."
     ]
   }
 ];
@@ -8381,8 +9213,8 @@ export const attractions = [
   tagline: "The exact marked spot of the Buddha's birth",
   description: "Housing the ancient marker stone and nativity sculpture believed to pinpoint the precise birthplace of Siddhartha Gautama, this whitewashed temple sits at the heart of the Lumbini Sacred Garden.",
   history: "Excavations in the 1990s beneath the temple uncovered brick structures dating to the 3rd century BCE, confirming continuous religious use since Emperor Ashoka's pilgrimage to the site.",
-  heroImage: img(PHOTO.stupa1, 1600),
-  gallery: gallery(PHOTO.stupa1, PHOTO.brickTemple),
+  heroImage: img("1708596571872-fe7ee0b8f945", 1600),
+  gallery: gallery("1708596571872-fe7ee0b8f945", "1578235107258-f6e405a4ffc0"),
   coordinates: { lat: 27.4695, lng: 83.2761 },
   rating: 4.6, reviewCount: 294,
   openingHours: "6:00 AM - 6:00 PM",
@@ -8402,8 +9234,8 @@ export const attractions = [
   tagline: "A living gallery of world Buddhist architecture",
   description: "Divided into eastern (Theravada) and western (Mahayana/Vajrayana) zones, this master-planned precinct hosts dozens of monasteries built by Buddhist countries including Myanmar, Thailand, China, Vietnam and Germany.",
   history: "Designed under a 1978 master plan by architect Kenzo Tange, the zone has been developed incrementally over four decades as nations have funded and built their own monasteries.",
-  heroImage: img(PHOTO.brickTemple, 1600),
-  gallery: gallery(PHOTO.brickTemple, PHOTO.sacredLake),
+  heroImage: img("1609168959134-9914b77bd890", 1600),
+  gallery: gallery("1609168959134-9914b77bd890", "1572881178197-456f38666aa1"),
   coordinates: { lat: 27.4720, lng: 83.2790 },
   rating: 4.4, reviewCount: 178,
   openingHours: "6:00 AM - 6:00 PM",
@@ -8423,8 +9255,13 @@ export const attractions = [
   tagline: "The inscription that proved Lumbini's identity",
   description: "This sandstone pillar, inscribed by Emperor Ashoka during his pilgrimage in 249 BCE, bears the earliest written confirmation of Lumbini as the Buddha's birthplace — a cornerstone of the site's historical verification.",
   history: "Rediscovered in 1896 by archaeologist Alois Anton Führer, the pillar's Brahmi inscription was instrumental in identifying Lumbini as a genuine Buddhist holy site.",
-  heroImage: img(PHOTO.stupa2, 1600),
-  gallery: gallery(PHOTO.stupa2, PHOTO.brickTemple),
+  // Wikimedia Commons (CC BY-SA 4.0, Shadow Ayush) — no exact match exists on Unsplash;
+  // Unsplash's "Ashoka Pillar" results are the unrelated Sarnath Lion Capital, not this pillar.
+  heroImage: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Ashoka_Pillar%2C_Lumbini%2C_Rupandehi%2C_Nepal.jpg",
+  gallery: [
+    "https://upload.wikimedia.org/wikipedia/commons/e/ec/Ashoka_Pillar%2C_Lumbini%2C_Rupandehi%2C_Nepal.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/7/75/Maya_Devi_Temple_and_Ashoka_Pillar%2C_Lumbini%2C_Rupandehi%2C_Nepal.jpg"
+  ],
   coordinates: { lat: 27.4698, lng: 83.2758 },
   rating: 4.4, reviewCount: 165,
   openingHours: "6:00 AM - 6:00 PM",
@@ -10307,6 +11144,397 @@ export const attractions = [
   nearbyAttractions: [],
   nearbyHotels: [],
   nearbyRestaurants: [{ name: "Darchula Bazaar Bhojanalaya", cuisine: "Nepali", priceRange: "$" }],
+  featured: false, trending: false
+},
+// ── Verified additions filling confirmed real-site gaps (religious/heritage/lake/viewpoint/park) ──
+{
+  id: "a307", slug: "pathivara-devi-temple", districtId: "d7",
+  name: "Pathivara Devi Temple", category: "Religious Sites",
+  tagline: "Eastern Nepal's most important Hindu-Kirat pilgrimage shrine",
+  description: "Perched on a high ridge in the Kanchenjunga foothills, Pathivara Devi is one of the most revered Shakti Peeth-style shrines in eastern Nepal, drawing Hindu and Kirat pilgrims alike for blessings on new ventures and journeys.",
+  heroImage: img(PHOTO.brickTemple, 1600),
+  gallery: [],
+  coordinates: { lat: 27.3667, lng: 87.9667 },
+  rating: 4.6, reviewCount: 210,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Pilgrimage", "Ridge-top photography", "Short hike from Suketar"],
+  featured: false, trending: false
+},
+{
+  id: "a308", slug: "kanchenjunga-conservation-area", districtId: "d7",
+  name: "Kanchenjunga Conservation Area", category: "National Parks & Wildlife",
+  tagline: "Remote protected wilderness around the world's third-highest mountain",
+  description: "This restricted-permit conservation area protects the forests, glaciers and high pastures surrounding Kanchenjunga, along with red pandas, snow leopards and some of Nepal's least-visited high-mountain trails.",
+  heroImage: img(PHOTO.kanchenjunga, 1600),
+  gallery: [],
+  coordinates: { lat: 27.6, lng: 87.9 },
+  rating: 4.7, reviewCount: 95,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Restricted-area trekking", "Wildlife spotting", "Mountaineering base treks"],
+  featured: false, trending: false
+},
+{
+  id: "a309", slug: "dantakali-temple-bhojpur", districtId: "d10",
+  name: "Dantakali Temple", category: "Religious Sites",
+  tagline: "A revered hilltop Shakti shrine above Bhojpur bazaar",
+  description: "One of eastern Nepal's significant Shakti temples, Dantakali sits above Bhojpur's historic bazaar and draws pilgrims from across the surrounding hill districts, especially during Dashain.",
+  heroImage: img(PHOTO.brickTemple, 1600),
+  gallery: [],
+  coordinates: { lat: 27.1744, lng: 87.0516 },
+  rating: 4.4, reviewCount: 87,
+  bestTimeToVisit: ["Autumn", "Winter", "Spring"],
+  activities: ["Pilgrimage", "Hilltop views over Bhojpur bazaar"],
+  featured: false, trending: false
+},
+{
+  id: "a310", slug: "muktinath-temple", districtId: "d6",
+  name: "Muktinath Temple", category: "Religious Sites",
+  tagline: "A high-altitude shrine sacred to both Hindus and Buddhists",
+  description: "Muktinath, meaning 'place of liberation', is one of the most important pilgrimage sites in the Himalaya — revered by Hindus as a Vishnu shrine and by Buddhists as a Dakini power place. It's also the goal many Annapurna Circuit trekkers reach after crossing Thorong La.",
+  heroImage: img(PHOTO.mustangDesert, 1600),
+  gallery: [],
+  coordinates: { lat: 28.8172, lng: 83.8724 },
+  rating: 4.8, reviewCount: 512,
+  bestTimeToVisit: ["Autumn", "Spring", "Summer"],
+  activities: ["Pilgrimage", "Trekking (Annapurna Circuit terminus)", "108 water spout ritual bathing"],
+  featured: true, trending: true
+},
+{
+  id: "a311", slug: "annapurna-conservation-area-mustang", districtId: "d6",
+  name: "Annapurna Conservation Area (Mustang)", category: "National Parks & Wildlife",
+  tagline: "Nepal's largest protected area, spanning Mustang's high desert plateau",
+  description: "The Mustang portion of the Annapurna Conservation Area protects a stark, rain-shadow high-desert landscape unlike anywhere else in the protected area — eroded cliffs, cave systems, and centuries-old walled settlements.",
+  heroImage: img(PHOTO.mustangDesert, 1600),
+  gallery: [],
+  coordinates: { lat: 29.0, lng: 83.9 },
+  rating: 4.7, reviewCount: 143,
+  bestTimeToVisit: ["Summer", "Autumn"],
+  activities: ["Restricted-area trekking", "Cave and monastery visits", "High-desert photography"],
+  featured: false, trending: false
+},
+{
+  id: "a312", slug: "devghat-chitwan", districtId: "d4",
+  name: "Devghat", category: "Religious Sites",
+  tagline: "A sacred river confluence where elderly pilgrims come to spend their final years",
+  description: "At the meeting point of the Kali Gandaki, Trishuli and Narayani rivers, Devghat is a quiet, deeply revered pilgrimage site where elderly Hindus traditionally retire to live out their final years in spiritual devotion.",
+  heroImage: img(PHOTO.himalayaLake, 1600),
+  gallery: [],
+  coordinates: { lat: 27.65, lng: 84.38 },
+  rating: 4.3, reviewCount: 64,
+  bestTimeToVisit: ["Autumn", "Winter", "Spring"],
+  activities: ["Pilgrimage", "River confluence rituals", "Quiet riverside walks"],
+  featured: false, trending: false
+},
+{
+  id: "a313", slug: "triveni-dham-nawalparasi", districtId: "d52",
+  name: "Triveni Dham", category: "Religious Sites",
+  tagline: "A sacred river confluence and bathing site near the Indian border",
+  description: "Triveni Dham marks a sacred confluence on the Narayani (Gandak) river, drawing Hindu pilgrims for ritual bathing, especially during major festival dates on the lunar calendar.",
+  heroImage: img(PHOTO.himalayaLake, 1600),
+  gallery: [],
+  coordinates: { lat: 27.5167, lng: 83.8833 },
+  rating: 4.2, reviewCount: 58,
+  bestTimeToVisit: ["Winter", "Spring"],
+  activities: ["Pilgrimage", "Ritual bathing", "Riverside fairs during festivals"],
+  featured: false, trending: false
+},
+{
+  id: "a314", slug: "chitwan-buffer-zone-madi", districtId: "d52",
+  name: "Chitwan National Park Buffer Zone (Madi Valley)", category: "National Parks & Wildlife",
+  tagline: "A quieter wildlife corridor extending Chitwan's ecosystem into Nawalparasi",
+  description: "The Madi valley forms part of Chitwan National Park's buffer zone, sharing the same lowland forest and grassland wildlife corridor — a quieter, less-visited edge of Nepal's flagship national park.",
+  heroImage: img(PHOTO.tiger, 1600),
+  gallery: [],
+  coordinates: { lat: 27.6, lng: 84.15 },
+  rating: 4.1, reviewCount: 39,
+  bestTimeToVisit: ["Autumn", "Winter", "Spring"],
+  activities: ["Wildlife spotting", "Community-run jungle walks", "Birdwatching"],
+  featured: false, trending: false
+},
+{
+  id: "a315", slug: "kakre-bihar-surkhet", districtId: "d68",
+  name: "Kakre Bihar", category: "Historical Sites",
+  tagline: "Medieval stone temple ruins in the Surkhet valley",
+  description: "An atmospheric complex of stone temple ruins dating to the medieval period, Kakre Bihar is one of Karnali province's more significant heritage sites, evidence that the Surkhet valley was a settled crossroads long before becoming a modern provincial capital.",
+  heroImage: img(PHOTO.square1, 1600),
+  gallery: [],
+  coordinates: { lat: 28.6, lng: 81.6167 },
+  rating: 4.0, reviewCount: 22,
+  bestTimeToVisit: ["Autumn", "Winter", "Spring"],
+  activities: ["Historical exploration", "Photography"],
+  featured: false, trending: false
+},
+{
+  id: "a316", slug: "gokyo-lakes-solukhumbu", districtId: "d3",
+  name: "Gokyo Lakes", category: "Lakes & Rivers",
+  tagline: "A chain of turquoise glacial lakes below Cho Oyu",
+  description: "The Gokyo Lakes are a series of stunning turquoise glacial lakes in the Everest region, reached via a quieter alternative trekking route to the main Everest Base Camp trail, with Gokyo Ri offering one of the best panoramic viewpoints in the Khumbu.",
+  heroImage: img(PHOTO.himalayaLake, 1600),
+  gallery: [],
+  coordinates: { lat: 27.9519, lng: 86.6909 },
+  rating: 4.8, reviewCount: 176,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Trekking", "Gokyo Ri sunrise climb", "Glacial lake photography"],
+  featured: false, trending: false
+},
+{
+  id: "a317", slug: "sagarmatha-national-park", districtId: "d3",
+  name: "Sagarmatha National Park", category: "National Parks & Wildlife",
+  tagline: "A UNESCO World Heritage Site protecting the Everest region",
+  description: "Sagarmatha National Park protects the dramatic high-altitude terrain surrounding Mount Everest, including Sherpa villages, ancient monasteries, and habitat for snow leopards and Himalayan tahr.",
+  heroImage: img(PHOTO.ebc, 1600),
+  gallery: [],
+  coordinates: { lat: 27.9, lng: 86.85 },
+  rating: 4.9, reviewCount: 289,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Trekking", "Mountaineering", "Sherpa culture and monastery visits"],
+  featured: true, trending: true
+},
+{
+  id: "a318", slug: "mai-pokhari-ilam", districtId: "d15",
+  name: "Mai Pokhari", category: "Lakes & Rivers",
+  tagline: "A sacred wetland lake among Ilam's tea gardens",
+  description: "Mai Pokhari is a small, tranquil sacred lake and Ramsar-listed wetland surrounded by forest, drawing both pilgrims — especially during Mai Pokhari Mela — and birdwatchers to its shores.",
+  heroImage: img(PHOTO.himalayaLake, 1600),
+  gallery: [],
+  coordinates: { lat: 26.955, lng: 87.951 },
+  rating: 4.4, reviewCount: 71,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Pilgrimage", "Birdwatching", "Lakeside walks"],
+  featured: false, trending: false
+},
+{
+  id: "a319", slug: "daman-viewpoint-makwanpur", districtId: "d37",
+  name: "Daman Viewpoint", category: "Viewpoints",
+  tagline: "One of the widest roadside Himalaya panoramas in Nepal",
+  description: "Perched on the Tribhuvan Highway, Daman offers an exceptionally wide panoramic view of the Himalayan range on clear days, stretching from Dhaulagiri in the west to Everest in the east.",
+  heroImage: img(PHOTO.himalaya1, 1600),
+  gallery: [],
+  coordinates: { lat: 27.5989, lng: 85.0972 },
+  rating: 4.5, reviewCount: 98,
+  bestTimeToVisit: ["Autumn", "Winter", "Spring"],
+  activities: ["Panoramic photography", "Sunrise viewing", "Short forest walks"],
+  featured: false, trending: false
+},
+{
+  id: "a320", slug: "langtang-national-park-nuwakot", districtId: "d34",
+  name: "Langtang National Park (Nuwakot sector)", category: "National Parks & Wildlife",
+  tagline: "The southern reaches of Nepal's Langtang protected wilderness",
+  description: "Nuwakot's northern hills form part of Langtang National Park's wider protected landscape, offering forested lower-altitude terrain that transitions into the higher Langtang valley further north.",
+  heroImage: img(PHOTO.himalaya2, 1600),
+  gallery: [],
+  coordinates: { lat: 28.05, lng: 85.3 },
+  rating: 4.2, reviewCount: 41,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Forest walks", "Birdwatching", "Village homestays"],
+  featured: false, trending: false
+},
+{
+  id: "a321", slug: "langtang-national-park-sindhupalchok", districtId: "d31",
+  name: "Langtang National Park (Sindhupalchok sector)", category: "National Parks & Wildlife",
+  tagline: "Helambu's forested share of the Langtang protected landscape",
+  description: "The Helambu region of Sindhupalchok forms part of Langtang National Park, its rhododendron forests and Hyolmo villages offering a gentler introduction to the high Langtang range further north.",
+  heroImage: img(PHOTO.himalaya6, 1600),
+  gallery: [],
+  coordinates: { lat: 28.05, lng: 85.6 },
+  rating: 4.3, reviewCount: 52,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Moderate trekking", "Monastery visits", "Rhododendron forest walks"],
+  featured: false, trending: false
+},
+{
+  id: "a322", slug: "annapurna-conservation-area-kaski", districtId: "d2",
+  name: "Annapurna Conservation Area (Kaski sector)", category: "National Parks & Wildlife",
+  tagline: "Nepal's largest protected area, headquartered above Pokhara",
+  description: "The Kaski portion of the Annapurna Conservation Area gives direct access to the Annapurna Sanctuary and Base Camp trails, protecting a huge range of habitat from subtropical valleys to high glacial terrain.",
+  heroImage: img(PHOTO.annapurna, 1600),
+  gallery: [],
+  coordinates: { lat: 28.5, lng: 83.9 },
+  rating: 4.8, reviewCount: 267,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Trekking", "Mountaineering", "Wildlife spotting"],
+  featured: true, trending: false
+},
+{
+  id: "a323", slug: "manaslu-conservation-area", districtId: "d38",
+  name: "Manaslu Conservation Area", category: "National Parks & Wildlife",
+  tagline: "Protected wilderness around the world's eighth-highest mountain",
+  description: "The Manaslu Conservation Area protects the forests and high valleys around Mount Manaslu, offering one of Nepal's classic restricted-area treks with a fraction of Everest or Annapurna's crowds.",
+  heroImage: img(PHOTO.manaslu, 1600),
+  gallery: [],
+  coordinates: { lat: 28.55, lng: 84.55 },
+  rating: 4.7, reviewCount: 88,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Restricted-area trekking", "Monastery visits", "Mountain photography"],
+  featured: false, trending: false
+},
+{
+  id: "a324", slug: "annapurna-conservation-area-lamjung", districtId: "d39",
+  name: "Annapurna Conservation Area (Lamjung sector)", category: "National Parks & Wildlife",
+  tagline: "The lush lower-altitude entry point to the Annapurna Circuit",
+  description: "Lamjung's share of the Annapurna Conservation Area covers the trek's early, greener stages, with terraced hillsides and forest giving way to the higher country further along the circuit toward Manang.",
+  heroImage: img(PHOTO.himalaya8, 1600),
+  gallery: [],
+  coordinates: { lat: 28.4, lng: 84.4 },
+  rating: 4.4, reviewCount: 56,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Trekking", "Village homestays", "Terraced hillside photography"],
+  featured: false, trending: false
+},
+{
+  id: "a325", slug: "annapurna-conservation-area-myagdi", districtId: "d43",
+  name: "Annapurna Conservation Area (Myagdi sector)", category: "National Parks & Wildlife",
+  tagline: "Dhaulagiri's flank, protected within the Annapurna Conservation Area",
+  description: "Myagdi's portion of the Annapurna Conservation Area protects the base region of Dhaulagiri and the approach trails toward Ghorepani and Poon Hill.",
+  heroImage: img(PHOTO.himalaya3, 1600),
+  gallery: [],
+  coordinates: { lat: 28.55, lng: 83.55 },
+  rating: 4.5, reviewCount: 63,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Trekking", "Sunrise viewpoint hikes", "Forest walks"],
+  featured: false, trending: false
+},
+{
+  id: "a326", slug: "dhorpatan-hunting-reserve-baglung", districtId: "d44",
+  name: "Dhorpatan Hunting Reserve", category: "National Parks & Wildlife",
+  tagline: "Nepal's only hunting reserve, protecting remote alpine pasture",
+  description: "Dhorpatan is Nepal's sole hunting reserve, a remote high-altitude landscape of pasture and forest shared with neighbouring Myagdi and Rukum West, home to blue sheep and occasionally snow leopards.",
+  heroImage: img(PHOTO.himalaya4, 1600),
+  gallery: [],
+  coordinates: { lat: 28.5, lng: 83.05 },
+  rating: 4.1, reviewCount: 19,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Wildlife spotting", "Remote trekking", "High-pasture camping"],
+  featured: false, trending: false
+},
+{
+  id: "a327", slug: "shey-phoksundo-national-park", districtId: "d59",
+  name: "Shey Phoksundo National Park", category: "National Parks & Wildlife",
+  tagline: "Nepal's largest national park, home to a stunning turquoise lake",
+  description: "Shey Phoksundo National Park protects the trans-Himalayan landscape of Dolpa, including Phoksundo Lake — Nepal's deepest — and the remote Tibetan Buddhist and Bon culture of Upper Dolpo.",
+  heroImage: img(PHOTO.sacredLake, 1600),
+  gallery: [],
+  coordinates: { lat: 29.34, lng: 82.92 },
+  rating: 4.8, reviewCount: 74,
+  bestTimeToVisit: ["Summer", "Autumn"],
+  activities: ["Restricted-area trekking", "Lake photography", "Monastery visits"],
+  featured: false, trending: false
+},
+{
+  id: "a328", slug: "khaptad-national-park-bajhang", districtId: "d70",
+  name: "Khaptad National Park (Bajhang sector)", category: "National Parks & Wildlife",
+  tagline: "A serene high-altitude plateau of meadows sacred to a hermit saint",
+  description: "The Bajhang portion of Khaptad National Park holds most of its rolling high-altitude meadows and the ashram of Khaptad Baba, a revered hermit-saint who lived here for decades.",
+  heroImage: img(PHOTO.nepalHills, 1600),
+  gallery: [],
+  coordinates: { lat: 29.35, lng: 81.2 },
+  rating: 4.4, reviewCount: 33,
+  bestTimeToVisit: ["Summer", "Autumn"],
+  activities: ["Pilgrimage", "Meadow walks", "Wildflower photography"],
+  featured: false, trending: false
+},
+{
+  id: "a329", slug: "khaptad-national-park-achham", districtId: "d71",
+  name: "Khaptad National Park (Achham sector)", category: "National Parks & Wildlife",
+  tagline: "Achham's share of the high Khaptad plateau",
+  description: "Achham's northern hills form part of Khaptad National Park's forest and grassland landscape, a quiet, rarely visited extension of the plateau shared with Bajhang, Bajura and Doti.",
+  heroImage: img(PHOTO.nepalHills, 1600),
+  gallery: [],
+  coordinates: { lat: 29.25, lng: 81.15 },
+  rating: 4.2, reviewCount: 21,
+  bestTimeToVisit: ["Summer", "Autumn"],
+  activities: ["Remote trekking", "Meadow walks"],
+  featured: false, trending: false
+},
+{
+  id: "a330", slug: "khaptad-national-park-doti", districtId: "d72",
+  name: "Khaptad National Park (Doti sector)", category: "National Parks & Wildlife",
+  tagline: "Doti's forested approach into the Khaptad plateau",
+  description: "Doti's portion of Khaptad National Park offers forested approach trails into the plateau's open meadows, a gentler high-country landscape than Nepal's more famous Himalayan parks.",
+  heroImage: img(PHOTO.nepalHills, 1600),
+  gallery: [],
+  coordinates: { lat: 29.3, lng: 81.05 },
+  rating: 4.2, reviewCount: 24,
+  bestTimeToVisit: ["Summer", "Autumn"],
+  activities: ["Remote trekking", "Forest walks"],
+  featured: false, trending: false
+},
+{
+  id: "a331", slug: "shuklaphanta-national-park-kanchanpur", districtId: "d74",
+  name: "Shuklaphanta National Park", category: "National Parks & Wildlife",
+  tagline: "Nepal's largest population of swamp deer on open grassland plains",
+  description: "Shuklaphanta National Park protects vast open grasslands in Nepal's far-western corner, home to the country's largest swamp deer (barasingha) population alongside tigers, wild elephants and rich birdlife.",
+  heroImage: img(PHOTO.tiger, 1600),
+  gallery: [],
+  coordinates: { lat: 28.85, lng: 80.2 },
+  rating: 4.6, reviewCount: 47,
+  bestTimeToVisit: ["Winter", "Spring"],
+  activities: ["Jeep safari", "Grassland wildlife spotting", "Birdwatching"],
+  featured: false, trending: false
+},
+{
+  id: "a332", slug: "api-nampa-conservation-area-darchula", districtId: "d77",
+  name: "Api Nampa Conservation Area", category: "National Parks & Wildlife",
+  tagline: "Rugged high peaks at Nepal's northwesternmost tip",
+  description: "Api Nampa Conservation Area protects the Api and Nampa peaks and the surrounding high-mountain landscape where Nepal, India and the Tibetan plateau meet — one of the least-visited significant ranges in the country.",
+  heroImage: img(PHOTO.himalaya1, 1600),
+  gallery: [],
+  coordinates: { lat: 30.0, lng: 80.95 },
+  rating: 4.3, reviewCount: 17,
+  bestTimeToVisit: ["Summer", "Autumn"],
+  activities: ["Remote trekking", "Mountaineering", "Byanshi village visits"],
+  featured: false, trending: false
+},
+{
+  id: "a333", slug: "banke-national-park", districtId: "d57",
+  name: "Banke National Park", category: "National Parks & Wildlife",
+  tagline: "A quieter tiger habitat neighbouring Bardiya",
+  description: "Banke National Park protects a stretch of Terai forest adjoining Bardiya National Park, sharing the same tiger and wildlife population with a fraction of the visitor numbers.",
+  heroImage: img(PHOTO.tiger, 1600),
+  gallery: [],
+  coordinates: { lat: 28.05, lng: 81.85 },
+  rating: 4.3, reviewCount: 29,
+  bestTimeToVisit: ["Winter", "Spring"],
+  activities: ["Jeep safari", "Wildlife spotting", "Birdwatching"],
+  featured: false, trending: false
+},
+{
+  id: "a334", slug: "koshi-tappu-wildlife-reserve-saptari", districtId: "d20",
+  name: "Koshi Tappu Wildlife Reserve (Saptari sector)", category: "National Parks & Wildlife",
+  tagline: "Wetland habitat for wild water buffalo and migratory birds",
+  description: "Saptari's share of Koshi Tappu Wildlife Reserve protects Terai wetlands along the Koshi river, home to Nepal's last wild water buffalo population and some of the country's best birdwatching.",
+  heroImage: img(PHOTO.himalayaLake, 1600),
+  gallery: [],
+  coordinates: { lat: 26.6, lng: 86.95 },
+  rating: 4.3, reviewCount: 31,
+  bestTimeToVisit: ["Winter", "Spring"],
+  activities: ["Birdwatching", "Wetland boat rides", "Wildlife spotting"],
+  featured: false, trending: false
+},
+{
+  id: "a335", slug: "koshi-tappu-wildlife-reserve-udayapur", districtId: "d19",
+  name: "Koshi Tappu Wildlife Reserve (Udayapur sector)", category: "National Parks & Wildlife",
+  tagline: "Udayapur's edge of the Koshi wetland wildlife reserve",
+  description: "Udayapur borders part of Koshi Tappu Wildlife Reserve's wetland ecosystem, sharing the reserve's wild water buffalo population and migratory bird habitat with neighbouring Saptari and Sunsari.",
+  heroImage: img(PHOTO.himalayaLake, 1600),
+  gallery: [],
+  coordinates: { lat: 26.65, lng: 86.7 },
+  rating: 4.1, reviewCount: 18,
+  bestTimeToVisit: ["Winter", "Spring"],
+  activities: ["Birdwatching", "Wildlife spotting"],
+  featured: false, trending: false
+},
+{
+  id: "a336", slug: "gaurishankar-conservation-area-ramechhap", districtId: "d29",
+  name: "Gaurishankar Conservation Area", category: "National Parks & Wildlife",
+  tagline: "Protected high country around the Gauri Shankar massif",
+  description: "Gaurishankar Conservation Area protects the high peaks and valleys around Gauri Shankar, sacred to both Hindus and Buddhists, forming a quieter northern extension of Ramechhap's hill terrain.",
+  heroImage: img(PHOTO.himalaya5, 1600),
+  gallery: [],
+  coordinates: { lat: 27.8, lng: 86.2 },
+  rating: 4.4, reviewCount: 26,
+  bestTimeToVisit: ["Autumn", "Spring"],
+  activities: ["Remote trekking", "Wildlife spotting", "Mountain photography"],
   featured: false, trending: false
 }
 ];

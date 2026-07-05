@@ -7,6 +7,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { genId } from "../utils/ids";
 import { pick, qs, sanitizeImage, sanitizeGallery } from "../utils/sanitize";
 import { getWeatherInsight } from "../services/weather";
+import { cleanupReplacedImages } from "../services/cloudinary.service";
 
 const DESTINATION_FIELDS = [
   "slug", "cityId", "districtId", "name", "tagline", "description", "category",
@@ -99,17 +100,23 @@ export const updateDestination = asyncHandler(async (req: Request, res: Response
     if (conflict) return fail(res, `Slug "${body.slug}" is already used by another destination.`, 409);
   }
 
+  const existing = await Destination.findOne({ id: req.params.id }).select("heroImage gallery");
   const destination = await Destination.findOneAndUpdate(
     { id: req.params.id },
     { $set: body },
     { new: true, runValidators: true }
   );
   if (!destination) return fail(res, "Destination not found", 404);
+  cleanupReplacedImages(
+    [existing?.heroImage, existing?.gallery],
+    [destination.heroImage, destination.gallery]
+  );
   ok(res, destination);
 });
 
 export const deleteDestination = asyncHandler(async (req: Request, res: Response) => {
   const destination = await Destination.findOneAndDelete({ id: req.params.id });
   if (!destination) return fail(res, "Destination not found", 404);
+  cleanupReplacedImages([destination.heroImage, destination.gallery], []);
   ok(res, { id: req.params.id, deleted: true });
 });

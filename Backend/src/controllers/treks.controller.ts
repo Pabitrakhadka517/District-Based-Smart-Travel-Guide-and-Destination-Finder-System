@@ -4,6 +4,7 @@ import { ok, fail } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
 import { genId } from "../utils/ids";
 import { pick, qs, sanitizeImage, sanitizeGallery } from "../utils/sanitize";
+import { cleanupReplacedImages } from "../services/cloudinary.service";
 
 const TREK_FIELDS = [
   "slug", "name", "region", "districtIds", "tagline", "description", "heroImage", "gallery",
@@ -55,17 +56,20 @@ export const updateTrek = asyncHandler(async (req: Request, res: Response) => {
     const conflict = await Trek.findOne({ slug: body.slug, id: { $ne: req.params.id } });
     if (conflict) return fail(res, `Slug "${body.slug}" is already used by another trek.`, 409);
   }
+  const existing = await Trek.findOne({ id: req.params.id }).select("heroImage gallery");
   const trek = await Trek.findOneAndUpdate(
     { id: req.params.id },
     { $set: body },
     { new: true, runValidators: true }
   );
   if (!trek) return fail(res, "Trek not found", 404);
+  cleanupReplacedImages([existing?.heroImage, existing?.gallery], [trek.heroImage, trek.gallery]);
   ok(res, trek);
 });
 
 export const deleteTrek = asyncHandler(async (req: Request, res: Response) => {
   const trek = await Trek.findOneAndDelete({ id: req.params.id });
   if (!trek) return fail(res, "Trek not found", 404);
+  cleanupReplacedImages([trek.heroImage, trek.gallery], []);
   ok(res, { id: req.params.id, deleted: true });
 });
