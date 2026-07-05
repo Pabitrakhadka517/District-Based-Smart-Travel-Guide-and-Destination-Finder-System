@@ -8,6 +8,7 @@ import { attractionService } from "@/services/attractionService";
 import { reviewService } from "@/services/reviewService";
 import { wishlistService } from "@/services/wishlistService";
 import { tripService } from "@/services/tripService";
+import { bookingService } from "@/services/bookingService";
 import { profileService } from "@/services/profileService";
 import { searchService } from "@/services/searchService";
 import { recommendationService } from "@/services/recommendationService";
@@ -15,7 +16,7 @@ import { useAuth } from "@/store/auth-store";
 import type {
   Destination, District, Review, Trek,
   Festival, GuideArticle, TripPlan, User, WeatherDay, TouristAttraction, ActivityEvent,
-  WeatherInsight, CloudinaryImage, TravelAlert, PackingChecklist,
+  WeatherInsight, CloudinaryImage, TravelAlert, PackingChecklist, Booking,
 } from "@/types";
 import type { PlatformStats } from "@/services/content";
 
@@ -233,6 +234,42 @@ export function useDeletePlan() {
   return useMutation({
     mutationFn: (id: string) => tripService.remove(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["plans"] }),
+  });
+}
+
+/* ----------------------------- Bookings ---------------------------------- */
+
+export function useBookings() {
+  const { isLoggedIn } = useAuth();
+  return useQuery({
+    queryKey: ["bookings"],
+    queryFn: () => bookingService.getAll(),
+    enabled: isLoggedIn(),
+    retry: false,
+  });
+}
+
+export function useCreateBooking() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: Partial<Booking>) => bookingService.create(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["bookings"] }),
+  });
+}
+
+export function useCancelBooking() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => bookingService.updateStatus(id, "cancelled"),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["bookings"] }),
+  });
+}
+
+export function useDeleteBooking() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => bookingService.remove(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["bookings"] }),
   });
 }
 

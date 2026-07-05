@@ -282,6 +282,24 @@ export interface ActivityEvent {
   rating?: number;
 }
 
+export type AccommodationType = "Budget" | "Standard" | "Luxury";
+export type TransportPreference = "Local Bus" | "Private Jeep" | "Domestic Flight";
+
+export interface Booking {
+  id: string;
+  userId?: string;
+  destinationId: string;
+  travelDate: string;
+  travelers: number;
+  budget: number;
+  accommodationType: AccommodationType;
+  transportPreference: TransportPreference;
+  estimatedCost: number;
+  status: "pending" | "confirmed" | "cancelled";
+  notes: string;
+  createdAt: string;
+}
+
 export interface GuideArticle {
   id: string;
   slug: string;

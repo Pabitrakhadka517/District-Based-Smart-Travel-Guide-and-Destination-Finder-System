@@ -18,6 +18,14 @@ function setToken(token: string): void {
   if (typeof window !== "undefined") localStorage.setItem(TOKEN_KEY, token);
 }
 
+/** Backend validation errors include a field-level `errors` array — surface it instead
+ *  of the generic "Validation failed" message so the UI can show what actually broke. */
+function buildErrorMessage(json: { error?: string; errors?: { field: string; message: string }[] }): string {
+  const base = json.error ?? "Unknown error";
+  if (!json.errors?.length) return base;
+  return `${base}: ${json.errors.map((e) => `${e.field} (${e.message})`).join(", ")}`;
+}
+
 function authHeaders(): HeadersInit {
   const token = getToken();
   return token
@@ -76,7 +84,7 @@ async function request<T>(
         credentials: "include"
       });
       const retryJson = await retryRes.json();
-      if (!retryJson.success) throw new Error(retryJson.error ?? "Request failed");
+      if (!retryJson.success) throw new Error(buildErrorMessage(retryJson));
       return retryJson.data as T;
     }
     // Refresh also failed — log the user out
@@ -85,7 +93,7 @@ async function request<T>(
   }
 
   const json = await res.json();
-  if (!json.success) throw new Error(json.error ?? "Unknown error");
+  if (!json.success) throw new Error(buildErrorMessage(json));
   return json.data as T;
 }
 
@@ -135,7 +143,7 @@ export async function apiUpload<T>(path: string, formData: FormData): Promise<T>
         credentials: "include"
       });
       const retryJson = await retryRes.json();
-      if (!retryJson.success) throw new Error(retryJson.error ?? "Upload failed");
+      if (!retryJson.success) throw new Error(buildErrorMessage(retryJson));
       return retryJson.data as T;
     }
     window.dispatchEvent(new Event("nepayatra:logout"));
@@ -143,6 +151,6 @@ export async function apiUpload<T>(path: string, formData: FormData): Promise<T>
   }
 
   const json = await res.json();
-  if (!json.success) throw new Error(json.error ?? "Upload failed");
+  if (!json.success) throw new Error(buildErrorMessage(json));
   return json.data as T;
 }

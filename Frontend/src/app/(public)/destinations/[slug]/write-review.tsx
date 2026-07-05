@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  PenSquare, Star, CheckCircle2, Loader2, Lock, ChevronDown, ChevronUp,
+  PenSquare, Star, CheckCircle2, Loader2, Lock, MapPinned, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/ui/alert";
 import { GalleryUploader } from "@/components/dashboard/image-uploader";
-import { useCreateReview } from "@/hooks/use-content";
+import { useCreateReview, usePlans } from "@/hooks/use-content";
 import { useAuth } from "@/store/auth-store";
 import type { CloudinaryImage } from "@/types";
 
@@ -22,6 +22,8 @@ export function WriteReview({ destinationId, destinationName }: {
 }) {
   const { user } = useAuth();
   const createReview = useCreateReview();
+  const { data: plans = [], isLoading: plansLoading } = usePlans();
+  const hasTripForDestination = plans.some((p) => p.destinationIds.includes(destinationId));
 
   const [open,       setOpen]       = useState(false);
   const [rating,     setRating]     = useState(5);
@@ -82,6 +84,20 @@ export function WriteReview({ destinationId, destinationName }: {
         <p className="text-sm text-muted-foreground">Sign in to share your experience at {destinationName}.</p>
         <Link href="/login">
           <Button variant="outline" size="sm"><Lock size={13} /> Sign in</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  /* ── logged in but hasn't added this destination to a trip plan ── */
+  if (!plansLoading && !hasTripForDestination) {
+    return (
+      <div className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-muted/40 px-5 py-4">
+        <p className="text-sm text-muted-foreground">
+          Add {destinationName} to a trip plan to write a review — only travelers with a plan for this destination can review it.
+        </p>
+        <Link href="/planner">
+          <Button variant="outline" size="sm"><MapPinned size={13} /> Go to planner</Button>
         </Link>
       </div>
     );
