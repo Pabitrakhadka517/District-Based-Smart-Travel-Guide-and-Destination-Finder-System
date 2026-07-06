@@ -9,7 +9,8 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "seed": "tsx src/seed/seed.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "cross-env NODE_ENV=test vitest run"
   },
   "dependencies": {
     "@types/compression": "^1.8.1",
@@ -40,8 +41,13 @@
     "@types/multer": "^1.4.12",
     "@types/node": "^22.10.5",
     "@types/nodemailer": "^8.0.1",
+    "@types/supertest": "^7.2.0",
     "@types/swagger-ui-express": "^4.1.7",
+    "cross-env": "^10.1.0",
+    "mongodb-memory-server": "^11.2.0",
+    "supertest": "^7.2.2",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^4.1.9"
   }
 }
