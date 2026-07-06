@@ -15,9 +15,32 @@ const envelope = (dataSchema: object) => ({
   properties: { success: { type: "boolean", example: true }, data: dataSchema }
 });
 
+/**
+ * Paginated { success, data, total, page, limit } response envelope — used by
+ * every list endpoint that calls `okPaginated()` on the backend. `data` stays
+ * a plain array (so callers that only read `.data` still work); `total`,
+ * `page` and `limit` are additive.
+ */
+const paginatedEnvelope = (itemsSchemaName: string) => ({
+  type: "object",
+  required: ["success", "data", "total", "page", "limit"],
+  properties: {
+    success: { type: "boolean", example: true },
+    data: arrayOf(itemsSchemaName),
+    total: { type: "integer", example: 42, description: "Total matching documents across all pages" },
+    page:  { type: "integer", example: 1,  description: "Current 1-indexed page number" },
+    limit: { type: "integer", example: 24, description: "Page size actually applied (capped server-side)" }
+  }
+});
+
 /** Short-hand for a 200/201 application/json response */
 const jsonResponse = (description: string, dataSchema: object, status = 200) => ({
   [status]: { description, content: { "application/json": { schema: envelope(dataSchema) } } }
+});
+
+/** Short-hand for a paginated 200 application/json response */
+const jsonResponsePaginated = (description: string, itemsSchemaName: string) => ({
+  200: { description, content: { "application/json": { schema: paginatedEnvelope(itemsSchemaName) } } }
 });
 
 /** Reusable $ref response short-hands */
@@ -27,6 +50,7 @@ const r403 = { $ref: "#/components/responses/Forbidden" } as const;
 const r404 = { $ref: "#/components/responses/NotFound" } as const;
 const r409 = { $ref: "#/components/responses/Conflict" } as const;
 const r500 = { $ref: "#/components/responses/InternalError" } as const;
+const r502 = { $ref: "#/components/responses/BadGateway" } as const;
 
 /** Bearer-JWT security requirement */
 const bearerSec = [{ bearerAuth: [] }];
@@ -39,6 +63,21 @@ const pathParam = (name: string, description: string, example: string) => ({
   example
 });
 
+/** Reusable `page`/`limit` query parameters, shared by every paginated list endpoint. */
+const pageParam = {
+  name: "page", in: "query",
+  description: "1-indexed page number.",
+  schema: { type: "integer", minimum: 1, default: 1 },
+  example: 1
+};
+const limitParam = (defaultLimit: number, maxLimit = 500) => ({
+  name: "limit", in: "query",
+  description: `Items per page (capped server-side at ${maxLimit}). Defaults to ${defaultLimit} when omitted, so existing callers that never paginate keep getting the full collection.`,
+  schema: { type: "integer", minimum: 1, maximum: maxLimit, default: defaultLimit },
+  example: defaultLimit
+});
+const paginationParams = (defaultLimit: number, maxLimit = 500) => [pageParam, limitParam(defaultLimit, maxLimit)];
+
 // ─── Enum constants ───────────────────────────────────────────────────────────
 
 const ENUM_CATEGORY = ["Heritage", "Adventure", "Nature", "Trekking", "Religious", "Wildlife", "Cultural", "Lake", "City"];
@@ -50,13 +89,21 @@ const ENUM_ATTRACTION_CATEGORY = [
   "Viewpoints", "National Parks & Wildlife", "Local Experiences"
 ];
 const ENUM_REVIEW_STATUS  = ["approved", "pending", "rejected"];
-const ENUM_TRIP_STATUS    = ["planned", "ongoing", "completed"];
+const ENUM_TRIP_STATUS    = ["draft", "planned", "ready", "ongoing", "completed", "cancelled"];
+const ENUM_TRAVEL_TYPE    = ["Adventure", "Trekking", "Cultural", "Religious", "Family", "Wildlife", "Luxury", "Budget"];
 const ENUM_ROLE           = ["user", "admin"];
 const ENUM_GUIDE_CATEGORY = ["Tips", "Itineraries", "Culture", "Food", "Trekking"];
 const ENUM_FESTIVAL_TYPE  = ["Religious", "Cultural", "Harvest", "National"];
 const ENUM_BOOKING_STATUS = ["pending", "confirmed", "cancelled"];
 const ENUM_ACCOMMODATION  = ["Budget", "Standard", "Luxury"];
 const ENUM_TRANSPORT      = ["Local Bus", "Private Jeep", "Domestic Flight"];
+const ENUM_SEARCH_SORT    = ["rating", "reviews", "price-low", "price-high", "alphabetical", "newest"];
+const ENUM_ALERT_LEVEL    = ["Info", "Advisory", "Warning"];
+const ENUM_UPLOAD_TYPE = [
+  "district", "city", "destination-cover", "destination-gallery",
+  "attraction-cover", "attraction-gallery", "trek-cover", "trek-gallery",
+  "festival", "guide-cover", "guide-avatar", "avatar", "review", "planner"
+];
 
 // ─── OpenAPI document ─────────────────────────────────────────────────────────
 
@@ -72,8 +119,13 @@ export const openapiSpec = {
       "",
       "Complete REST API for the NepalYatra travel platform.",
       "",
-      "### Response envelope",
-      "Every endpoint returns `{ success: boolean, data: T }`. On error the shape is `{ success: false, error: string }`.",
+      "### Response envelopes",
+      "Every endpoint returns `{ success: boolean, data: T }`. On error the shape is `{ success: false, error: string }` — there is no separate field-level validation error shape; every 400/401/403/404/409 uses this same `error` string.",
+      "",
+      "List endpoints backed by `okPaginated()` (marked in their description below) return an additive envelope: `{ success: true, data: T[], total, page, limit }`. `data` is still a plain array, so a caller that only reads `.data` works unchanged whether or not it passes `page`/`limit`.",
+      "",
+      "### Images",
+      "Every image field (`heroImage`, `image`, `cover`, `avatar`, `gallery`, `photos`, …) is a structured object — see the `Image` schema — not a plain URL string. `publicId` is `null` for legacy/external images that were never uploaded through this app's own Cloudinary account (so they're never sent to Cloudinary's destroy API by mistake).",
       "",
       "### Authentication",
       "1. Call `POST /api/auth/login` to receive a short-lived **access token** (15 min by default) plus an `httpOnly` refresh token cookie.",
@@ -112,12 +164,15 @@ export const openapiSpec = {
     { name: "Festivals",    description: "Cultural and religious festivals" },
     { name: "Guides",       description: "Curated travel guide articles" },
     { name: "Reviews",      description: "Traveller reviews for destinations" },
-    { name: "Search",       description: "Cross-content full-text search" },
+    { name: "Search",       description: "Cross-content full-text search with filters, sorting and pagination" },
+    { name: "Recommendations", description: "Personalized, similar-item and trending destination recommendations" },
     { name: "Travel Alerts",description: "Admin-managed travel advisories shown on the weather page" },
     { name: "Checklists",   description: "Admin-managed packing checklists, one per destination category" },
     { name: "Planner",      description: "Personal trip planner (requires auth)" },
-    { name: "Bookings",     description: "Destination bookings with cost estimates (requires auth)" },
+    { name: "Bookings",     description: "Destination bookings with cost estimates (requires auth); admin oversight endpoints included" },
     { name: "Wishlist",     description: "Personal wishlist (requires auth)" },
+    { name: "Media",        description: "Cloudinary image upload/delete used by admin forms and user-generated content (reviews, trip photos, avatars)" },
+    { name: "Dashboard",    description: "The authenticated user's own activity feed" },
     { name: "Admin",        description: "Admin-only: analytics, user management, content moderation" },
     { name: "Stats",        description: "Public platform statistics" }
   ],
@@ -148,25 +203,6 @@ export const openapiSpec = {
         }
       },
 
-      ValidationError: {
-        type: "object",
-        required: ["success", "error"],
-        properties: {
-          success: { type: "boolean", example: false },
-          error: { type: "string", example: "Validation failed" },
-          errors: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                field: { type: "string", example: "email" },
-                message: { type: "string", example: "Invalid email address" }
-              }
-            }
-          }
-        }
-      },
-
       DeleteResult: {
         type: "object",
         properties: {
@@ -182,6 +218,20 @@ export const openapiSpec = {
         properties: {
           lat: { type: "number", format: "double", example: 27.7172 },
           lng: { type: "number", format: "double", example: 85.3240 }
+        }
+      },
+
+      Image: {
+        type: "object",
+        description: "Structured image metadata backing every image field in the API. `publicId` is null for images not owned by this app's Cloudinary account (never sent to the destroy API).",
+        required: ["url", "publicId", "alt"],
+        properties: {
+          url:         { type: "string", format: "uri", example: "https://res.cloudinary.com/your-cloud-name/image/upload/v1/nepalyatra/destinations/example.jpg" },
+          publicId:    { type: "string", nullable: true, example: "nepalyatra/destinations/example" },
+          alt:         { type: "string", example: "Sunrise over Phewa Lake" },
+          width:       { type: "integer", example: 1600 },
+          height:      { type: "integer", example: 1067 },
+          blurDataUrl: { type: "string", description: "Tiny base64 blur placeholder for progressive image loading", example: "data:image/jpeg;base64,/9j/4AAQ…" }
         }
       },
 
@@ -225,24 +275,46 @@ export const openapiSpec = {
         }
       },
 
+      WeatherInsight: {
+        type: "object",
+        description: "Live weather (Open-Meteo) blended with season-based visiting advice. Falls back to season-only advice if the weather API is unreachable (5s timeout).",
+        properties: {
+          condition:     { type: "string", enum: ["Sunny", "Clear", "Cloudy", "Rain", "Snow"], example: "Clear" },
+          currentTemp:   { type: "integer", example: 18, description: "Degrees Celsius; 0 if the weather API call failed" },
+          isIdealSeason: { type: "boolean", example: true },
+          visitAdvice:   { type: "string", enum: ["Go now", "Good time", "Off-season", "Avoid"], example: "Go now" },
+          message:       { type: "string", example: "Autumn is one of the best times to visit. Clear skies and comfortable temperatures." },
+          bestMonths:    { type: "array", items: { type: "string" }, example: ["September", "October", "November"] }
+        }
+      },
+
+      RatingBreakdownItem: {
+        type: "object",
+        properties: {
+          star:  { type: "integer", minimum: 1, maximum: 5, example: 5 },
+          count: { type: "integer", example: 812 },
+          pct:   { type: "integer", example: 57, description: "Percentage of all approved reviews at this star rating" }
+        }
+      },
+
       // ---- Domain schemas ----
       District: {
         type: "object",
         description: "One of Nepal's 77 administrative districts",
         properties: {
-          id:             { type: "string", example: "d1" },
-          slug:           { type: "string", example: "kathmandu" },
-          name:           { type: "string", example: "Kathmandu" },
-          province:       { type: "string", example: "Bagmati" },
-          description:    { type: "string", example: "Nepal's vibrant capital district…" },
-          heroImage:      { type: "string", format: "uri", example: "https://res.cloudinary.com/your-cloud-name/image/upload/nepalyatra/districts/example.jpg" },
-          coordinates:    $ref("Coordinates"),
-          cityCount:      { type: "integer", example: 2 },
-          destinationCount:{ type: "integer", example: 3 },
-          attractionCount:{ type: "integer", example: 10 },
-          popularFor:     { type: "array", items: { type: "string" }, example: ["Heritage", "Temples"] },
-          rating:         { type: "number", example: 4.8 },
-          bestSeason:     { type: "string", example: "Autumn" }
+          id:               { type: "string", example: "d1" },
+          slug:             { type: "string", example: "kathmandu" },
+          name:             { type: "string", example: "Kathmandu" },
+          province:         { type: "string", example: "Bagmati" },
+          description:      { type: "string", example: "Nepal's vibrant capital district…" },
+          heroImage:        $ref("Image"),
+          coordinates:      $ref("Coordinates"),
+          cityCount:        { type: "integer", example: 2 },
+          destinationCount: { type: "integer", example: 3 },
+          attractionCount:  { type: "integer", example: 10 },
+          popularFor:       { type: "array", items: { type: "string" }, example: ["Heritage", "Temples"] },
+          rating:           { type: "number", example: 4.8 },
+          bestSeason:       { type: "string", example: "Autumn" }
         }
       },
 
@@ -254,7 +326,7 @@ export const openapiSpec = {
           districtId:      { type: "string", example: "d1" },
           name:            { type: "string", example: "Kathmandu" },
           description:     { type: "string" },
-          image:           { type: "string", format: "uri" },
+          image:           $ref("Image"),
           coordinates:     $ref("Coordinates"),
           categories:      { type: "array", items: { type: "string", enum: ENUM_CATEGORY } },
           rating:          { type: "number", example: 4.7 },
@@ -275,8 +347,8 @@ export const openapiSpec = {
           tagline:           { type: "string", example: "Nepal's holiest Hindu shrine on the Bagmati" },
           description:       { type: "string" },
           history:           { type: "string" },
-          heroImage:         { type: "string", format: "uri" },
-          gallery:           { type: "array", items: { type: "string", format: "uri" } },
+          heroImage:         $ref("Image"),
+          gallery:           arrayOf("Image"),
           coordinates:       $ref("Coordinates"),
           rating:            { type: "number", example: 4.9 },
           reviewCount:       { type: "integer", example: 2341 },
@@ -334,8 +406,8 @@ export const openapiSpec = {
           description:     { type: "string" },
           category:        { type: "string", enum: ENUM_CATEGORY, example: "Religious" },
           tags:            { type: "array", items: { type: "string" }, example: ["UNESCO", "Buddhist"] },
-          heroImage:       { type: "string", format: "uri" },
-          gallery:         { type: "array", items: { type: "string", format: "uri" } },
+          heroImage:       $ref("Image"),
+          gallery:         arrayOf("Image"),
           coordinates:     $ref("Coordinates"),
           rating:          { type: "number", example: 4.7 },
           reviewCount:     { type: "integer", example: 1542 },
@@ -350,34 +422,88 @@ export const openapiSpec = {
           cons:            { type: "array", items: { type: "string" } },
           nearby:          { type: "array", items: { type: "string" }, description: "Destination IDs" },
           featured:        { type: "boolean" },
-          trending:        { type: "boolean" }
+          trending:        { type: "boolean" },
+          difficulty:      { type: "string", enum: ENUM_DIFFICULTY, nullable: true, description: "Only set for trek-like destinations" },
+          recommendedDuration: { type: "string", nullable: true, example: "2-3 days" }
+        }
+      },
+
+      DestinationSummary: {
+        type: "object",
+        description: "Reduced Destination projection returned by the recommendation endpoints (id/slug/name/tagline/heroImage/category/tags/districtId/difficulty/rating/reviewCount/budget/trending only).",
+        properties: {
+          id:           { type: "string", example: "p1" },
+          slug:         { type: "string", example: "swayambhunath" },
+          name:         { type: "string", example: "Swayambhunath" },
+          tagline:      { type: "string" },
+          heroImage:    $ref("Image"),
+          category:     { type: "string", enum: ENUM_CATEGORY },
+          tags:         { type: "array", items: { type: "string" } },
+          districtId:   { type: "string", example: "d1" },
+          difficulty:   { type: "string", enum: ENUM_DIFFICULTY, nullable: true },
+          rating:       { type: "number", example: 4.7 },
+          reviewCount:  { type: "integer", example: 1542 },
+          budget:       $ref("BudgetEstimate"),
+          trending:     { type: "boolean" }
         }
       },
 
       DestinationBundle: {
         type: "object",
-        description: "Full destination detail with reviews and nearby destinations",
-        required: ["destination", "reviews", "nearby"],
+        description: "Full destination detail page payload",
+        required: ["destination", "reviews", "nearby", "ratingBreakdown", "similar", "nearbyAttractions"],
         properties: {
-          destination: $ref("Destination"),
-          reviews:     arrayOf("Review"),
-          nearby:      arrayOf("Destination")
+          destination:       $ref("Destination"),
+          reviews:           arrayOf("Review"),
+          nearby:            arrayOf("Destination"),
+          ratingBreakdown:   { type: "array", items: $ref("RatingBreakdownItem"), description: "Approved-review count and percentage per star rating (1-5)" },
+          similar:           arrayOf("Destination"),
+          nearbyAttractions: arrayOf("TouristAttraction")
+        }
+      },
+
+      DistrictDetail: {
+        type: "object",
+        description: "Full district tourism-hub payload — every piece of content scoped to this district in a single response.",
+        properties: {
+          district:        $ref("District"),
+          cities:          arrayOf("City"),
+          destinations:    arrayOf("Destination"),
+          attractions:     arrayOf("TouristAttraction"),
+          treks:           arrayOf("Trek"),
+          festivals:       arrayOf("Festival"),
+          guides:          arrayOf("GuideArticle"),
+          reviews:         arrayOf("Review"),
+          weather:         $ref("WeatherInsight"),
+          nearbyDistricts: arrayOf("District"),
+          recommended:     { ...arrayOf("Destination"), description: "Fallback destinations from same-province districts, only populated when this district has zero of its own" },
+          counts: {
+            type: "object",
+            properties: {
+              cityCount:        { type: "integer", example: 2 },
+              destinationCount: { type: "integer", example: 3 },
+              attractionCount:  { type: "integer", example: 10 }
+            }
+          }
         }
       },
 
       Review: {
         type: "object",
         properties: {
-          id:            { type: "string", example: "r1" },
-          destinationId: { type: "string", example: "p1" },
-          author:        { type: "string", example: "Anisha Gurung" },
-          avatar:        { type: "string", format: "uri" },
-          rating:        { type: "integer", minimum: 1, maximum: 5, example: 5 },
-          title:         { type: "string", example: "Magical at sunrise" },
-          body:          { type: "string" },
-          date:          { type: "string", format: "date", example: "2026-03-12" },
-          helpful:       { type: "integer", example: 42 },
-          status:        { type: "string", enum: ENUM_REVIEW_STATUS, example: "approved" }
+          id:               { type: "string", example: "r1" },
+          destinationId:    { type: "string", example: "p1" },
+          userId:           { type: "string", nullable: true, description: "Authenticated user who submitted the review; absent on legacy seed reviews", example: "u1" },
+          author:           { type: "string", example: "Anisha Gurung" },
+          avatar:           $ref("Image"),
+          rating:           { type: "integer", minimum: 1, maximum: 5, example: 5 },
+          title:            { type: "string", example: "Magical at sunrise" },
+          body:             { type: "string" },
+          date:             { type: "string", format: "date", example: "2026-03-12" },
+          helpful:          { type: "integer", example: 42 },
+          status:           { type: "string", enum: ENUM_REVIEW_STATUS, example: "approved" },
+          photos:           { type: "array", items: $ref("Image"), maxItems: 5 },
+          verifiedTraveler: { type: "boolean", example: true, description: "True when the reviewer had this destination in one of their trip plans (required to submit)" }
         }
       },
 
@@ -399,10 +525,11 @@ export const openapiSpec = {
           slug:         { type: "string", example: "everest-base-camp" },
           name:         { type: "string", example: "Everest Base Camp" },
           region:       { type: "string", example: "Khumbu" },
+          districtIds:  { type: "array", items: { type: "string" }, description: "Districts this trek passes through", example: ["d3"] },
           tagline:      { type: "string" },
           description:  { type: "string" },
-          heroImage:    { type: "string", format: "uri" },
-          gallery:      { type: "array", items: { type: "string", format: "uri" } },
+          heroImage:    $ref("Image"),
+          gallery:      arrayOf("Image"),
           difficulty:   { type: "string", enum: ENUM_DIFFICULTY, example: "Challenging" },
           durationDays: { type: "integer", example: 14 },
           maxAltitude:  { type: "integer", example: 5364, description: "Metres above sea level" },
@@ -411,6 +538,7 @@ export const openapiSpec = {
           permits:      { type: "array", items: { type: "string" } },
           highlights:   { type: "array", items: { type: "string" } },
           itinerary:    { type: "array", items: $ref("TrekDay") },
+          coordinates:  $ref("Coordinates"),
           rating:       { type: "number", example: 4.9 },
           priceFrom:    { type: "number", example: 800, description: "USD per person" },
           featured:     { type: "boolean" }
@@ -420,16 +548,19 @@ export const openapiSpec = {
       Festival: {
         type: "object",
         properties: {
-          id:          { type: "string", example: "f1" },
-          slug:        { type: "string", example: "dashain" },
-          name:        { type: "string", example: "Dashain" },
-          month:       { type: "string", example: "Sep–Oct" },
-          season:      { type: "string", enum: ENUM_SEASON, example: "Autumn" },
-          type:        { type: "string", enum: ENUM_FESTIVAL_TYPE, example: "Religious" },
-          description: { type: "string" },
-          image:       { type: "string", format: "uri" },
-          where:       { type: "string", example: "Nationwide" },
-          duration:    { type: "string", example: "15 days" }
+          id:           { type: "string", example: "f1" },
+          slug:         { type: "string", example: "dashain" },
+          name:         { type: "string", example: "Dashain" },
+          month:        { type: "string", example: "Sep–Oct" },
+          season:       { type: "string", enum: ENUM_SEASON, example: "Autumn" },
+          type:         { type: "string", enum: ENUM_FESTIVAL_TYPE, example: "Religious" },
+          description:  { type: "string" },
+          image:        $ref("Image"),
+          where:        { type: "string", example: "Nationwide" },
+          districtId:   { type: "string", nullable: true, description: "Absent/undefined when isNationwide is true", example: "d1" },
+          isNationwide: { type: "boolean", example: true },
+          duration:     { type: "string", example: "15 days" },
+          coordinates:  $ref("Coordinates")
         }
       },
 
@@ -437,7 +568,7 @@ export const openapiSpec = {
         type: "object",
         properties: {
           id:         { type: "string", example: "al1" },
-          level:      { type: "string", enum: ["Info", "Advisory", "Warning"], example: "Advisory" },
+          level:      { type: "string", enum: ENUM_ALERT_LEVEL, example: "Advisory" },
           text:       { type: "string", example: "Monsoon landslides can disrupt highland roads from June to August." },
           districtId: { type: "string", nullable: true, example: "d3" },
           isActive:   { type: "boolean", example: true }
@@ -456,30 +587,32 @@ export const openapiSpec = {
       GuideArticle: {
         type: "object",
         properties: {
-          id:          { type: "string", example: "g1" },
-          slug:        { type: "string", example: "altitude-sickness" },
-          title:       { type: "string", example: "Surviving Altitude Sickness in Nepal" },
-          excerpt:     { type: "string" },
-          category:    { type: "string", enum: ENUM_GUIDE_CATEGORY, example: "Tips" },
-          cover:       { type: "string", format: "uri" },
-          author:      { type: "string", example: "Emma Wilson" },
-          authorAvatar:{ type: "string", format: "uri" },
-          date:        { type: "string", format: "date", example: "2026-01-15" },
-          readMinutes: { type: "integer", example: 7 },
-          tags:        { type: "array", items: { type: "string" } },
-          body:        { type: "array", items: { type: "string" }, description: "Paragraphs of the article body" },
-          featured:    { type: "boolean" }
+          id:           { type: "string", example: "g1" },
+          slug:         { type: "string", example: "altitude-sickness" },
+          title:        { type: "string", example: "Surviving Altitude Sickness in Nepal" },
+          excerpt:      { type: "string" },
+          category:     { type: "string", enum: ENUM_GUIDE_CATEGORY, example: "Tips" },
+          cover:        $ref("Image"),
+          author:       { type: "string", example: "Emma Wilson" },
+          authorAvatar: $ref("Image"),
+          date:         { type: "string", format: "date", example: "2026-01-15" },
+          readMinutes:  { type: "integer", example: 7 },
+          tags:         { type: "array", items: { type: "string" } },
+          body:         { type: "array", items: { type: "string" }, description: "Paragraphs of the article body" },
+          featured:     { type: "boolean" },
+          coordinates:  $ref("Coordinates"),
+          districtId:   { type: "string", nullable: true, description: "Absent for general tips not tied to one place", example: "d1" }
         }
       },
 
       User: {
         type: "object",
-        description: "Public-safe user object (password never returned)",
+        description: "Public-safe user object (password, refresh tokens and reset tokens never returned)",
         properties: {
           id:            { type: "string", example: "u1" },
           name:          { type: "string", example: "Pabitra Khadka" },
           email:         { type: "string", format: "email", example: "user@example.com" },
-          avatar:        { type: "string", format: "uri" },
+          avatar:        $ref("Image"),
           role:          { type: "string", enum: ENUM_ROLE, example: "user" },
           joinedAt:      { type: "string", format: "date", example: "2025-09-01" },
           lastLogin:     { type: "string", format: "date", example: "2026-06-01" },
@@ -488,18 +621,69 @@ export const openapiSpec = {
         }
       },
 
+      BudgetBreakdown: {
+        type: "object",
+        description: "Planned spend by category, in the trip's currency (informational — not validated against `budget`)",
+        properties: {
+          accommodation:  { type: "number", example: 150 },
+          food:           { type: "number", example: 60  },
+          transportation: { type: "number", example: 80  },
+          activities:     { type: "number", example: 100 },
+          other:          { type: "number", example: 20  }
+        }
+      },
+
+      TripActivity: {
+        type: "object",
+        properties: {
+          id:            { type: "string", example: "act1" },
+          time:          { type: "string", example: "09:00" },
+          title:         { type: "string", example: "Sunrise at Sarangkot" },
+          type:          { type: "string", enum: ["destination", "attraction", "custom"], example: "destination" },
+          destinationId: { type: "string", example: "p1" },
+          notes:         { type: "string" }
+        }
+      },
+
+      TripDay: {
+        type: "object",
+        properties: {
+          id:         { type: "string", example: "day1" },
+          day:        { type: "integer", example: 1 },
+          date:       { type: "string", format: "date", example: "2026-08-01" },
+          title:      { type: "string", example: "Arrival & Boudhanath" },
+          activities: { type: "array", items: $ref("TripActivity") }
+        }
+      },
+
+      ChecklistItem: {
+        type: "object",
+        properties: {
+          id:        { type: "string", example: "chk-item-1" },
+          text:      { type: "string", example: "Passport & visa copies" },
+          completed: { type: "boolean", example: false },
+          category:  { type: "string", example: "Documents" }
+        }
+      },
+
       TripPlan: {
         type: "object",
         properties: {
-          id:             { type: "string", example: "t1" },
-          userId:         { type: "string", example: "u1" },
-          title:          { type: "string", example: "Kathmandu Heritage Weekend" },
-          destinationIds: { type: "array", items: { type: "string" }, example: ["p1", "p2"] },
-          startDate:      { type: "string", format: "date", example: "2026-08-01" },
-          endDate:        { type: "string", format: "date", example: "2026-08-03" },
-          budget:         { type: "number", example: 450, description: "Total budget in USD" },
-          status:         { type: "string", enum: ENUM_TRIP_STATUS, example: "planned" },
-          notes:          { type: "string", example: "Focus on UNESCO sites. Hire a guide for day 1." }
+          id:              { type: "string", example: "t1" },
+          userId:          { type: "string", example: "u1" },
+          title:           { type: "string", example: "Kathmandu Heritage Weekend" },
+          travelType:      { type: "string", enum: ENUM_TRAVEL_TYPE, example: "Cultural" },
+          travelers:       { type: "integer", minimum: 1, example: 2 },
+          destinationIds:  { type: "array", items: { type: "string" }, example: ["p1", "p2"] },
+          startDate:       { type: "string", format: "date", example: "2026-08-01" },
+          endDate:         { type: "string", format: "date", example: "2026-08-03" },
+          budget:          { type: "number", example: 450, description: "Total budget in USD" },
+          budgetBreakdown: $ref("BudgetBreakdown"),
+          status:          { type: "string", enum: ENUM_TRIP_STATUS, example: "planned" },
+          notes:           { type: "string", example: "Focus on UNESCO sites. Hire a guide for day 1." },
+          itinerary:       { type: "array", items: $ref("TripDay") },
+          checklist:       { type: "array", items: $ref("ChecklistItem") },
+          photos:          { type: "array", items: $ref("Image"), maxItems: 20 }
         }
       },
 
@@ -517,7 +701,8 @@ export const openapiSpec = {
           estimatedCost:         { type: "number", example: 20000, description: "Server-computed estimate (NPR), based on travelers × per-person accommodation and transport rates" },
           status:                { type: "string", enum: ENUM_BOOKING_STATUS, example: "pending" },
           notes:                 { type: "string", example: "Prefer a window seat if flying." },
-          createdAt:             { type: "string", format: "date-time" }
+          createdAt:             { type: "string", format: "date-time" },
+          updatedAt:             { type: "string", format: "date-time" }
         }
       },
 
@@ -584,6 +769,20 @@ export const openapiSpec = {
         }
       },
 
+      UserActivityEvent: {
+        type: "object",
+        description: "One entry in the authenticated user's activity feed — either a trip-plan milestone or a review they wrote",
+        properties: {
+          type:             { type: "string", enum: ["trip_planned", "trip_ongoing", "trip_completed", "review_written"], example: "review_written" },
+          date:             { type: "string", format: "date", example: "2026-06-20" },
+          tripTitle:        { type: "string", nullable: true, example: "Kathmandu Heritage Weekend" },
+          destinationCount: { type: "integer", nullable: true, example: 3 },
+          destinationName:  { type: "string", nullable: true, example: "Swayambhunath" },
+          destinationSlug:  { type: "string", nullable: true, example: "swayambhunath" },
+          rating:           { type: "integer", nullable: true, minimum: 1, maximum: 5, example: 5 }
+        }
+      },
+
       WishlistResponse: {
         type: "object",
         properties: {
@@ -595,17 +794,24 @@ export const openapiSpec = {
       WishlistIds: {
         type: "object",
         properties: {
-          destinationIds: { type: "array", items: { type: "string" }, example: ["p1", "p5"] }
+          ids: { type: "array", items: { type: "string" }, example: ["p1", "p5"] }
         }
       },
 
       SearchResults: {
         type: "object",
+        description: "Cross-content search results. Destinations are the primary, real-paginated section; the others are secondary preview lists capped comfortably above current collection sizes.",
         properties: {
-          destinations: arrayOf("Destination"),
-          districts:    arrayOf("District"),
-          cities:       arrayOf("City"),
-          total:        { type: "integer", example: 7 }
+          destinations:      arrayOf("Destination"),
+          destinationsTotal: { type: "integer", example: 41, description: "Total matching destinations across all pages (independent of the other sections' counts)" },
+          destinationsPage:  { type: "integer", example: 1 },
+          destinationsLimit: { type: "integer", example: 24 },
+          districts:         arrayOf("District"),
+          attractions:       arrayOf("TouristAttraction"),
+          treks:             arrayOf("Trek"),
+          festivals:         arrayOf("Festival"),
+          guides:            arrayOf("GuideArticle"),
+          total:             { type: "integer", example: 63, description: "destinationsTotal + attractions.length + treks.length + festivals.length + guides.length" }
         }
       },
 
@@ -616,15 +822,6 @@ export const openapiSpec = {
           city:         $ref("City"),
           district:     $ref("District"),
           destinations: arrayOf("Destination")
-        }
-      },
-
-      DistrictBundle: {
-        type: "object",
-        description: "Single-district response with its cities",
-        properties: {
-          district: $ref("District"),
-          cities:   arrayOf("City")
         }
       },
 
@@ -640,14 +837,14 @@ export const openapiSpec = {
     responses: {
       BadRequest: {
         description: "400 Bad Request — missing or invalid input",
-        content: { "application/json": { schema: $ref("ValidationError") } }
+        content: { "application/json": { schema: $ref("Error"), example: { success: false, error: "email is required" } } }
       },
       Unauthorized: {
         description: "401 Unauthorized — missing, invalid or expired Bearer token",
         content: { "application/json": { schema: $ref("Error"), example: { success: false, error: "Unauthorized" } } }
       },
       Forbidden: {
-        description: "403 Forbidden — authenticated but insufficient role (admin required)",
+        description: "403 Forbidden — authenticated but insufficient role/ownership (admin required, or acting on another user's resource)",
         content: { "application/json": { schema: $ref("Error"), example: { success: false, error: "Forbidden" } } }
       },
       NotFound: {
@@ -655,12 +852,16 @@ export const openapiSpec = {
         content: { "application/json": { schema: $ref("Error"), example: { success: false, error: "Resource not found" } } }
       },
       Conflict: {
-        description: "409 Conflict — resource already exists (e.g. duplicate email)",
+        description: "409 Conflict — resource already exists (e.g. duplicate email, duplicate review, duplicate booking)",
         content: { "application/json": { schema: $ref("Error"), example: { success: false, error: "An account with that email already exists" } } }
       },
       InternalError: {
         description: "500 Internal Server Error",
         content: { "application/json": { schema: $ref("Error"), example: { success: false, error: "Internal server error" } } }
+      },
+      BadGateway: {
+        description: "502 Bad Gateway — the upstream Cloudinary upload service failed or timed out",
+        content: { "application/json": { schema: $ref("Error"), example: { success: false, error: "Image upload service is temporarily unavailable. Please try again shortly." } } }
       }
     }
   },
@@ -735,7 +936,7 @@ export const openapiSpec = {
         summary: "Log in and receive a JWT access token",
         description: [
           "Authenticates the user and returns a **short-lived access token** (15 min) in the response body.",
-          "A long-lived refresh token is set in an `httpOnly` cookie (`nepayatra_rt`) and rotated on every call to `/auth/refresh`.",
+          "A long-lived refresh token is set in an `httpOnly` cookie (`nepalyatra_rt`) and rotated on every call to `/auth/refresh`.",
           "",
           "The account is **temporarily locked** for 15 minutes after 5 consecutive failed login attempts.",
           "",
@@ -764,6 +965,10 @@ export const openapiSpec = {
           ...jsonResponse("Login successful.", $ref("AuthTokens")),
           400: r400,
           401: r401,
+          403: {
+            description: "403 Forbidden — account has been deactivated",
+            content: { "application/json": { schema: $ref("Error"), example: { success: false, error: "Your account has been deactivated. Contact support." } } }
+          },
           423: {
             description: "423 Locked — account temporarily locked after too many failed attempts",
             content: { "application/json": { schema: $ref("Error"), example: { success: false, error: "Account temporarily locked. Try again in 14 minute(s)." } } }
@@ -778,7 +983,7 @@ export const openapiSpec = {
         tags: ["Auth"],
         summary: "Rotate refresh token and issue a new access token",
         description: [
-          "The browser/client must send the `nepayatra_rt` cookie (set automatically by the login response).",
+          "The browser/client must send the `nepalyatra_rt` cookie (set automatically by the login response).",
           "The old refresh token is invalidated and a new one is issued — **token rotation** prevents replay attacks.",
           "Returns a fresh access token and updated user object."
         ].join("\n"),
@@ -795,7 +1000,7 @@ export const openapiSpec = {
       post: {
         tags: ["Auth"],
         summary: "Log out — invalidate current session",
-        description: "Clears the `nepayatra_rt` cookie and removes the current refresh token from the database. The access token remains valid until expiry (by design — keep TTL short).",
+        description: "Clears the `nepalyatra_rt` cookie and removes the matching refresh token from the database, purely by cookie value — no valid (non-expired) access token is required, so a user with an expired access token can still log out cleanly.",
         operationId: "logout",
         responses: {
           ...jsonResponse("Logged out successfully.", $ref("MessageResponse")),
@@ -838,7 +1043,7 @@ export const openapiSpec = {
       patch: {
         tags: ["Auth"],
         summary: "Update display name and/or avatar",
-        description: "Updates `name` and/or `avatar` for the authenticated user. At least one field must be provided.",
+        description: "Updates `name` and/or `avatar` for the authenticated user. At least one field must be provided. Replacing the avatar best-effort deletes the previous Cloudinary asset.",
         operationId: "updateProfile",
         security: bearerSec,
         requestBody: {
@@ -849,7 +1054,7 @@ export const openapiSpec = {
                 type: "object",
                 properties: {
                   name:   { type: "string", minLength: 2, example: "Pabitra Khadka" },
-                  avatar: { type: "string", format: "uri", example: "https://res.cloudinary.com/your-cloud-name/image/upload/nepalyatra/users/example.jpg" }
+                  avatar: $ref("Image")
                 }
               }
             }
@@ -870,7 +1075,7 @@ export const openapiSpec = {
         summary: "Change password for the authenticated user",
         description: [
           "Verifies `currentPassword`, then replaces it with `newPassword`.",
-          "**Side effect:** All other refresh tokens are invalidated — the user is logged out on all other devices.",
+          "**Side effect:** All refresh tokens (including the caller's own) are invalidated — the user is logged out everywhere and must log in again.",
           "",
           "**Rules:** `newPassword` must be at least 8 characters."
         ].join("\n"),
@@ -904,7 +1109,7 @@ export const openapiSpec = {
         tags: ["Auth"],
         summary: "Request a password-reset link",
         description: [
-          "Sends a password-reset email to the provided address if an account exists.",
+          "Sends a password-reset email to the provided address if an account exists (30-minute token expiry).",
           "The response is always the same message whether or not the email is found — this prevents email enumeration."
         ].join("\n"),
         operationId: "forgotPassword",
@@ -921,12 +1126,7 @@ export const openapiSpec = {
           }
         },
         responses: {
-          ...jsonResponse("Reset link sent (if email exists).", {
-            type: "object",
-            properties: {
-              message: { type: "string", example: "If that email exists, a password reset link has been sent." }
-            }
-          }),
+          ...jsonResponse("Reset link sent (if email exists).", $ref("MessageResponse")),
           400: r400,
           500: r500
         }
@@ -969,11 +1169,12 @@ export const openapiSpec = {
     "/districts": {
       get: {
         tags: ["Districts"],
-        summary: "List all 77 districts",
-        description: "Returns all Nepal districts sorted by province and name. No filters — use the search endpoint for filtering.",
+        summary: "List all 77 districts (paginated)",
+        description: "Returns Nepal districts sorted by province then name. `okPaginated` response — pass `page`/`limit` for real pagination, or omit both to receive the full collection (default limit comfortably covers all 77).",
         operationId: "listDistricts",
+        parameters: paginationParams(100),
         responses: {
-          ...jsonResponse("Array of all districts.", arrayOf("District")),
+          ...jsonResponsePaginated("Page of districts.", "District"),
           500: r500
         }
       },
@@ -989,7 +1190,8 @@ export const openapiSpec = {
               schema: $ref("District"),
               example: {
                 id: "d99", slug: "test-district", name: "Test District", province: "Bagmati",
-                description: "A test district.", heroImage: "https://res.cloudinary.com/your-cloud-name/image/upload/nepalyatra/districts/example.jpg",
+                description: "A test district.",
+                heroImage: { url: "https://res.cloudinary.com/your-cloud-name/image/upload/v1/nepalyatra/districts/example.jpg", publicId: "nepalyatra/districts/example", alt: "Test District landscape" },
                 coordinates: { lat: 27.7, lng: 85.3 }, cityCount: 0, destinationCount: 0,
                 popularFor: [], rating: 0, bestSeason: "Autumn", attractionCount: 0
               }
@@ -1006,11 +1208,12 @@ export const openapiSpec = {
     "/districts/{slug}": {
       get: {
         tags: ["Districts"],
-        summary: "Get a district with its cities",
+        summary: "Get a district's full tourism-hub payload",
+        description: "Single-call aggregator: the district itself plus every destination/attraction/trek/festival/guide/review scoped to it, a live weather insight, same-province neighbouring districts, and (only when this district has no destinations of its own) a same-province recommended fallback list.",
         operationId: "getDistrict",
         parameters: [pathParam("slug", "District slug (kebab-case name)", "kathmandu")],
         responses: {
-          ...jsonResponse("District and its cities.", $ref("DistrictBundle")),
+          ...jsonResponse("Full district detail payload.", $ref("DistrictDetail")),
           404: r404, 500: r500
         }
       }
@@ -1020,18 +1223,20 @@ export const openapiSpec = {
       put: {
         tags: ["Districts"],
         summary: "Update a district *(admin)*",
+        description: "Replacing `slug` 409s if another district already uses it. Replacing `heroImage` best-effort deletes the previous Cloudinary asset.",
         operationId: "updateDistrict",
         security: bearerSec,
         parameters: [pathParam("id", "District ID", "d1")],
         requestBody: { required: true, content: { "application/json": { schema: $ref("District") } } },
         responses: {
           ...jsonResponse("Updated district.", $ref("District")),
-          401: r401, 403: r403, 404: r404
+          401: r401, 403: r403, 404: r404, 409: r409
         }
       },
       delete: {
         tags: ["Districts"],
         summary: "Delete a district *(admin)*",
+        description: "Cascades: also deletes/detaches every city, destination, attraction, festival, guide, review, booking, wishlist entry and trip-plan reference scoped to this district, plus their Cloudinary images, since nothing in this schema uses ObjectId refs/populate.",
         operationId: "deleteDistrict",
         security: bearerSec,
         parameters: [pathParam("id", "District ID", "d1")],
@@ -1049,22 +1254,28 @@ export const openapiSpec = {
     "/cities": {
       get: {
         tags: ["Cities"],
-        summary: "List cities — filtered or all",
+        summary: "List cities — filtered, single-city bundle, or all (paginated)",
         description: [
-          "Behaviour depends on which query parameter is provided:",
-          "- `?city=<slug>` → returns `{ city, district, destinations }` for that city",
-          "- `?district=<slug>` → returns `City[]` for that district",
-          "- *(no params)* → returns all cities"
+          "Behaviour depends on which query parameter is provided (checked in this order):",
+          "1. `?city=<slug>` → returns `{ city, district, destinations }` for that city (plain envelope, not paginated)",
+          "2. `?district=<slug>` → returns `City[]` for that district (plain envelope, not paginated)",
+          "3. *(no params)* → returns a paginated page of all cities via `okPaginated`"
         ].join("\n"),
         operationId: "listCities",
         parameters: [
-          { name: "district", in: "query", schema: { type: "string" }, example: "kathmandu", description: "Filter by district slug" },
-          { name: "city",     in: "query", schema: { type: "string" }, example: "bhaktapur",  description: "Return single-city bundle" }
+          { name: "district", in: "query", schema: { type: "string" }, example: "kathmandu", description: "Filter by district slug — returns City[]" },
+          { name: "city",     in: "query", schema: { type: "string" }, example: "bhaktapur",  description: "Return single-city bundle" },
+          ...paginationParams(300)
         ],
         responses: {
-          ...jsonResponse("City[] or single-city bundle.", {
-            oneOf: [arrayOf("City"), $ref("CityBundle")]
-          }),
+          200: {
+            description: "City[] (filtered), a single-city bundle, or a paginated page of all cities.",
+            content: {
+              "application/json": {
+                schema: { oneOf: [paginatedEnvelope("City"), envelope(arrayOf("City")), envelope($ref("CityBundle"))] }
+              }
+            }
+          },
           404: r404
         }
       },
@@ -1076,7 +1287,7 @@ export const openapiSpec = {
         requestBody: { required: true, content: { "application/json": { schema: $ref("City") } } },
         responses: {
           ...jsonResponse("City created.", $ref("City"), 201),
-          401: r401, 403: r403
+          401: r401, 403: r403, 409: r409
         }
       }
     },
@@ -1091,7 +1302,7 @@ export const openapiSpec = {
         requestBody: { required: true, content: { "application/json": { schema: $ref("City") } } },
         responses: {
           ...jsonResponse("Updated city.", $ref("City")),
-          401: r401, 403: r403, 404: r404
+          401: r401, 403: r403, 404: r404, 409: r409
         }
       },
       delete: {
@@ -1114,16 +1325,17 @@ export const openapiSpec = {
     "/districts/{slug}/attractions": {
       get: {
         tags: ["Attractions"],
-        summary: "List attractions for a specific district",
-        description: "Returns all tourist attractions that belong to the given district, sorted by rating descending. Supports optional category and text filters.",
+        summary: "List attractions for a specific district (paginated)",
+        description: "Returns all tourist attractions that belong to the given district, sorted by rating descending. Supports optional category and text filters, plus pagination.",
         operationId: "listDistrictAttractions",
         parameters: [
           pathParam("slug", "District slug", "kathmandu"),
           { name: "category", in: "query", schema: { type: "string", enum: ENUM_ATTRACTION_CATEGORY }, description: "Filter by attraction category" },
-          { name: "q",        in: "query", schema: { type: "string" }, example: "temple", description: "Case-insensitive name search" }
+          { name: "q",        in: "query", schema: { type: "string" }, example: "temple", description: "Case-insensitive name search" },
+          ...paginationParams(350)
         ],
         responses: {
-          ...jsonResponse("Attractions in the district sorted by rating.", arrayOf("TouristAttraction")),
+          ...jsonResponsePaginated("Page of attractions in the district, sorted by rating.", "TouristAttraction"),
           404: r404, 500: r500
         }
       }
@@ -1132,18 +1344,19 @@ export const openapiSpec = {
     "/attractions": {
       get: {
         tags: ["Attractions"],
-        summary: "List attractions — filtered or all",
-        description: "Returns attractions with optional filters. Results sorted by rating descending.",
+        summary: "List attractions — filtered or all (paginated)",
+        description: "Returns attractions with optional filters, sorted by rating descending.",
         operationId: "listAttractions",
         parameters: [
           { name: "district",  in: "query", schema: { type: "string" }, example: "d1", description: "Filter by districtId" },
           { name: "category",  in: "query", schema: { type: "string", enum: ENUM_ATTRACTION_CATEGORY } },
           { name: "featured",  in: "query", schema: { type: "string" }, description: "Any truthy value to filter to featured only" },
           { name: "trending",  in: "query", schema: { type: "string" }, description: "Any truthy value to filter to trending only" },
-          { name: "q",         in: "query", schema: { type: "string" }, example: "stupa", description: "Case-insensitive name search" }
+          { name: "q",         in: "query", schema: { type: "string" }, example: "stupa", description: "Case-insensitive name search" },
+          ...paginationParams(350)
         ],
         responses: {
-          ...jsonResponse("Filtered list of attractions.", arrayOf("TouristAttraction")),
+          ...jsonResponsePaginated("Page of filtered attractions.", "TouristAttraction"),
           500: r500
         }
       },
@@ -1163,7 +1376,7 @@ export const openapiSpec = {
                 tagline: "Nepal's holiest Hindu shrine",
                 description: "One of the most sacred Hindu temples in Asia…",
                 history: "The temple dates to at least the 5th century…",
-                heroImage: "https://res.cloudinary.com/your-cloud-name/image/upload/nepalyatra/districts/example.jpg",
+                heroImage: { url: "https://res.cloudinary.com/your-cloud-name/image/upload/v1/nepalyatra/attractions/example.jpg", publicId: "nepalyatra/attractions/example", alt: "Pashupatinath Temple" },
                 gallery: [], coordinates: { lat: 27.7109, lng: 85.3487 },
                 openingHours: "4:00 AM – 9:00 PM",
                 entryFee: { nepali: 0, saarc: 250, foreigner: 1000, currency: "NPR" },
@@ -1186,7 +1399,7 @@ export const openapiSpec = {
       get: {
         tags: ["Attractions"],
         summary: "Get a single attraction with nearby attractions",
-        description: "Returns the full attraction document plus a list of nearby attractions (resolved from `nearbyAttractions` ID array).",
+        description: "Returns the full attraction document plus a list of nearby attractions (resolved from `nearbyAttractions` ID array). Not paginated — a single document lookup.",
         operationId: "getAttraction",
         parameters: [pathParam("slug", "Attraction slug", "pashupatinath-temple")],
         responses: {
@@ -1229,17 +1442,18 @@ export const openapiSpec = {
     "/destinations": {
       get: {
         tags: ["Destinations"],
-        summary: "List destinations — filtered or all",
+        summary: "List destinations — filtered or all (paginated)",
         operationId: "listDestinations",
         parameters: [
-          { name: "featured",  in: "query", schema: { type: "string" }, description: "Return only featured destinations" },
-          { name: "trending",  in: "query", schema: { type: "string" }, description: "Return only trending destinations" },
+          { name: "featured",  in: "query", schema: { type: "string" }, description: "Any truthy value to filter to featured only" },
+          { name: "trending",  in: "query", schema: { type: "string" }, description: "Any truthy value to filter to trending only" },
           { name: "city",      in: "query", schema: { type: "string" }, example: "c1",       description: "Filter by cityId" },
           { name: "category",  in: "query", schema: { type: "string", enum: ENUM_CATEGORY },  description: "Filter by category" },
-          { name: "ids",       in: "query", schema: { type: "string" }, example: "p1,p2,p5", description: "Comma-separated destination IDs (used for nearby / wishlist resolution)" }
+          { name: "ids",       in: "query", schema: { type: "string" }, example: "p1,p2,p5", description: "Comma-separated destination IDs (used for nearby / wishlist resolution)" },
+          ...paginationParams(200)
         ],
         responses: {
-          ...jsonResponse("Destinations list.", arrayOf("Destination")),
+          ...jsonResponsePaginated("Page of destinations, sorted by rating.", "Destination"),
           500: r500
         }
       },
@@ -1259,11 +1473,26 @@ export const openapiSpec = {
     "/destinations/{slug}": {
       get: {
         tags: ["Destinations"],
-        summary: "Get a destination with approved reviews and nearby places",
+        summary: "Get a destination's full detail-page payload",
+        description: "Returns the destination plus its approved reviews, resolved nearby destinations, a star-rating breakdown, same-category similar destinations, and nearby attractions from the same district.",
         operationId: "getDestination",
         parameters: [pathParam("slug", "Destination slug", "swayambhunath")],
         responses: {
           ...jsonResponse("Destination detail bundle.", $ref("DestinationBundle")),
+          404: r404
+        }
+      }
+    },
+
+    "/destinations/{slug}/weather-insight": {
+      get: {
+        tags: ["Destinations"],
+        summary: "Live weather + best-time-to-visit advice for a destination",
+        description: "Combines a live Open-Meteo current-conditions call (5s timeout, degrades gracefully to season-only advice if unreachable) with the destination's `bestTimeToVisit` seasons to produce a plain-language visiting recommendation.",
+        operationId: "getDestinationWeatherInsight",
+        parameters: [pathParam("slug", "Destination slug", "swayambhunath")],
+        responses: {
+          ...jsonResponse("Weather insight for this destination.", $ref("WeatherInsight")),
           404: r404
         }
       }
@@ -1279,12 +1508,13 @@ export const openapiSpec = {
         requestBody: { required: true, content: { "application/json": { schema: $ref("Destination") } } },
         responses: {
           ...jsonResponse("Updated destination.", $ref("Destination")),
-          401: r401, 403: r403, 404: r404
+          401: r401, 403: r403, 404: r404, 409: r409
         }
       },
       delete: {
         tags: ["Destinations"],
         summary: "Delete a destination *(admin)*",
+        description: "Cascades: also cleans up reviews/bookings for this destination and removes it from any wishlist/trip-plan arrays that reference it.",
         operationId: "deleteDestination",
         security: bearerSec,
         parameters: [pathParam("id", "Destination ID", "p1")],
@@ -1302,13 +1532,14 @@ export const openapiSpec = {
     "/treks": {
       get: {
         tags: ["Treks"],
-        summary: "List treks — filtered or all",
+        summary: "List treks — filtered or all (paginated)",
         operationId: "listTreks",
         parameters: [
           { name: "featured",   in: "query", schema: { type: "string" } },
-          { name: "difficulty", in: "query", schema: { type: "string", enum: ENUM_DIFFICULTY } }
+          { name: "difficulty", in: "query", schema: { type: "string", enum: ENUM_DIFFICULTY } },
+          ...paginationParams(100)
         ],
-        responses: { ...jsonResponse("Treks list.", arrayOf("Trek")), 500: r500 }
+        responses: { ...jsonResponsePaginated("Page of treks.", "Trek"), 400: r400, 500: r500 }
       },
       post: {
         tags: ["Treks"],
@@ -1316,7 +1547,7 @@ export const openapiSpec = {
         operationId: "createTrek",
         security: bearerSec,
         requestBody: { required: true, content: { "application/json": { schema: $ref("Trek") } } },
-        responses: { ...jsonResponse("Trek created.", $ref("Trek"), 201), 401: r401, 403: r403 }
+        responses: { ...jsonResponse("Trek created.", $ref("Trek"), 201), 401: r401, 403: r403, 409: r409 }
       }
     },
 
@@ -1338,7 +1569,7 @@ export const openapiSpec = {
         security: bearerSec,
         parameters: [pathParam("id", "Trek ID", "tk1")],
         requestBody: { required: true, content: { "application/json": { schema: $ref("Trek") } } },
-        responses: { ...jsonResponse("Updated trek.", $ref("Trek")), 401: r401, 403: r403, 404: r404 }
+        responses: { ...jsonResponse("Updated trek.", $ref("Trek")), 401: r401, 403: r403, 404: r404, 409: r409 }
       },
       delete: {
         tags: ["Treks"],
@@ -1357,9 +1588,10 @@ export const openapiSpec = {
     "/festivals": {
       get: {
         tags: ["Festivals"],
-        summary: "List all festivals",
+        summary: "List all festivals (paginated)",
         operationId: "listFestivals",
-        responses: { ...jsonResponse("Festivals list.", arrayOf("Festival")), 500: r500 }
+        parameters: paginationParams(100),
+        responses: { ...jsonResponsePaginated("Page of festivals.", "Festival"), 500: r500 }
       },
       post: {
         tags: ["Festivals"],
@@ -1408,13 +1640,14 @@ export const openapiSpec = {
     "/guides": {
       get: {
         tags: ["Guides"],
-        summary: "List guide articles — filtered or all",
+        summary: "List guide articles — filtered or all (paginated)",
         operationId: "listGuides",
         parameters: [
           { name: "featured",  in: "query", schema: { type: "string" } },
-          { name: "category",  in: "query", schema: { type: "string", enum: ENUM_GUIDE_CATEGORY } }
+          { name: "category",  in: "query", schema: { type: "string", enum: ENUM_GUIDE_CATEGORY } },
+          ...paginationParams(100)
         ],
-        responses: { ...jsonResponse("Guide articles.", arrayOf("GuideArticle")), 500: r500 }
+        responses: { ...jsonResponsePaginated("Page of guide articles.", "GuideArticle"), 400: r400, 500: r500 }
       },
       post: {
         tags: ["Guides"],
@@ -1463,18 +1696,33 @@ export const openapiSpec = {
     "/reviews": {
       get: {
         tags: ["Reviews"],
-        summary: "List reviews — optionally filtered",
+        summary: "List reviews — optionally filtered (paginated)",
+        description: [
+          "Visibility rules:",
+          "- `?user=<yourOwnUserId>` (while authenticated as that user) → your own reviews at **any** status",
+          "- Authenticated as **admin** → all reviews; optionally narrowed with `?status=`",
+          "- Everyone else (including anonymous) → only `status: approved` reviews, regardless of `?status=`"
+        ].join("\n"),
         operationId: "listReviews",
         parameters: [
-          { name: "destination", in: "query", schema: { type: "string" }, example: "p1",        description: "Filter by destinationId" },
-          { name: "status",      in: "query", schema: { type: "string", enum: ENUM_REVIEW_STATUS }, description: "Filter by moderation status" }
+          { name: "destination", in: "query", schema: { type: "string" }, example: "p1", description: "Filter by destinationId" },
+          { name: "status",      in: "query", schema: { type: "string", enum: ENUM_REVIEW_STATUS }, description: "Admin-only filter; ignored for non-admin callers" },
+          { name: "user",        in: "query", schema: { type: "string" }, example: "u1", description: "Return this user's own reviews at any status (only honoured when it matches the authenticated caller)" },
+          ...paginationParams(200)
         ],
-        responses: { ...jsonResponse("Reviews list.", arrayOf("Review")), 500: r500 }
+        responses: { ...jsonResponsePaginated("Page of reviews.", "Review"), 400: r400, 500: r500 }
       },
       post: {
         tags: ["Reviews"],
         summary: "Submit a traveller review",
-        description: "Anyone can submit a review. It is saved with `status: pending` and must be approved by an admin before appearing publicly.",
+        description: [
+          "Saved with `status: pending` and must be approved by an admin before appearing publicly.",
+          "",
+          "**Rules:**",
+          "- You may only review a destination that appears in one of your own trip plans (403 otherwise).",
+          "- Only one review per user per destination (409 on a second attempt).",
+          "- `author`/`avatar` are always taken from the authenticated user's profile — any client-supplied values are ignored."
+        ].join("\n"),
         operationId: "createReview",
         security: bearerSec,
         requestBody: {
@@ -1483,14 +1731,13 @@ export const openapiSpec = {
             "application/json": {
               schema: {
                 type: "object",
-                required: ["destinationId"],
+                required: ["destinationId", "rating"],
                 properties: {
                   destinationId: { type: "string", example: "p1" },
-                  author:        { type: "string", example: "Emma Wilson" },
-                  avatar:        { type: "string", format: "uri" },
                   rating:        { type: "integer", minimum: 1, maximum: 5, example: 5 },
-                  title:         { type: "string", example: "Magical at sunrise" },
-                  body:          { type: "string", example: "We climbed up before dawn and watched the valley wake up." }
+                  title:         { type: "string", maxLength: 200,  example: "Magical at sunrise" },
+                  body:          { type: "string", maxLength: 5000, example: "We climbed up before dawn and watched the valley wake up." },
+                  photos:        { type: "array", items: $ref("Image"), maxItems: 5, description: "Already-uploaded images, e.g. via POST /upload/gallery with type=review" }
                 }
               }
             }
@@ -1498,7 +1745,12 @@ export const openapiSpec = {
         },
         responses: {
           ...jsonResponse("Review submitted (pending approval).", $ref("Review"), 201),
-          400: r400, 401: r401
+          400: r400, 401: r401,
+          403: {
+            description: "403 Forbidden — destination is not part of any of your trip plans",
+            content: { "application/json": { schema: $ref("Error"), example: { success: false, error: "You can only review destinations that are part of one of your trip plans" } } }
+          },
+          409: r409
         }
       }
     },
@@ -1507,7 +1759,7 @@ export const openapiSpec = {
       patch: {
         tags: ["Reviews"],
         summary: "Moderate a review *(admin)*",
-        description: "Approving a review recalculates the parent destination's aggregate rating and `reviewCount`.",
+        description: "Approving or un-approving a review recalculates the parent destination's aggregate `rating` and `reviewCount` from all currently-approved reviews.",
         operationId: "moderateReview",
         security: bearerSec,
         parameters: [pathParam("id", "Review ID", "r1")],
@@ -1535,12 +1787,31 @@ export const openapiSpec = {
       delete: {
         tags: ["Reviews"],
         summary: "Delete a review *(admin)*",
+        description: "Also recalculates the parent destination's aggregate rating and reviewCount.",
         operationId: "deleteReview",
         security: bearerSec,
         parameters: [pathParam("id", "Review ID", "r1")],
         responses: {
           ...jsonResponse("Delete confirmation.", $ref("DeleteResult")),
           401: r401, 403: r403, 404: r404
+        }
+      }
+    },
+
+    "/reviews/{id}/helpful": {
+      post: {
+        tags: ["Reviews"],
+        summary: "Upvote a review as helpful",
+        description: "Atomically increments the review's `helpful` counter by 1. Double-vote prevention is handled client-side (localStorage), not enforced server-side.",
+        operationId: "voteHelpful",
+        security: bearerSec,
+        parameters: [pathParam("id", "Review ID", "r1")],
+        responses: {
+          ...jsonResponse("Updated helpful count.", {
+            type: "object",
+            properties: { helpful: { type: "integer", example: 43 } }
+          }),
+          401: r401, 404: r404
         }
       }
     },
@@ -1553,15 +1824,22 @@ export const openapiSpec = {
       get: {
         tags: ["Search"],
         summary: "Cross-content full-text search",
-        description: "Searches destinations, districts and cities simultaneously. All filters are optional and combinable.",
+        description: [
+          "Searches destinations, districts, attractions, treks, festivals and guides simultaneously (case-insensitive regex on name/tagline/description/tags). All filters are optional and combinable; only `destinations` is truly paginated (`page`/`limit`) — the other sections are capped preview lists.",
+          "",
+          "A filter alone (no `q`) is enough to trigger a section's query where it makes sense — e.g. `categories=Trekking` or `difficulty=Easy` alone still searches treks."
+        ].join("\n"),
         operationId: "search",
         parameters: [
-          { name: "q",         in: "query", schema: { type: "string" },  example: "lake", description: "Full-text search term" },
-          { name: "category",  in: "query", schema: { type: "string", enum: ENUM_CATEGORY } },
-          { name: "district",  in: "query", schema: { type: "string" },  example: "d2", description: "Filter by districtId" },
-          { name: "minRating", in: "query", schema: { type: "number" },  example: 4.0 },
-          { name: "maxBudget", in: "query", schema: { type: "number" },  example: 50,  description: "Max budget/day in USD" },
-          { name: "sort",      in: "query", schema: { type: "string", enum: ["rating", "reviews", "price-low", "price-high"] } }
+          { name: "q",          in: "query", schema: { type: "string" },  example: "lake", description: "Full-text search term" },
+          { name: "categories", in: "query", schema: { type: "string" },  example: "Adventure,Nature", description: "Comma-separated list of categories (legacy singular `category` param also accepted)" },
+          { name: "district",   in: "query", schema: { type: "string" },  example: "d2", description: "Filter by districtId (applies to destinations and attractions)" },
+          { name: "difficulty", in: "query", schema: { type: "string", enum: ENUM_DIFFICULTY }, description: "Applies to destinations and treks" },
+          { name: "season",     in: "query", schema: { type: "string", enum: ENUM_SEASON }, description: "Matches bestTimeToVisit/bestSeasons array membership; applies to destinations and treks" },
+          { name: "minRating",  in: "query", schema: { type: "number" },  example: 4.0, description: "Applies to destinations and attractions" },
+          { name: "maxBudget",  in: "query", schema: { type: "number" },  example: 5000, description: "Max destination budget/day in NPR" },
+          { name: "sort",       in: "query", schema: { type: "string", enum: ENUM_SEARCH_SORT, default: "rating" } },
+          ...paginationParams(24)
         ],
         responses: {
           ...jsonResponse("Search results across all content types.", $ref("SearchResults")),
@@ -1574,10 +1852,58 @@ export const openapiSpec = {
       get: {
         tags: ["Search"],
         summary: "Trending search suggestions",
-        description: "Top destination, trek and district names derived from ratings/popularity — powers the search page's suggestion chips.",
+        description: "Top destination, trek and district names derived from ratings/trending flags/popularity — powers the search page's suggestion chips. Deduplicated across content types.",
         operationId: "getPopularSearches",
         responses: {
-          ...jsonResponse("List of trending names.", { type: "array", items: { type: "string" } }),
+          ...jsonResponse("List of trending names.", { type: "array", items: { type: "string" }, example: ["Everest Base Camp Trek", "Phewa Lake", "Kaski"] }),
+          500: r500
+        }
+      }
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // RECOMMENDATIONS
+    // ══════════════════════════════════════════════════════════════════════
+
+    "/recommendations": {
+      get: {
+        tags: ["Recommendations"],
+        summary: "Personalized destination recommendations",
+        description: "Scores every destination not already wishlisted using a weighted blend of the user's wishlisted categories/tags/districts (35/20/20%), planned-trip and reviewed-destination signals (10/5%), and general popularity (10%). Results are cached in-memory per user for 5 minutes.",
+        operationId: "getPersonalized",
+        security: bearerSec,
+        parameters: [
+          { name: "viewed", in: "query", schema: { type: "string" }, example: "p3,p7", description: "Comma-separated recently-viewed destination IDs from client-side history (max 10), used to lightly boost district affinity" }
+        ],
+        responses: {
+          ...jsonResponse("Up to 12 recommended destinations.", arrayOf("DestinationSummary")),
+          401: r401, 404: r404
+        }
+      }
+    },
+
+    "/recommendations/similar/{slug}": {
+      get: {
+        tags: ["Recommendations"],
+        summary: "Destinations similar to a given one",
+        description: "Scores every other destination by shared category (40%), tag overlap (35%), same district (15%) and same difficulty (10%). Cached in-memory for 10 minutes per slug.",
+        operationId: "getSimilar",
+        parameters: [pathParam("slug", "Destination slug", "swayambhunath")],
+        responses: {
+          ...jsonResponse("Up to 6 similar destinations.", arrayOf("DestinationSummary")),
+          404: r404
+        }
+      }
+    },
+
+    "/recommendations/trending": {
+      get: {
+        tags: ["Recommendations"],
+        summary: "Currently trending destinations",
+        description: "Destinations flagged `trending: true` or rated ≥ 4, ranked by rating weighted with review-count volume (`rating × log(reviewCount + 1)`). Cached in-memory for 15 minutes.",
+        operationId: "getTrending",
+        responses: {
+          ...jsonResponse("Up to 8 trending destinations.", arrayOf("DestinationSummary")),
           500: r500
         }
       }
@@ -1591,12 +1917,12 @@ export const openapiSpec = {
       get: {
         tags: ["Travel Alerts"],
         summary: "List travel alerts",
-        description: "Public callers receive only active alerts; admins receive all (optionally filtered with ?active=true|false).",
+        description: "Public callers receive only active alerts; admins receive all by default (optionally filtered with `?active=true|false`).",
         operationId: "listTravelAlerts",
         parameters: [
-          { name: "active", in: "query", schema: { type: "boolean" }, description: "Admin-only filter" }
+          { name: "active", in: "query", schema: { type: "boolean" }, description: "Admin-only filter; ignored for non-admin callers" }
         ],
-        responses: { ...jsonResponse("Travel alerts list.", arrayOf("TravelAlert")), 500: r500 }
+        responses: { ...jsonResponse("Travel alerts list, sorted by level.", arrayOf("TravelAlert")), 500: r500 }
       },
       post: {
         tags: ["Travel Alerts"],
@@ -1636,6 +1962,7 @@ export const openapiSpec = {
       get: {
         tags: ["Checklists"],
         summary: "List all packing checklists",
+        description: "One checklist per destination Category (e.g. Trekking, Cultural). Not paginated — the collection is inherently small (one per category).",
         operationId: "listPackingChecklists",
         responses: { ...jsonResponse("Checklists list.", arrayOf("PackingChecklist")), 500: r500 }
       },
@@ -1687,6 +2014,7 @@ export const openapiSpec = {
       get: {
         tags: ["Planner"],
         summary: "Get the authenticated user's trip plans",
+        description: "Not paginated — scoped to the caller's own trips only, sorted by start date ascending.",
         operationId: "listTrips",
         security: bearerSec,
         responses: {
@@ -1703,20 +2031,31 @@ export const openapiSpec = {
           required: true,
           content: {
             "application/json": {
-              schema: $ref("TripPlan"),
-              example: {
-                title: "Kathmandu Heritage Weekend",
-                destinationIds: ["p1", "p2", "p4"],
-                startDate: "2026-08-01", endDate: "2026-08-03",
-                budget: 450, status: "planned",
-                notes: "Focus on UNESCO sites. Hire a guide for day 1."
+              schema: {
+                type: "object",
+                required: ["title"],
+                properties: {
+                  title:           { type: "string", example: "Kathmandu Heritage Weekend" },
+                  travelType:      { type: "string", enum: ENUM_TRAVEL_TYPE, default: "Adventure" },
+                  travelers:       { type: "integer", minimum: 1, default: 1 },
+                  destinationIds:  { type: "array", items: { type: "string" }, example: ["p1", "p2", "p4"] },
+                  startDate:       { type: "string", format: "date", example: "2026-08-01" },
+                  endDate:         { type: "string", format: "date", example: "2026-08-03" },
+                  budget:          { type: "number", example: 450, description: "Total budget in USD" },
+                  budgetBreakdown: $ref("BudgetBreakdown"),
+                  status:          { type: "string", enum: ENUM_TRIP_STATUS, default: "draft" },
+                  notes:           { type: "string", example: "Focus on UNESCO sites. Hire a guide for day 1." },
+                  itinerary:       { type: "array", items: $ref("TripDay") },
+                  checklist:       { type: "array", items: $ref("ChecklistItem") },
+                  photos:          { type: "array", items: $ref("Image"), maxItems: 20 }
+                }
               }
             }
           }
         },
         responses: {
           ...jsonResponse("Trip plan created.", $ref("TripPlan"), 201),
-          401: r401
+          400: r400, 401: r401
         }
       }
     },
@@ -1725,18 +2064,20 @@ export const openapiSpec = {
       put: {
         tags: ["Planner"],
         summary: "Update a trip plan",
+        description: "Scoped to the caller's own trip (a mismatched id/owner 404s, never leaks another user's trip). Replacing `photos` best-effort deletes any Cloudinary assets no longer referenced.",
         operationId: "updateTrip",
         security: bearerSec,
         parameters: [pathParam("id", "Trip plan ID", "t1")],
         requestBody: { required: true, content: { "application/json": { schema: $ref("TripPlan") } } },
         responses: {
           ...jsonResponse("Updated trip plan.", $ref("TripPlan")),
-          401: r401, 404: r404
+          400: r400, 401: r401, 404: r404
         }
       },
       delete: {
         tags: ["Planner"],
         summary: "Delete a trip plan",
+        description: "Best-effort deletes any Cloudinary assets referenced by the trip's `photos`.",
         operationId: "deleteTrip",
         security: bearerSec,
         parameters: [pathParam("id", "Trip plan ID", "t1")],
@@ -1754,18 +2095,19 @@ export const openapiSpec = {
     "/bookings": {
       get: {
         tags: ["Bookings"],
-        summary: "Get the authenticated user's bookings",
+        summary: "Get the authenticated user's bookings (paginated)",
         operationId: "listBookings",
         security: bearerSec,
+        parameters: paginationParams(100),
         responses: {
-          ...jsonResponse("List of bookings.", arrayOf("Booking")),
+          ...jsonResponsePaginated("Page of the caller's own bookings, sorted by travel date.", "Booking"),
           401: r401
         }
       },
       post: {
         tags: ["Bookings"],
         summary: "Create a booking",
-        description: "estimatedCost is always computed server-side from travelers × per-person accommodation and transport rates — any client-supplied value is ignored.",
+        description: "`estimatedCost` is always computed server-side as `travelers × (accommodation rate + transport rate)` — any client-supplied value is ignored. `travelDate` must be today or later.",
         operationId: "createBooking",
         security: bearerSec,
         requestBody: {
@@ -1778,19 +2120,23 @@ export const openapiSpec = {
                 properties: {
                   destinationId:        { type: "string", example: "p1" },
                   travelDate:           { type: "string", format: "date", example: "2026-09-15" },
-                  travelers:            { type: "integer", example: 2, minimum: 1 },
-                  budget:               { type: "number", example: 60000 },
-                  accommodationType:    { type: "string", enum: ENUM_ACCOMMODATION, example: "Standard" },
-                  transportPreference:  { type: "string", enum: ENUM_TRANSPORT, example: "Private Jeep" },
-                  notes:                { type: "string", example: "Prefer a window seat if flying." }
+                  travelers:            { type: "integer", example: 2, minimum: 1, default: 1 },
+                  budget:               { type: "number", example: 60000, description: "Traveller's stated budget in NPR — informational only, does not affect estimatedCost" },
+                  accommodationType:    { type: "string", enum: ENUM_ACCOMMODATION, default: "Standard" },
+                  transportPreference:  { type: "string", enum: ENUM_TRANSPORT, default: "Local Bus" },
+                  notes:                { type: "string", maxLength: 500, example: "Prefer a window seat if flying." }
                 }
               }
             }
           }
         },
         responses: {
-          ...jsonResponse("Booking created.", $ref("Booking"), 201),
-          400: r400, 401: r401, 404: r404
+          ...jsonResponse("Booking created with status 'pending'.", $ref("Booking"), 201),
+          400: r400, 401: r401, 404: r404,
+          409: {
+            description: "409 Conflict — you already have a non-cancelled booking for this destination and travel date",
+            content: { "application/json": { schema: $ref("Error") } }
+          }
         }
       }
     },
@@ -1798,7 +2144,8 @@ export const openapiSpec = {
     "/bookings/{id}": {
       patch: {
         tags: ["Bookings"],
-        summary: "Update a booking's status (e.g. cancel)",
+        summary: "Cancel your own booking",
+        description: "Self-service: a user may only set `status` to `cancelled` on their **own** booking (403 for any other status — moving a booking to `confirmed` is admin-only via `PATCH /admin/bookings/{id}`).",
         operationId: "updateBookingStatus",
         security: bearerSec,
         parameters: [pathParam("id", "Booking ID", "bk1")],
@@ -1809,25 +2156,85 @@ export const openapiSpec = {
               schema: {
                 type: "object",
                 required: ["status"],
-                properties: { status: { type: "string", enum: ENUM_BOOKING_STATUS, example: "cancelled" } }
+                properties: { status: { type: "string", enum: ["cancelled"], example: "cancelled" } }
               }
             }
           }
         },
         responses: {
           ...jsonResponse("Updated booking.", $ref("Booking")),
-          400: r400, 401: r401, 404: r404
+          401: r401, 404: r404,
+          403: {
+            description: "403 Forbidden — users may only cancel their own booking, not set any other status",
+            content: { "application/json": { schema: $ref("Error"), example: { success: false, error: 'You can only cancel your own booking (status must be "cancelled")' } } }
+          }
         }
       },
       delete: {
         tags: ["Bookings"],
-        summary: "Delete a booking",
+        summary: "Delete your own booking",
         operationId: "deleteBooking",
         security: bearerSec,
         parameters: [pathParam("id", "Booking ID", "bk1")],
         responses: {
           ...jsonResponse("Delete confirmation.", $ref("DeleteResult")),
           401: r401, 404: r404
+        }
+      }
+    },
+
+    "/admin/bookings": {
+      get: {
+        tags: ["Bookings"],
+        summary: "List every user's bookings *(admin)*",
+        description: "Admin oversight endpoint — without this, users could self-confirm their own bookings with no review. Optional `status` filter.",
+        operationId: "adminListBookings",
+        security: bearerSec,
+        parameters: [
+          { name: "status", in: "query", schema: { type: "string", enum: ENUM_BOOKING_STATUS } },
+          ...paginationParams(50)
+        ],
+        responses: {
+          ...jsonResponsePaginated("Page of all bookings across all users, sorted by travel date.", "Booking"),
+          400: r400, 401: r401, 403: r403
+        }
+      }
+    },
+
+    "/admin/bookings/{id}": {
+      patch: {
+        tags: ["Bookings"],
+        summary: "Update any booking's status *(admin)*",
+        description: "The only way a booking can be moved to `confirmed`.",
+        operationId: "adminUpdateBookingStatus",
+        security: bearerSec,
+        parameters: [pathParam("id", "Booking ID", "bk1")],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["status"],
+                properties: { status: { type: "string", enum: ENUM_BOOKING_STATUS, example: "confirmed" } }
+              }
+            }
+          }
+        },
+        responses: {
+          ...jsonResponse("Updated booking.", $ref("Booking")),
+          400: r400, 401: r401, 403: r403, 404: r404
+        }
+      },
+      delete: {
+        tags: ["Bookings"],
+        summary: "Delete any user's booking *(admin)*",
+        operationId: "adminDeleteBooking",
+        security: bearerSec,
+        parameters: [pathParam("id", "Booking ID", "bk1")],
+        responses: {
+          ...jsonResponse("Delete confirmation.", $ref("DeleteResult")),
+          401: r401, 403: r403, 404: r404
         }
       }
     },
@@ -1840,6 +2247,7 @@ export const openapiSpec = {
       get: {
         tags: ["Wishlist"],
         summary: "Get the authenticated user's wishlist",
+        description: "Self-heals: if a wishlisted destination was since deleted, its id is silently dropped from the stored list on read.",
         operationId: "getWishlist",
         security: bearerSec,
         responses: {
@@ -1850,7 +2258,7 @@ export const openapiSpec = {
       post: {
         tags: ["Wishlist"],
         summary: "Add a destination to the wishlist",
-        description: "Uses MongoDB `$addToSet` — duplicate additions are silently ignored.",
+        description: "Uses MongoDB `$addToSet` — duplicate additions are silently ignored. Capped at 500 destinations per user.",
         operationId: "addToWishlist",
         security: bearerSec,
         requestBody: {
@@ -1867,7 +2275,7 @@ export const openapiSpec = {
         },
         responses: {
           ...jsonResponse("Updated wishlist IDs.", $ref("WishlistIds")),
-          400: r400, 401: r401
+          400: r400, 401: r401, 404: r404
         }
       }
     },
@@ -1882,6 +2290,109 @@ export const openapiSpec = {
         responses: {
           ...jsonResponse("Updated wishlist IDs.", $ref("WishlistIds")),
           401: r401, 404: r404
+        }
+      }
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // MEDIA (uploads)
+    // ══════════════════════════════════════════════════════════════════════
+
+    "/upload/image": {
+      post: {
+        tags: ["Media"],
+        summary: "Upload a single image to Cloudinary",
+        description: [
+          "Accepts `multipart/form-data` with one file field named `image` (JPG/PNG/WEBP only, size-limited by `MAX_UPLOAD_SIZE_MB`).",
+          "",
+          `\`type\` selects the destination Cloudinary folder and must be one of: ${ENUM_UPLOAD_TYPE.join(", ")}.`,
+          "Content-management types (district/city/destination-*/attraction-*/trek-*/festival/guide-*) require **admin**; `avatar`/`review`/`planner` are open to any authenticated user."
+        ].join("\n"),
+        operationId: "uploadSingleImage",
+        security: bearerSec,
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                required: ["image", "type"],
+                properties: {
+                  image: { type: "string", format: "binary" },
+                  type:  { type: "string", enum: ENUM_UPLOAD_TYPE, example: "review" },
+                  alt:   { type: "string", maxLength: 200, example: "Sunrise over Phewa Lake" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          ...jsonResponse("Uploaded image metadata.", $ref("Image"), 201),
+          400: r400, 401: r401, 403: r403, 502: r502
+        }
+      },
+      delete: {
+        tags: ["Media"],
+        summary: "Delete an uploaded image from Cloudinary *(admin)*",
+        operationId: "deleteUploadedImage",
+        security: bearerSec,
+        parameters: [
+          { name: "publicId", in: "query", required: true, schema: { type: "string" }, example: "nepalyatra/reviews/abc123", description: "The Cloudinary publicId to destroy" }
+        ],
+        responses: {
+          ...jsonResponse("Deletion confirmation.", {
+            type: "object",
+            properties: { publicId: { type: "string" }, deleted: { type: "boolean", example: true } }
+          }),
+          400: r400, 401: r401, 403: r403
+        }
+      }
+    },
+
+    "/upload/gallery": {
+      post: {
+        tags: ["Media"],
+        summary: "Upload multiple images to Cloudinary",
+        description: "Accepts `multipart/form-data` with up to 8 files under the field name `images`. Same `type` permission rules as `POST /upload/image`.",
+        operationId: "uploadGalleryImages",
+        security: bearerSec,
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                required: ["images", "type"],
+                properties: {
+                  images: { type: "array", items: { type: "string", format: "binary" }, maxItems: 8 },
+                  type:   { type: "string", enum: ENUM_UPLOAD_TYPE, example: "destination-gallery" },
+                  alt:    { type: "string", maxLength: 200, description: "Applied to every uploaded image in this batch" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          ...jsonResponse("Uploaded image metadata for each file.", arrayOf("Image"), 201),
+          400: r400, 401: r401, 403: r403, 502: r502
+        }
+      }
+    },
+
+    // ══════════════════════════════════════════════════════════════════════
+    // DASHBOARD
+    // ══════════════════════════════════════════════════════════════════════
+
+    "/dashboard/activity": {
+      get: {
+        tags: ["Dashboard"],
+        summary: "The authenticated user's recent activity feed",
+        description: "Merges their last 20 trip-plan milestones (planned/ongoing/completed) with their last 10 reviews into a single feed, sorted by date descending and capped to 15 entries.",
+        operationId: "getUserActivity",
+        security: bearerSec,
+        responses: {
+          ...jsonResponse("Up to 15 recent activity events.", arrayOf("UserActivityEvent")),
+          401: r401
         }
       }
     },
@@ -1915,11 +2426,12 @@ export const openapiSpec = {
       get: {
         tags: ["Admin"],
         summary: "List all users *(admin)*",
-        description: "Returns all user accounts sorted by join date descending.",
+        description: "Returns user accounts sorted by join date descending. `okPaginated` response.",
         operationId: "listUsers",
         security: bearerSec,
+        parameters: paginationParams(500),
         responses: {
-          ...jsonResponse("All users.", arrayOf("User")),
+          ...jsonResponsePaginated("Page of users.", "User"),
           401: r401, 403: r403
         }
       }
@@ -1940,12 +2452,13 @@ export const openapiSpec = {
       delete: {
         tags: ["Admin"],
         summary: "Delete a user *(admin)*",
+        description: "An admin cannot delete their own account through this endpoint (400).",
         operationId: "deleteUser",
         security: bearerSec,
         parameters: [pathParam("id", "User ID", "u1")],
         responses: {
           ...jsonResponse("Delete confirmation.", $ref("DeleteResult")),
-          401: r401, 403: r403, 404: r404
+          400: r400, 401: r401, 403: r403, 404: r404
         }
       }
     },
@@ -1954,7 +2467,7 @@ export const openapiSpec = {
       patch: {
         tags: ["Admin"],
         summary: "Change a user's role *(admin)*",
-        description: "Promotes a user to `admin` or demotes an admin to `user`. You cannot change your own role.",
+        description: "Promotes a user to `admin` or demotes an admin to `user`. You cannot change your own role (400).",
         operationId: "updateUserRole",
         security: bearerSec,
         parameters: [pathParam("id", "User ID", "u1")],
