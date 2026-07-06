@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowLeft, Clock, Star, ChevronRight, Plus, Check,
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Rating } from "@/components/ui/rating";
 import { cn, formatCurrency } from "@/lib/utils";
 import { WishlistButton } from "@/components/shared/wishlist-button";
+import { cld } from "@/lib/cloudinary";
 import { usePlans, useUpdatePlan } from "@/hooks/use-content";
 import { useAuth } from "@/store/auth-store";
 
@@ -109,8 +111,7 @@ export function QuickViewPanel({ entry, districtsById, onBack }: { entry: MapEnt
       </button>
 
       <div className="relative mt-2 h-44 w-full overflow-hidden rounded-xl">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={entryImage(entry)} alt={entryName(entry)} className="h-full w-full object-cover" />
+        <Image src={cld(entryImage(entry), { quality: "auto" })} alt={entryName(entry)} fill sizes="360px" className="object-cover" />
         <div className="absolute right-2 top-2">
           <WishlistButton id={entry.data.id} className="h-8 w-8 rounded-full bg-white/90 backdrop-blur shadow" />
         </div>

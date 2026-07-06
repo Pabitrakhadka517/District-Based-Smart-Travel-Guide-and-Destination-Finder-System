@@ -99,13 +99,31 @@ export const getReviews = (destinationId?: string) =>
   get<Review[]>(destinationId ? `/reviews?destination=${destinationId}` : "/reviews");
 
 export const getTreks = () => get<Trek[]>("/treks");
-export const getTrek = (slug: string) => get<Trek | null>(`/treks/${slug}`);
+export const getTrek = async (slug: string): Promise<Trek | null> => {
+  try {
+    const res = await fetch(`${API}/treks/${slug}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return (json.data as Trek) ?? null;
+  } catch {
+    return null;
+  }
+};
 export const getFeaturedTreks = () => get<Trek[]>("/treks?featured=1");
 
 export const getFestivals = () => get<Festival[]>("/festivals");
 
 export const getGuides = () => get<GuideArticle[]>("/guides");
-export const getGuide = (slug: string) => get<GuideArticle | null>(`/guides/${slug}`);
+export const getGuide = async (slug: string): Promise<GuideArticle | null> => {
+  try {
+    const res = await fetch(`${API}/guides/${slug}`, { cache: "no-store" });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return (json.data as GuideArticle) ?? null;
+  } catch {
+    return null;
+  }
+};
 export const getFeaturedGuides = () => get<GuideArticle[]>("/guides?featured=1");
 
 export const getStats = () => get<PlatformStats>("/stats");

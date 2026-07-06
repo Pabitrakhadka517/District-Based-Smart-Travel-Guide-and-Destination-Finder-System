@@ -92,7 +92,7 @@ export function DistrictsList({ districts }: { districts: District[] }) {
         <span className="font-semibold text-foreground">{filtered.length}</span>
         {" "}of {districts.length} districts
         {province !== "All" && <> in <span className="font-medium text-brand-600">{province} Province</span></>}
-        {search && <> matching "<span className="font-medium text-brand-600">{search}</span>"</>}
+        {search && <> matching &quot;<span className="font-medium text-brand-600">{search}</span>&quot;</>}
       </p>
 
       {/* grid */}

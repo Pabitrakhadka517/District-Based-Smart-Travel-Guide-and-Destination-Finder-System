@@ -145,7 +145,7 @@ export function DistrictAttractions({
         <div className="mb-5 flex flex-wrap items-center gap-2">
           {search && (
             <span className="flex items-center gap-1.5 rounded-full bg-secondary/10 px-3 py-1 text-xs font-medium text-secondary">
-              "{search}"
+              &quot;{search}&quot;
               <button onClick={() => setSearch("")} aria-label="Remove search filter">
                 <X size={11} />
               </button>

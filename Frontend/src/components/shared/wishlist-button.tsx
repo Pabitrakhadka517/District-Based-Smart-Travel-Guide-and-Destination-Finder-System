@@ -1,5 +1,4 @@
 "use client";
-import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import { useWishlist } from "@/store/wishlist-store";
 import { useToggleWishlist } from "@/hooks/use-toggle-wishlist";
@@ -7,10 +6,9 @@ import { cn } from "@/lib/utils";
 
 export function WishlistButton({ id, className }: { id: string; className?: string }) {
   const activeInStore = useWishlist((s) => s.has(id));
+  const hasHydrated = useWishlist((s) => s.hasHydrated);
   const toggleWishlist = useToggleWishlist();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-  const active = mounted && activeInStore;
+  const active = hasHydrated && activeInStore;
 
   return (
     <button

@@ -307,7 +307,7 @@ export default async function GuidePage({
                   <MapPin size={22} className="text-secondary" /> Nearby Attractions
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Explored {d.name}? Don't miss these nearby sites.
+                  Explored {d.name}? Don&apos;t miss these nearby sites.
                 </p>
                 <div className="mt-5 grid gap-4 sm:grid-cols-2">
                   {nearbyAttractions.slice(0, 4).map((a) => (
@@ -392,7 +392,7 @@ export default async function GuidePage({
             <div className="grid gap-4 sm:grid-cols-2">
               <section className="rounded-2xl border border-success/30 bg-success/5 p-6">
                 <h3 className="flex items-center gap-2 font-display font-semibold text-success">
-                  <ThumbsUp size={18} /> What you'll love
+                  <ThumbsUp size={18} /> What you&apos;ll love
                 </h3>
                 <ul className="mt-3 space-y-2 text-sm text-foreground">
                   {d.pros.map((p) => (

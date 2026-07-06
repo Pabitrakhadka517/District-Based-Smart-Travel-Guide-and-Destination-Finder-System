@@ -14,7 +14,8 @@ export type UploadType =
   | "guide-cover"
   | "guide-avatar"
   | "avatar"
-  | "review";
+  | "review"
+  | "planner";
 
 const MAX_FILE_SIZE_MB = 5;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];

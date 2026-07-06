@@ -1,8 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-
-const DEFAULT_AVATAR = "https://i.pravatar.cc/150?img=68";
+import { DEFAULT_AVATAR } from "@/lib/cloudinary";
 
 function getInitials(name: string): string {
   return name

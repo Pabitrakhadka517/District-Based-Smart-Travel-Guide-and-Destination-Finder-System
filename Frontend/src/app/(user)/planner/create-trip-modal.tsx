@@ -197,7 +197,7 @@ export function CreateTripModal({ onClose, onCreated }: Props) {
           <div className="px-6 py-6 space-y-6">
             <div>
               <h2 className="font-display text-2xl font-bold text-brand-600">Dates & budget</h2>
-              <p className="mt-1 text-sm text-muted-foreground">When are you going and what's your total budget?</p>
+              <p className="mt-1 text-sm text-muted-foreground">When are you going and what&apos;s your total budget?</p>
             </div>
 
             {/* Dates */}

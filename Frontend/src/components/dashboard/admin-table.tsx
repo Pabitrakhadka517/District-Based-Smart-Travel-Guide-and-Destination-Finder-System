@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { Pencil, Trash2, Plus, AlertTriangle, X, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Pencil, Trash2, Plus, AlertTriangle, X, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
@@ -32,24 +32,35 @@ interface Props<T extends { id: string; name?: string }> {
   searchPlaceholder?: string;
   bulkActions?: BulkAction[];
   emptyMessage?: string;
+  pageSize?: number;
 }
 
 export function AdminTable<T extends { id: string; name?: string }>({
   title, columns, rows, onAdd, onEdit, onDelete,
   searchValue, onSearchChange, searchPlaceholder = "Search…",
-  bulkActions, emptyMessage = "No items found.",
+  bulkActions, emptyMessage = "No items found.", pageSize = 20,
 }: Props<T>) {
   const [pendingDelete, setPendingDelete] = useState<T | null>(null);
   const [pendingBulk, setPendingBulk] = useState<{ action: BulkAction; ids: string[] } | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [page, setPage] = useState(1);
 
   const showBulk = !!bulkActions?.length;
-  const allSelected = rows.length > 0 && rows.every((r) => selected.has(r.id));
+  const pageCount = Math.max(1, Math.ceil(rows.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pageRows = rows.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const allSelected = pageRows.length > 0 && pageRows.every((r) => selected.has(r.id));
   const someSelected = selected.size > 0;
   const colSpan = columns.length + (showBulk ? 1 : 0) + (onEdit || onDelete ? 1 : 0);
 
+  // Whenever the underlying (filtered/searched) row set changes, go back to page 1
+  // so the pager never gets stranded past the end of a shorter result set.
+  useEffect(() => {
+    setPage(1);
+  }, [rows.length, searchValue]);
+
   const toggleAll = () =>
-    setSelected(allSelected ? new Set() : new Set(rows.map((r) => r.id)));
+    setSelected(allSelected ? new Set() : new Set(pageRows.map((r) => r.id)));
 
   const toggleOne = (id: string) =>
     setSelected((prev) => {
@@ -222,13 +233,13 @@ export function AdminTable<T extends { id: string; name?: string }>({
               </tr>
             </thead>
             <tbody>
-              {rows.length === 0 ? (
+              {pageRows.length === 0 ? (
                 <tr>
                   <td colSpan={colSpan} className="px-5 py-10 text-center text-sm text-muted-foreground">
                     {emptyMessage}
                   </td>
                 </tr>
-              ) : rows.map((row) => (
+              ) : pageRows.map((row) => (
                 <tr
                   key={row.id}
                   className={cn(
@@ -282,11 +293,34 @@ export function AdminTable<T extends { id: string; name?: string }>({
           </table>
         </div>
 
-        {/* Footer row count */}
+        {/* Footer: row count + pager */}
         {rows.length > 0 && (
-          <div className="border-t border-border px-5 py-2.5 text-xs text-muted-foreground">
-            {rows.length} item{rows.length !== 1 ? "s" : ""}
-            {someSelected && <span className="ml-2 font-medium text-brand-600">· {selected.size} selected</span>}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border px-5 py-2.5 text-xs text-muted-foreground">
+            <span>
+              {rows.length} item{rows.length !== 1 ? "s" : ""}
+              {someSelected && <span className="ml-2 font-medium text-brand-600">· {selected.size} selected</span>}
+            </span>
+            {pageCount > 1 && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  aria-label="Previous page"
+                  className="grid h-7 w-7 place-items-center rounded-lg border border-border text-muted-foreground transition hover:bg-muted/60 disabled:opacity-40 disabled:hover:bg-transparent"
+                >
+                  <ChevronLeft size={14} />
+                </button>
+                <span className="tabular-nums">Page {currentPage} of {pageCount}</span>
+                <button
+                  onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+                  disabled={currentPage === pageCount}
+                  aria-label="Next page"
+                  className="grid h-7 w-7 place-items-center rounded-lg border border-border text-muted-foreground transition hover:bg-muted/60 disabled:opacity-40 disabled:hover:bg-transparent"
+                >
+                  <ChevronRight size={14} />
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -451,7 +451,7 @@ export default async function DistrictDetail({
             <div className="mx-auto max-w-4xl">
               <div className="mb-8 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <span className="kicker">What you'll find</span>
+                  <span className="kicker">What you&apos;ll find</span>
                   <h2 className="h3 mt-2 text-brand-600">Attractions by Category</h2>
                 </div>
                 <p className="text-sm text-muted-foreground">

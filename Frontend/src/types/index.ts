@@ -175,6 +175,7 @@ export interface TripPlan {
   notes: string;
   itinerary: TripDay[];
   checklist: ChecklistItem[];
+  photos: CloudinaryImage[];
 }
 
 export type Difficulty = "Easy" | "Moderate" | "Challenging" | "Strenuous";

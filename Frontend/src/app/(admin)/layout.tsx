@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { LayoutDashboard, Map, Mountain, MessageSquare, Users, Landmark, Footprints, CalendarDays, BookOpen, AlertTriangle, ClipboardList } from "lucide-react";
+import { LayoutDashboard, Map, Mountain, MessageSquare, Users, Landmark, Footprints, CalendarDays, BookOpen, AlertTriangle, ClipboardList, CalendarCheck } from "lucide-react";
 import { Sidebar } from "@/components/shared/sidebar";
 import { useAdminAnalytics } from "@/hooks/use-content";
 import { useAuth } from "@/store/auth-store";
@@ -18,6 +18,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: "/admin/treks",        label: "Treks",        icon: Footprints },
     { href: "/admin/festivals",    label: "Festivals",    icon: CalendarDays },
     { href: "/admin/guides",       label: "Guides",       icon: BookOpen },
+    { href: "/admin/bookings",     label: "Bookings",     icon: CalendarCheck },
     { href: "/admin/travel-alerts",label: "Travel Alerts",icon: AlertTriangle },
     { href: "/admin/checklists",   label: "Checklists",   icon: ClipboardList },
     { href: "/admin/reviews",      label: "Reviews",      icon: MessageSquare, badge: pending || undefined },

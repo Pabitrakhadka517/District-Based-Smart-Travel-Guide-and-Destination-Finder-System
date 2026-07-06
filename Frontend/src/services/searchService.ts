@@ -3,6 +3,9 @@ import type { Destination, District, TouristAttraction, Trek, Festival, GuideArt
 
 export interface SearchResult {
   destinations: Destination[];
+  destinationsTotal: number;
+  destinationsPage: number;
+  destinationsLimit: number;
   attractions?: TouristAttraction[];
   districts?: District[];
   treks?: Trek[];

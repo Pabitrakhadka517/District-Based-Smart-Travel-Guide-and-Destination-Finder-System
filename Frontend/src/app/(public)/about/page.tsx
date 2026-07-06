@@ -25,7 +25,7 @@ export default function AboutPage() {
         <div className="container relative flex h-full flex-col justify-end pb-12 text-white">
           <Mountain size={40} className="text-accent" />
           <h1 className="h1 mt-3">About Nepal</h1>
-          <p className="mt-3 max-w-2xl text-lg text-white/85">A land where eight of the world's ten highest peaks meet ancient cities, jungle lowlands and a culture of extraordinary depth.</p>
+          <p className="mt-3 max-w-2xl text-lg text-white/85">A land where eight of the world&apos;s ten highest peaks meet ancient cities, jungle lowlands and a culture of extraordinary depth.</p>
         </div>
       </section>
 
@@ -33,7 +33,7 @@ export default function AboutPage() {
         <div className="prose-lg mx-auto max-w-3xl text-center">
           <span className="text-sm font-semibold uppercase tracking-wider text-accent">Tourism overview</span>
           <h2 className="h2 mt-2 text-brand-600">A whole world in one country</h2>
-          <p className="lead mt-4">Squeezed between India and Tibet, Nepal compresses subtropical jungle, terraced hills, medieval cities and the planet's highest mountains into an area smaller than many single provinces elsewhere. It is a place of pilgrimage for trekkers, spiritual seekers, wildlife lovers and culture enthusiasts alike.</p>
+          <p className="lead mt-4">Squeezed between India and Tibet, Nepal compresses subtropical jungle, terraced hills, medieval cities and the planet&apos;s highest mountains into an area smaller than many single provinces elsewhere. It is a place of pilgrimage for trekkers, spiritual seekers, wildlife lovers and culture enthusiasts alike.</p>
         </div>
       </section>
 

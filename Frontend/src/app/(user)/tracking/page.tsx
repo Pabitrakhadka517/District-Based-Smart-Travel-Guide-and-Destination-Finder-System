@@ -1,15 +1,15 @@
 "use client";
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import {
   MapPin, CheckCircle2, CalendarDays, Users, TrendingUp, Route,
   Flame, CheckSquare, ChevronRight, Play, Trophy, BarChart2, Loader2,
-  PencilLine, Camera, Wallet, Clock, ImagePlus, X, Star,
+  PencilLine, Camera, Wallet, Clock, X, Star,
   Circle, BarChart, Compass, Save, PenSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/shared/empty-state";
+import { GalleryUploader } from "@/components/dashboard/image-uploader";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/store/auth-store";
 import { usePlans, useUpdatePlan, useUserReviews, useDestinations, useCreateReview } from "@/hooks/use-content";
@@ -51,81 +51,23 @@ function budgetBurn(t: TripPlan) {
   return { total, daily: Math.round(daily), burned, remaining: total - burned, pct };
 }
 
-/* ── localStorage photos ─────────────────────────────────────────────────── */
-
-function useLocalPhotos(tripId: string) {
-  const key = `nt_photos_${tripId}`;
-  const [photos, setPhotos] = useState<string[]>([]);
-
-  useEffect(() => {
-    try { setPhotos(JSON.parse(localStorage.getItem(key) ?? "[]")); } catch { /* */ }
-  }, [key]);
-
-  const persist = (next: string[]) => {
-    setPhotos(next);
-    try { localStorage.setItem(key, JSON.stringify(next)); } catch { /* */ }
-  };
-
-  return {
-    photos,
-    add:    (url: string)  => persist([...photos, url]),
-    remove: (i: number)    => persist(photos.filter((_, idx) => idx !== i)),
-  };
-}
-
 /* ── Photo panel ─────────────────────────────────────────────────────────── */
+/* Photos are real Cloudinary uploads (via GalleryUploader) stored on the trip
+ * document itself (synced via the same updatePlan mutation used for notes/
+ * activities elsewhere on this page) so they're visible across devices. */
 
-function PhotoPanel({ tripId }: { tripId: string }) {
-  const { photos, add, remove } = useLocalPhotos(tripId);
-  const [input, setInput] = useState("");
-
-  const submit = () => {
-    const url = input.trim();
-    if (!url) return;
-    add(url);
-    setInput("");
-  };
+function PhotoPanel({ trip, updatePlan }: { trip: TripPlan; updatePlan: UpdateFn }) {
+  const photos = trip.photos ?? [];
 
   return (
-    <div className="space-y-3">
-      {photos.length > 0 ? (
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-          {photos.map((url, i) => (
-            <div key={i} className="group relative aspect-square overflow-hidden rounded-xl">
-              <Image src={url} alt={`Photo ${i + 1}`} fill className="object-cover" sizes="120px" />
-              <button
-                onClick={() => remove(i)}
-                className="absolute right-1 top-1 hidden rounded-full bg-black/60 p-0.5 text-white group-hover:flex"
-              >
-                <X size={11} />
-              </button>
-            </div>
-          ))}
-          <div className="flex aspect-square items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/30">
-            <ImagePlus size={20} className="text-muted-foreground/50" />
-          </div>
-        </div>
-      ) : (
-        <div className="flex h-28 items-center justify-center rounded-xl border-2 border-dashed border-border bg-muted/30 text-muted-foreground">
-          <div className="flex flex-col items-center gap-1">
-            <Camera size={22} className="opacity-40" />
-            <span className="text-xs">No photos yet</span>
-          </div>
-        </div>
-      )}
-      <div className="flex gap-2">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && submit()}
-          placeholder="Paste photo URL to add…"
-          className="flex-1 rounded-xl border border-border bg-white px-3 py-2 text-xs outline-none focus:ring-2 focus:ring-ring"
-        />
-        <Button size="sm" variant="outline" onClick={submit} disabled={!input.trim()}>
-          <ImagePlus size={13} /> Add
-        </Button>
-      </div>
-    </div>
+    <GalleryUploader
+      type="planner"
+      value={photos}
+      onChange={(next) => void updatePlan.mutateAsync({ ...trip, photos: next })}
+      alt={`${trip.title} photo`}
+      label="Trip photos"
+      max={20}
+    />
   );
 }
 
@@ -269,7 +211,7 @@ function UpcomingTab({ trips }: { trips: TripPlan[] }) {
                   }
                 </Button>
               ) : (
-                <span className="text-xs text-muted-foreground">Mark "Ready" in the Planner to begin.</span>
+                <span className="text-xs text-muted-foreground">Mark &quot;Ready&quot; in the Planner to begin.</span>
               )}
             </div>
           </div>
@@ -560,7 +502,7 @@ function OngoingTripCard({ trip, updatePlan }: { trip: TripPlan; updatePlan: Upd
             </button>
             {photosOpen && (
               <div className="border-t border-border p-4 bg-muted/20">
-                <PhotoPanel tripId={local.id} />
+                <PhotoPanel trip={local} updatePlan={updatePlan} />
               </div>
             )}
           </div>
@@ -738,6 +680,7 @@ function CompletedTab({ trips }: { trips: TripPlan[] }) {
   const completed  = trips.filter((t) => t.status === "completed");
   const cancelled  = trips.filter((t) => t.status === "cancelled");
   const allSorted  = [...trips].sort((a, b) => (b.endDate ?? "").localeCompare(a.endDate ?? ""));
+  const updatePlan = useUpdatePlan();
 
   const { user } = useAuth();
   const { data: userReviews    = [] } = useUserReviews(user?.id ?? "");
@@ -849,7 +792,7 @@ function CompletedTab({ trips }: { trips: TripPlan[] }) {
                         {/* Photos */}
                         <div>
                           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Trip Photos</p>
-                          <PhotoPanel tripId={trip.id} />
+                          <PhotoPanel trip={trip} updatePlan={updatePlan} />
                         </div>
 
                         {/* Notes / memories */}
@@ -857,7 +800,7 @@ function CompletedTab({ trips }: { trips: TripPlan[] }) {
                           <div>
                             <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Travel Notes</p>
                             <blockquote className="rounded-xl border-l-4 border-accent bg-white pl-4 pr-4 py-3 text-sm text-foreground italic leading-relaxed">
-                              "{trip.notes}"
+                              &quot;{trip.notes}&quot;
                             </blockquote>
                           </div>
                         )}

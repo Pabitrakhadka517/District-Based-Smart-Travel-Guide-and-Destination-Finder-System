@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { adminEntityService } from "@/services/adminEntityService";
 import { useDistricts } from "@/hooks/use-content";
 import { slugify } from "@/lib/utils";
+import { DEFAULT_AVATAR } from "@/lib/cloudinary";
 
 const CATEGORIES: GuideArticle["category"][] = ["Tips", "Itineraries", "Culture", "Food", "Trekking"];
 
@@ -55,7 +56,7 @@ export function GuideForm({ guide, onClose, onSaved }: GuideFormProps) {
     try {
       const body = {
         title: title.trim(), slug: slug.trim(), excerpt, category, cover,
-        author: author.trim(), authorAvatar: authorAvatar ?? { url: "https://i.pravatar.cc/150?img=68", publicId: null, alt: "" },
+        author: author.trim(), authorAvatar: authorAvatar ?? { url: DEFAULT_AVATAR, publicId: null, alt: "" },
         date, readMinutes, tags,
         body: bodyText.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean),
         featured, coordinates,

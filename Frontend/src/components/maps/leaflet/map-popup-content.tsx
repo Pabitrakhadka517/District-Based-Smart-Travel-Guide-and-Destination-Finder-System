@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import type { District } from "@/types";
@@ -13,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Rating } from "@/components/ui/rating";
 import { KIND_STYLE } from "@/lib/category-colors";
 import { WishlistButton } from "@/components/shared/wishlist-button";
+import { cld } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
 
 export function MapPopupContent({
@@ -30,8 +32,7 @@ export function MapPopupContent({
   return (
     <div className="w-[240px] overflow-hidden rounded-xl">
       <div className="relative -m-3 mb-0 h-28 w-[calc(100%+1.5rem)]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={entryImage(entry)} alt={entryName(entry)} className="h-full w-full object-cover" />
+        <Image src={cld(entryImage(entry), { quality: "auto" })} alt={entryName(entry)} fill sizes="240px" className="object-cover" />
         <div className="absolute right-1.5 top-1.5">
           <WishlistButton id={entryId(entry)} className="h-7 w-7" />
         </div>

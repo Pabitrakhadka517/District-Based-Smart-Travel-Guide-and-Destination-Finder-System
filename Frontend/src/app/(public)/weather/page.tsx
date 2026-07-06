@@ -30,7 +30,7 @@ export default function WeatherPage() {
   return (
     <section className="container py-10">
       <h1 className="h2 text-brand-600">Weather & seasonal guide</h1>
-      <p className="lead mt-2 max-w-2xl">Plan around Nepal's seasons — when to trek, when to safari and what to expect.</p>
+      <p className="lead mt-2 max-w-2xl">Plan around Nepal&apos;s seasons — when to trek, when to safari and what to expect.</p>
 
       <div className="mt-8">
         <SectionHeader title="7-day forecast" subtitle="Kathmandu Valley — live data." />

@@ -1,8 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { ChevronRight, Star } from "lucide-react";
 import { entryImage, entryName, entryRating, entryDescription, type MapEntry } from "@/lib/map-entry-helpers";
 import { KIND_STYLE } from "@/lib/category-colors";
+import { cld } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
 
 export function KindChip({ entry }: { entry: MapEntry }) {
@@ -32,8 +34,7 @@ export function ItemRow({ entry, isSelected, onClick }: { entry: MapEntry; isSel
       )}
     >
       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={entryImage(entry)} alt={entryName(entry)} className="h-full w-full object-cover" />
+        <Image src={cld(entryImage(entry), { quality: "auto" })} alt={entryName(entry)} fill sizes="56px" className="object-cover" />
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">

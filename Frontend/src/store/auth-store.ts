@@ -6,7 +6,6 @@ import { useWishlist } from "@/store/wishlist-store";
 
 const SESSION_COOKIE = "nepayatra_session";
 const ROLE_COOKIE = "nepayatra_role";
-const TOKEN_KEY = "nepayatra_token";
 
 function setCookie(name: string, value: string, days: number) {
   if (typeof document === "undefined") return;
@@ -22,6 +21,8 @@ function clearCookie(name: string) {
 interface AuthState {
   token: string | null;
   user: User | null;
+  hasHydrated: boolean;
+  setHasHydrated: (v: boolean) => void;
   setAuth: (token: string, user: User, rememberMe?: boolean) => void;
   updateUser: (user: User) => void;
   clearAuth: () => void;
@@ -34,9 +35,10 @@ export const useAuth = create<AuthState>()(
     (set, get) => ({
       token: null,
       user: null,
+      hasHydrated: false,
+      setHasHydrated: (v) => set({ hasHydrated: v }),
 
       setAuth: (token, user, rememberMe = false) => {
-        localStorage.setItem(TOKEN_KEY, token);
         // Session cookies let the Next.js middleware know the user is logged in
         const days = rememberMe ? 30 : 7;
         setCookie(SESSION_COOKIE, "1", days);
@@ -49,7 +51,6 @@ export const useAuth = create<AuthState>()(
       },
 
       clearAuth: () => {
-        localStorage.removeItem(TOKEN_KEY);
         clearCookie(SESSION_COOKIE);
         clearCookie(ROLE_COOKIE);
         set({ token: null, user: null });
@@ -61,6 +62,15 @@ export const useAuth = create<AuthState>()(
       isAdmin: () => get().user?.role === "admin",
       isLoggedIn: () => !!get().token
     }),
-    { name: "nepayatra-auth", partialize: (s) => ({ token: s.token, user: s.user }) }
+    {
+      name: "nepayatra-auth",
+      // token + user live in this single persisted key — api-client.ts reads the
+      // token straight out of this same localStorage entry rather than keeping
+      // a second copy, so there is exactly one place a token lives on disk.
+      partialize: (s) => ({ token: s.token, user: s.user }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      }
+    }
   )
 );

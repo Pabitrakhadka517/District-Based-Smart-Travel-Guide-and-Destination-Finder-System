@@ -1,8 +1,24 @@
 import type { CloudinaryImage } from "@/types";
 
-/** Shown whenever an image is missing, broken, or fails to load. */
-export const FALLBACK_IMAGE =
-  "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80";
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+
+/**
+ * Builds a bare (untransformed) Cloudinary delivery URL for a known
+ * public_id. Callers that want resizing/format transforms should pipe the
+ * result through `cld()` below rather than baking a transform in here —
+ * `cld()` inserts exactly one transformation segment.
+ */
+export function cloudinaryUrl(publicId: string): string {
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${publicId}.jpg`;
+}
+
+/** Shown whenever an image is missing, broken, or fails to load — a
+ *  dedicated Cloudinary asset (see `nepalyatra/placeholders/`), not an
+ *  external URL. */
+export const FALLBACK_IMAGE = cloudinaryUrl("nepalyatra/placeholders/default-image");
+
+/** Shown whenever a user/author/reviewer avatar is missing. */
+export const DEFAULT_AVATAR = cloudinaryUrl("nepalyatra/placeholders/default-avatar");
 
 /** Resolves an (possibly undefined) CloudinaryImage to a renderable URL. */
 export function getImageUrl(image: CloudinaryImage | null | undefined, fallback = FALLBACK_IMAGE): string {

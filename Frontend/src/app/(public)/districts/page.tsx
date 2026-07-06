@@ -25,9 +25,9 @@ export default async function DistrictsPage() {
       <section className="mesh-brand py-20 text-white">
         <div className="container">
           <span className="kicker text-white/60">Nepal Travel Guide</span>
-          <h1 className="h1 mt-3">Explore Nepal's Districts</h1>
+          <h1 className="h1 mt-3">Explore Nepal&apos;s Districts</h1>
           <p className="lead mt-3 max-w-2xl text-white/80">
-            Nepal's 77 districts each offer something remarkable — from ancient temples and snow-capped peaks
+            Nepal&apos;s 77 districts each offer something remarkable — from ancient temples and snow-capped peaks
             to wildlife sanctuaries and vibrant festivals. Pick a region and start exploring.
           </p>
 

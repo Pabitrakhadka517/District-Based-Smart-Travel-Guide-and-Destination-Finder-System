@@ -17,7 +17,7 @@ export function NewsletterForm() {
     return (
       <div className="mx-auto mt-6 flex max-w-md items-center justify-center gap-2 rounded-xl border border-success/30 bg-success/10 px-6 py-4 text-sm text-success">
         <CheckCircle2 size={18} />
-        <span>Thanks! We'll notify you when the newsletter launches.</span>
+        <span>Thanks! We&apos;ll notify you when the newsletter launches.</span>
       </div>
     );
   }

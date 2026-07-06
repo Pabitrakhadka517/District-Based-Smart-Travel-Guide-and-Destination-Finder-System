@@ -20,7 +20,7 @@ export function ContactClient() {
       <section className="mesh-light border-b border-border/70">
         <div className="container py-16">
           <span className="kicker">Get in touch</span>
-          <h1 className="h1 mt-3 text-brand-600">We'd love to help you plan</h1>
+          <h1 className="h1 mt-3 text-brand-600">We&apos;d love to help you plan</h1>
           <p className="lead mt-3 max-w-2xl">Questions about a destination, a trek or your itinerary? Send us a message.</p>
         </div>
       </section>
@@ -43,7 +43,7 @@ export function ContactClient() {
               <div className="flex h-full flex-col items-center justify-center rounded-3xl border border-success/30 bg-success/5 p-12 text-center">
                 <CheckCircle2 className="text-success" size={56} />
                 <h2 className="mt-4 font-display text-xl font-semibold text-brand-600">Message sent!</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Thanks for reaching out — we'll reply within one business day.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Thanks for reaching out — we&apos;ll reply within one business day.</p>
                 <Button variant="outline" className="mt-6" onClick={() => setSent(false)}>Send another</Button>
               </div>
             ) : (

@@ -1,9 +1,28 @@
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";
-const TOKEN_KEY = "nepayatra_token";
+
+// The access token has exactly one home on disk: the auth store's own
+// persisted entry. Reading/writing that same key directly (by name, not by
+// importing the store) avoids a second copy of the token ever existing in
+// localStorage while still keeping this module free of a circular import.
+const AUTH_STORAGE_KEY = "nepayatra-auth";
+
+interface PersistedAuthBlob {
+  state?: { token?: string | null };
+  version?: number;
+}
+
+function readAuthBlob(): PersistedAuthBlob | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as PersistedAuthBlob) : null;
+  } catch {
+    return null;
+  }
+}
 
 function getToken(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem(TOKEN_KEY);
+  return readAuthBlob()?.state?.token ?? null;
 }
 
 /** Exposed for callers that need to build their own request (e.g. XHR uploads with progress). */
@@ -15,7 +34,15 @@ export function getAuthToken(): string | null {
 }
 
 function setToken(token: string): void {
-  if (typeof window !== "undefined") localStorage.setItem(TOKEN_KEY, token);
+  if (typeof window === "undefined") return;
+  try {
+    const blob = readAuthBlob() ?? { state: {}, version: 0 };
+    blob.state = { ...blob.state, token };
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(blob));
+  } catch {
+    // Best-effort — the "nepayatra:token-refresh" event still syncs the token
+    // into the live Zustand store even if this direct write fails.
+  }
 }
 
 /** Backend validation errors include a field-level `errors` array — surface it instead
@@ -24,6 +51,33 @@ function buildErrorMessage(json: { error?: string; errors?: { field: string; mes
   const base = json.error ?? "Unknown error";
   if (!json.errors?.length) return base;
   return `${base}: ${json.errors.map((e) => `${e.field} (${e.message})`).join(", ")}`;
+}
+
+const DEFAULT_TIMEOUT_MS = 15_000;
+const UPLOAD_TIMEOUT_MS  = 60_000;
+
+/**
+ * fetch() with a timeout, and a friendly error message instead of the raw
+ * "Failed to fetch" / "The operation was aborted" a caller would otherwise
+ * see on a hung request, an offline connection, or a DNS failure.
+ */
+async function fetchWithTimeout(
+  url: string,
+  init: RequestInit,
+  timeoutMs: number = DEFAULT_TIMEOUT_MS
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new Error("The request timed out. Please check your connection and try again.");
+    }
+    throw new Error("Unable to reach the server. Please check your connection and try again.");
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function authHeaders(): HeadersInit {
@@ -36,7 +90,7 @@ function authHeaders(): HeadersInit {
 /** Try to get a fresh access token using the httpOnly refresh cookie. */
 async function refreshAccessToken(): Promise<string | null> {
   try {
-    const res = await fetch(`${BASE}/auth/refresh`, {
+    const res = await fetchWithTimeout(`${BASE}/auth/refresh`, {
       method: "POST",
       credentials: "include" // sends the httpOnly cookie
     });
@@ -67,14 +121,14 @@ async function request<T>(
     ? { ...authHeaders(), ...(init.headers as object) }
     : { "Content-Type": "application/json", ...(init.headers as object) };
 
-  const res = await fetch(`${BASE}${path}`, { ...init, headers, credentials: "include" });
+  const res = await fetchWithTimeout(`${BASE}${path}`, { ...init, headers, credentials: "include" });
 
   if (res.status === 401 && withAuth) {
     // Try to refresh the access token
     const newToken = await refreshAccessToken();
     if (newToken) {
       // Retry the original request with the fresh token
-      const retryRes = await fetch(`${BASE}${path}`, {
+      const retryRes = await fetchWithTimeout(`${BASE}${path}`, {
         ...init,
         headers: {
           "Content-Type": "application/json",
@@ -126,22 +180,22 @@ export async function apiUpload<T>(path: string, formData: FormData): Promise<T>
   const token = getToken();
   const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {};
 
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetchWithTimeout(`${BASE}${path}`, {
     method: "POST",
     body: formData,
     headers,
     credentials: "include"
-  });
+  }, UPLOAD_TIMEOUT_MS);
 
   if (res.status === 401) {
     const newToken = await refreshAccessToken();
     if (newToken) {
-      const retryRes = await fetch(`${BASE}${path}`, {
+      const retryRes = await fetchWithTimeout(`${BASE}${path}`, {
         method: "POST",
         body: formData,
         headers: { Authorization: `Bearer ${newToken}` },
         credentials: "include"
-      });
+      }, UPLOAD_TIMEOUT_MS);
       const retryJson = await retryRes.json();
       if (!retryJson.success) throw new Error(buildErrorMessage(retryJson));
       return retryJson.data as T;

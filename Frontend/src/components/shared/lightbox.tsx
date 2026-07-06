@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useCallback } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import type { CloudinaryImage as CloudinaryImageType } from "@/types";
-import { getImageUrl } from "@/lib/cloudinary";
+import { getImageUrl, cld } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
 
 interface LightboxProps {
@@ -49,10 +50,16 @@ export function Lightbox({ images, index, onClose, onIndexChange }: LightboxProp
         className="relative flex max-h-[90vh] max-w-[90vw] items-center justify-center"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Not next/image: this viewer sizes itself to the photo's natural
+            aspect ratio (max-h/max-w only, no fixed box), which next/image's
+            fill/width+height modes don't support. Still Cloudinary-optimized
+            (f_auto/q_auto) via cld(), just not through the Next pipeline. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={getImageUrl(current)}
+          src={cld(getImageUrl(current), { quality: "auto" })}
           alt={current.alt || `Photo ${index + 1} of ${total}`}
+          loading="lazy"
+          decoding="async"
           className="max-h-[85vh] max-w-[85vw] rounded-xl object-contain shadow-2xl"
         />
 
@@ -86,12 +93,11 @@ export function Lightbox({ images, index, onClose, onIndexChange }: LightboxProp
                 onClick={(e) => { e.stopPropagation(); onIndexChange(i); }}
                 aria-label={`View photo ${i + 1}`}
                 className={cn(
-                  "h-10 w-10 overflow-hidden rounded-lg border-2 transition",
+                  "relative h-10 w-10 overflow-hidden rounded-lg border-2 transition",
                   i === index ? "border-white" : "border-white/30 opacity-60 hover:opacity-80"
                 )}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={getImageUrl(img)} alt="" className="h-full w-full object-cover" />
+                <Image src={cld(getImageUrl(img), { quality: "auto" })} alt="" fill sizes="40px" className="object-cover" />
               </button>
             ))}
           </div>

@@ -1,8 +1,7 @@
 import { Compass, Mountain, Landmark, Sun, Users, TreePine, Gem, Wallet } from "lucide-react";
 import type { TravelType } from "@/types";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type Icon = React.ComponentType<any>;
+type Icon = React.ComponentType<{ size?: number; className?: string }>;
 
 export const TRAVEL_TYPE_CONFIG: Record<
   TravelType,

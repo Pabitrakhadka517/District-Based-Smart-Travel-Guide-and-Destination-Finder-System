@@ -1,11 +1,12 @@
 "use client";
-import { LayoutDashboard, Heart, Map, Route, User, Settings } from "lucide-react";
+import { LayoutDashboard, Heart, Map, Route, User, Settings, CalendarCheck } from "lucide-react";
 import { Sidebar } from "@/components/shared/sidebar";
 
 const items = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/wishlist", label: "Wishlist", icon: Heart },
   { href: "/planner", label: "Trip Planner", icon: Map },
+  { href: "/booking", label: "My Bookings", icon: CalendarCheck },
   { href: "/tracking", label: "Travel Tracking", icon: Route },
   { href: "/profile", label: "Profile", icon: User },
   { href: "/settings", label: "Settings", icon: Settings }

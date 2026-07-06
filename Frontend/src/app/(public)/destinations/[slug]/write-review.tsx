@@ -20,7 +20,7 @@ export function WriteReview({ destinationId, destinationName }: {
   destinationId: string;
   destinationName: string;
 }) {
-  const { user } = useAuth();
+  const { user, hasHydrated } = useAuth();
   const createReview = useCreateReview();
   const { data: plans = [], isLoading: plansLoading } = usePlans();
   const hasTripForDestination = plans.some((p) => p.destinationIds.includes(destinationId));
@@ -75,6 +75,11 @@ export function WriteReview({ destinationId, destinationName }: {
         </div>
       </div>
     );
+  }
+
+  /* ── auth store not yet hydrated from localStorage — avoid a "sign in" flash ── */
+  if (!hasHydrated) {
+    return <div className="h-[68px] animate-pulse rounded-2xl bg-muted/40" />;
   }
 
   /* ── not logged in ── */

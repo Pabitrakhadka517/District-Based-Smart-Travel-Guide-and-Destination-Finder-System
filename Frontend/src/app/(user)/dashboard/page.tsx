@@ -20,6 +20,7 @@ import {
 import { RecommendationWidget } from "@/components/shared/recommendation-widget";
 import { ActivityTimeline } from "./activity-timeline";
 import { formatDate } from "@/lib/utils";
+import { img, PHOTO } from "@/data/images";
 
 function getGreeting(): string {
   const h = new Date().getHours();
@@ -40,14 +41,32 @@ interface BadgeDef {
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { data: plans = [], isLoading: plansLoading } = usePlans();
+  const { data: plansRaw = [], isLoading: plansLoadingRaw } = usePlans();
   const { data: wishlistData } = useWishlistApi();
   const { data: featured = [], isLoading: attractionsLoading } = useFeaturedAttractions();
-  const { data: userReviews = [] } = useUserReviews(user?.id ?? "");
+  const { data: userReviewsRaw = [] } = useUserReviews(user?.id ?? "");
 
-  const { data: recommended = [], isLoading: recsLoading } = usePersonalizedRecommendations();
+  const { data: recommended = [], isLoading: recsLoadingRaw } = usePersonalizedRecommendations();
   const { data: trending = [], isLoading: trendingLoading } = useTrendingRecommendations();
-  const { data: activity = [], isLoading: activityLoading } = useActivityTimeline();
+  const { data: activity = [], isLoading: activityLoadingRaw } = useActivityTimeline();
+
+  // These queries are all gated by isLoggedIn()/user.id, which come from the
+  // Zustand auth store's persisted state. The server always renders assuming
+  // "not logged in yet" (no localStorage access), but the client's first
+  // paint can already reflect the real, rehydrated auth state — so their
+  // loading/data values can legitimately differ from the server's. Forcing
+  // everything derived from them into a stable "loading" shape until strictly
+  // after mount (a plain effect, guaranteed to run post-hydration) avoids a
+  // hydration mismatch instead of chasing each differing value individually.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
+  const plans = mounted ? plansRaw : [];
+  const plansLoading = !mounted || plansLoadingRaw;
+  const userReviews = mounted ? userReviewsRaw : [];
+  const recsLoading = !mounted || recsLoadingRaw;
+  const activityLoading = !mounted || activityLoadingRaw;
+  const wishlistCount = mounted ? (wishlistData?.ids?.length ?? 0) : 0;
 
   // Recently viewed from localStorage
   const [recentIds, setRecentIds] = useState<string[]>([]);
@@ -68,10 +87,9 @@ export default function DashboardPage() {
   const ongoing   = plans.filter((t) => t.status === "ongoing");
   const planned   = plans.filter((t) => t.status === "planned");
   const ready     = plans.filter((t) => t.status === "ready");
-  const wishlistCount   = wishlistData?.ids?.length ?? 0;
   const upcomingCount   = planned.length + ready.length + ongoing.length;
   const visitedCount    = new Set(completed.flatMap((t) => t.destinationIds)).size;
-  const firstName = user?.name?.split(" ")[0] ?? "Traveller";
+  const firstName = mounted ? (user?.name?.split(" ")[0] ?? "Traveller") : "Traveller";
 
   // Continue planning — most recent trip still in the planning phase
   const continuePlan = [...plans]
@@ -97,7 +115,7 @@ export default function DashboardPage() {
       {/* welcome banner */}
       <div className="relative overflow-hidden rounded-3xl p-8 text-white">
         <Image
-          src="https://images.unsplash.com/photo-1665435246383-4103fc803522?auto=format&fit=crop&w=1600&q=80"
+          src={img(PHOTO.swayambhu, 1600)}
           alt="Swayambhunath stupa, Kathmandu"
           fill
           sizes="(max-width: 768px) 100vw, 80vw"

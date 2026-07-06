@@ -25,6 +25,7 @@ const links = [
   { href: "/search",    label: "Destinations" },
   { href: "/map",       label: "Map" },
   { href: "/guides",    label: "Guides" },
+  { href: "/booking",   label: "Book a Trip" },
   { href: "/reviews",   label: "Reviews" },
   { href: "/about",     label: "About" },
 ];
@@ -44,9 +45,8 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
 
-  const { isLoggedIn, isAdmin } = useAuth();
+  const { isLoggedIn, isAdmin, hasHydrated } = useAuth();
   const logout = useLogout();
-  const [mounted, setMounted] = useState(false);
 
   const exploreBtnRef  = useRef<HTMLButtonElement>(null);
   const exploreMenuRef = useRef<HTMLDivElement>(null);
@@ -60,10 +60,8 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => { setMounted(true); }, []);
-
-  const loggedIn = mounted && isLoggedIn();
-  const admin    = mounted && isAdmin();
+  const loggedIn = hasHydrated && isLoggedIn();
+  const admin    = hasHydrated && isAdmin();
 
   /* Close mobile menu on route change */
   useEffect(() => { setOpen(false); }, [pathname]);

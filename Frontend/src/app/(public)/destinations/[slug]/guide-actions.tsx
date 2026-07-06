@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Heart, Share2, CalendarPlus, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useWishlist } from "@/store/wishlist-store";
@@ -15,11 +15,10 @@ interface Props {
 
 export function GuideActions({ id, dark = false }: Props) {
   const savedInStore  = useWishlist((s) => s.has(id));
+  const hasHydrated   = useWishlist((s) => s.hasHydrated);
   const toggleWishlist = useToggleWishlist();
-  const [mounted, setMounted]   = useState(false);
   const [copied,  setCopied]    = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-  const saved = mounted && savedInStore;
+  const saved = hasHydrated && savedInStore;
 
   const share = () => {
     if (typeof navigator === "undefined") return;

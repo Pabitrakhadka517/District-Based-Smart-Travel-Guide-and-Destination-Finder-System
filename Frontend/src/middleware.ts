@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Routes that require an authenticated user
-const PROTECTED = ["/dashboard", "/profile", "/settings", "/wishlist", "/planner", "/tracking"];
+const PROTECTED = ["/dashboard", "/profile", "/settings", "/wishlist", "/planner", "/tracking", "/booking"];
 // Routes that require admin role
 const ADMIN_ONLY = ["/admin"];
 
@@ -54,6 +54,7 @@ export const config = {
     "/wishlist/:path*",
     "/planner/:path*",
     "/tracking/:path*",
+    "/booking/:path*",
     "/admin/:path*"
   ]
 };
