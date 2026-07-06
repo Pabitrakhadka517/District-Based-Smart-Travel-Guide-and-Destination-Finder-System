@@ -2,12 +2,13 @@ import type { Request, Response } from "express";
 import { Destination } from "../models/Destination";
 import { Review } from "../models/Review";
 import { Attraction } from "../models/Attraction";
-import { ok, fail } from "../utils/response";
+import { ok, fail, okPaginated } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
-import { genId } from "../utils/ids";
-import { pick, qs, sanitizeImage, sanitizeGallery } from "../utils/sanitize";
+import { qs } from "../utils/sanitize";
+import { parsePagination } from "../utils/pagination";
 import { getWeatherInsight } from "../services/weather";
-import { cleanupReplacedImages } from "../services/cloudinary.service";
+import { makeAdminCrud } from "../utils/crudFactory";
+import { cascadeDestinationReferences } from "../services/cascade.service";
 
 const DESTINATION_FIELDS = [
   "slug", "cityId", "districtId", "name", "tagline", "description", "category",
@@ -32,8 +33,12 @@ export const listDestinations = asyncHandler(async (req: Request, res: Response)
   if (category)  filter.category   = category;
   if (idsParam)  filter.id         = { $in: idsParam.split(",").map((s) => s.trim()).filter(Boolean) };
 
-  const result = await Destination.find(filter).sort({ rating: -1 }).limit(200);
-  ok(res, result);
+  const { page, limit, skip } = parsePagination(req.query, 200);
+  const [result, total] = await Promise.all([
+    Destination.find(filter).sort({ rating: -1 }).skip(skip).limit(limit),
+    Destination.countDocuments(filter)
+  ]);
+  okPaginated(res, result, total, page, limit);
 });
 
 // GET /api/destinations/:slug -> { destination, reviews, nearby, ratingBreakdown, similar, nearbyAttractions }
@@ -81,42 +86,19 @@ export const getDestinationWeatherInsight = asyncHandler(async (req: Request, re
 
 // --- Admin CRUD ---
 
-export const createDestination = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, DESTINATION_FIELDS);
-  if (body.heroImage !== undefined) body.heroImage = sanitizeImage(body.heroImage);
-  if (body.gallery !== undefined) body.gallery = sanitizeGallery(body.gallery);
-  const destination = await Destination.create({ ...body, id: (body.id as string) ?? genId("p") });
-  ok(res, destination, 201);
+const crud = makeAdminCrud(Destination, {
+  fields: DESTINATION_FIELDS,
+  idPrefix: "p",
+  notFoundMessage: "Destination not found",
+  imageFields: ["heroImage"],
+  galleryFields: ["gallery"],
+  checkSlugConflict: true,
+  // Clears reviews/bookings for this destination and pulls it out of any
+  // wishlist/trip-plan arrays that reference it — nothing here uses ObjectId
+  // refs, so none of that would be cleaned up automatically otherwise.
+  onDeleted: cascadeDestinationReferences
 });
 
-export const updateDestination = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, DESTINATION_FIELDS);
-  if (body.heroImage !== undefined) body.heroImage = sanitizeImage(body.heroImage);
-  if (body.gallery !== undefined) body.gallery = sanitizeGallery(body.gallery);
-
-  // Slug uniqueness: if slug is changing, ensure no other document uses it
-  if (body.slug) {
-    const conflict = await Destination.findOne({ slug: body.slug, id: { $ne: req.params.id } });
-    if (conflict) return fail(res, `Slug "${body.slug}" is already used by another destination.`, 409);
-  }
-
-  const existing = await Destination.findOne({ id: req.params.id }).select("heroImage gallery");
-  const destination = await Destination.findOneAndUpdate(
-    { id: req.params.id },
-    { $set: body },
-    { new: true, runValidators: true }
-  );
-  if (!destination) return fail(res, "Destination not found", 404);
-  cleanupReplacedImages(
-    [existing?.heroImage, existing?.gallery],
-    [destination.heroImage, destination.gallery]
-  );
-  ok(res, destination);
-});
-
-export const deleteDestination = asyncHandler(async (req: Request, res: Response) => {
-  const destination = await Destination.findOneAndDelete({ id: req.params.id });
-  if (!destination) return fail(res, "Destination not found", 404);
-  cleanupReplacedImages([destination.heroImage, destination.gallery], []);
-  ok(res, { id: req.params.id, deleted: true });
-});
+export const createDestination = crud.create;
+export const updateDestination = crud.update;
+export const deleteDestination = crud.remove;

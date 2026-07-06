@@ -1,19 +1,19 @@
 import type { Request, Response } from "express";
 import { Guide } from "../models/Guide";
-import { ok, fail } from "../utils/response";
+import { ok, fail, okPaginated } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
-import { genId } from "../utils/ids";
-import { pick, qs, sanitizeImage } from "../utils/sanitize";
-import { cleanupReplacedImages } from "../services/cloudinary.service";
+import { qs } from "../utils/sanitize";
+import { parsePagination } from "../utils/pagination";
+import { makeAdminCrud } from "../utils/crudFactory";
 
 const GUIDE_FIELDS = [
   "slug", "title", "category", "excerpt", "body", "cover", "authorAvatar",
   "readMinutes", "author", "date", "tags", "featured", "coordinates", "districtId"
 ];
 
-const VALID_CATEGORIES = ["culture", "trekking", "food", "nature", "adventure", "history", "travel-tips"];
+const VALID_CATEGORIES = ["Tips", "Itineraries", "Culture", "Food", "Trekking"];
 
-// GET /api/guides?featured=&category= -> GuideArticle[]
+// GET /api/guides?featured=&category=&page=&limit= -> GuideArticle[]
 export const listGuides = asyncHandler(async (req: Request, res: Response) => {
   const featured  = req.query.featured;
   const category  = qs(req.query.category);
@@ -27,8 +27,12 @@ export const listGuides = asyncHandler(async (req: Request, res: Response) => {
     filter.category = category;
   }
 
-  const guides = await Guide.find(filter).sort({ publishedAt: -1 });
-  ok(res, guides);
+  const { page, limit, skip } = parsePagination(req.query, 100);
+  const [guides, total] = await Promise.all([
+    Guide.find(filter).sort({ date: -1 }).skip(skip).limit(limit),
+    Guide.countDocuments(filter)
+  ]);
+  okPaginated(res, guides, total, page, limit);
 });
 
 // GET /api/guides/:slug -> GuideArticle
@@ -40,33 +44,13 @@ export const getGuide = asyncHandler(async (req: Request, res: Response) => {
 
 // --- Admin CRUD ---
 
-export const createGuide = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, GUIDE_FIELDS);
-  if (body.cover !== undefined) body.cover = sanitizeImage(body.cover);
-  if (body.authorAvatar !== undefined) body.authorAvatar = sanitizeImage(body.authorAvatar);
-  const guide = await Guide.create({ ...body, id: (body.id as string) ?? genId("g") });
-  ok(res, guide, 201);
+const crud = makeAdminCrud(Guide, {
+  fields: GUIDE_FIELDS,
+  idPrefix: "g",
+  notFoundMessage: "Guide not found",
+  imageFields: ["cover", "authorAvatar"]
 });
 
-export const updateGuide = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, GUIDE_FIELDS);
-  if (body.cover !== undefined) body.cover = sanitizeImage(body.cover);
-  if (body.authorAvatar !== undefined) body.authorAvatar = sanitizeImage(body.authorAvatar);
-
-  const existing = await Guide.findOne({ id: req.params.id }).select("cover authorAvatar");
-  const guide = await Guide.findOneAndUpdate(
-    { id: req.params.id },
-    { $set: body },
-    { new: true, runValidators: true }
-  );
-  if (!guide) return fail(res, "Guide not found", 404);
-  cleanupReplacedImages([existing?.cover, existing?.authorAvatar], [guide.cover, guide.authorAvatar]);
-  ok(res, guide);
-});
-
-export const deleteGuide = asyncHandler(async (req: Request, res: Response) => {
-  const guide = await Guide.findOneAndDelete({ id: req.params.id });
-  if (!guide) return fail(res, "Guide not found", 404);
-  cleanupReplacedImages([guide.cover, guide.authorAvatar], []);
-  ok(res, { id: req.params.id, deleted: true });
-});
+export const createGuide = crud.create;
+export const updateGuide = crud.update;
+export const deleteGuide = crud.remove;

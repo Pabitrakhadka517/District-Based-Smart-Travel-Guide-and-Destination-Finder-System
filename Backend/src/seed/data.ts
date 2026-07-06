@@ -1,7 +1,7 @@
 /* Seed data ported 1:1 from the frontend's src/data/*.ts files. */
-import { img, gallery, PHOTO } from "./images";
+import { img, gallery, PHOTO, avatar } from "./images";
 
-const AV = (i: number): string => `https://i.pravatar.cc/150?img=${i}`;
+const AV = avatar;
 
 export const districts = [
   // ── Koshi Province (14 districts) ────────────────────────────────────────
@@ -9255,12 +9255,14 @@ export const attractions = [
   tagline: "The inscription that proved Lumbini's identity",
   description: "This sandstone pillar, inscribed by Emperor Ashoka during his pilgrimage in 249 BCE, bears the earliest written confirmation of Lumbini as the Buddha's birthplace — a cornerstone of the site's historical verification.",
   history: "Rediscovered in 1896 by archaeologist Alois Anton Führer, the pillar's Brahmi inscription was instrumental in identifying Lumbini as a genuine Buddhist holy site.",
-  // Wikimedia Commons (CC BY-SA 4.0, Shadow Ayush) — no exact match exists on Unsplash;
-  // Unsplash's "Ashoka Pillar" results are the unrelated Sarnath Lion Capital, not this pillar.
-  heroImage: "https://upload.wikimedia.org/wikipedia/commons/e/ec/Ashoka_Pillar%2C_Lumbini%2C_Rupandehi%2C_Nepal.jpg",
+  // Originally sourced from Wikimedia Commons (CC BY-SA 4.0, Shadow Ayush) — no exact
+  // match exists on Unsplash (Unsplash's "Ashoka Pillar" results are the unrelated
+  // Sarnath Lion Capital, not this pillar) — now migrated onto this project's own
+  // Cloudinary account (nepalyatra/attractions/) rather than left on an external host.
+  heroImage: "https://res.cloudinary.com/dnftsx4f5/image/upload/nepalyatra/attractions/ashoka-pillar-lumbini.jpg",
   gallery: [
-    "https://upload.wikimedia.org/wikipedia/commons/e/ec/Ashoka_Pillar%2C_Lumbini%2C_Rupandehi%2C_Nepal.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/7/75/Maya_Devi_Temple_and_Ashoka_Pillar%2C_Lumbini%2C_Rupandehi%2C_Nepal.jpg"
+    "https://res.cloudinary.com/dnftsx4f5/image/upload/nepalyatra/attractions/ashoka-pillar-lumbini.jpg",
+    "https://res.cloudinary.com/dnftsx4f5/image/upload/nepalyatra/attractions/maya-devi-temple-ashoka-pillar.jpg"
   ],
   coordinates: { lat: 27.4698, lng: 83.2758 },
   rating: 4.4, reviewCount: 165,

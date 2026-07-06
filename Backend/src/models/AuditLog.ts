@@ -9,7 +9,9 @@ const auditLogSchema = new Schema(
     ip: { type: String, default: "" },
     userAgent: { type: String, default: "" },
     metadata: { type: Schema.Types.Mixed, default: {} },
-    createdAt: { type: Date, default: Date.now, index: true }
+    // Indexed below via `.index()` (with the TTL option) instead of `index: true`
+    // here — declaring both throws a duplicate-index warning at startup.
+    createdAt: { type: Date, default: Date.now }
   },
   {
     versionKey: false,

@@ -60,7 +60,9 @@ const destinationSchema = new Schema(
   baseSchemaOptions
 );
 
-destinationSchema.index({ name: "text", tagline: "text", description: "text" });
+// Note: search.controller.ts matches on unanchored $regex (substring, not whole-word)
+// to support type-ahead style partial queries, so a $text index wouldn't be used —
+// intentionally not adding one here.
 
 export type DestinationDoc = InferSchemaType<typeof destinationSchema>;
 export const Destination = model<IDestination>("Destination", destinationSchema);

@@ -27,7 +27,8 @@ export const UPLOAD_TYPES = [
   "guide-cover",
   "guide-avatar",
   "avatar",
-  "review"
+  "review",
+  "planner"
 ] as const;
 
 export type UploadType = (typeof UPLOAD_TYPES)[number];
@@ -45,7 +46,8 @@ const FOLDER_MAP: Record<UploadType, string> = {
   "guide-cover": "nepalyatra/guides",
   "guide-avatar": "nepalyatra/users",
   avatar: "nepalyatra/users",
-  review: "nepalyatra/reviews"
+  review: "nepalyatra/reviews",
+  planner: "nepalyatra/planner"
 };
 
 /** Content types that only an admin may upload/replace. */
@@ -66,6 +68,23 @@ export const ADMIN_ONLY_TYPES: ReadonlySet<UploadType> = new Set([
 export function isUploadType(value: unknown): value is UploadType {
   return typeof value === "string" && (UPLOAD_TYPES as readonly string[]).includes(value);
 }
+
+/**
+ * Dedicated default/fallback assets, migrated once into `nepalyatra/placeholders/`
+ * (see `seed/cloudinary-migrate.ts`) so model defaults and anonymous-user
+ * fallbacks are real, deletable-safe Cloudinary assets instead of a
+ * hardcoded pravatar.cc/Unsplash URL with `publicId: null`.
+ */
+export const PLACEHOLDER = {
+  avatar: {
+    publicId: "nepalyatra/placeholders/default-avatar",
+    get url() { return cloudinary.url(PLACEHOLDER.avatar.publicId, { secure: true }); }
+  },
+  image: {
+    publicId: "nepalyatra/placeholders/default-image",
+    get url() { return cloudinary.url(PLACEHOLDER.image.publicId, { secure: true }); }
+  }
+} as const;
 
 interface CloudinaryUploadResult {
   secure_url: string;

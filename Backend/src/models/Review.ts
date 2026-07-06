@@ -1,6 +1,7 @@
 import { Schema, model, type InferSchemaType } from "mongoose";
 import type { IReview } from "./types";
 import { baseSchemaOptions, imageSchema } from "./shared";
+import { PLACEHOLDER } from "../services/cloudinary.service";
 
 const reviewSchema = new Schema(
   {
@@ -12,7 +13,7 @@ const reviewSchema = new Schema(
     author:  { type: String, default: "Anonymous" },
     avatar:  {
       type: imageSchema,
-      default: () => ({ url: "https://i.pravatar.cc/150?img=3", publicId: null, alt: "Anonymous traveler" })
+      default: () => ({ url: PLACEHOLDER.avatar.url, publicId: PLACEHOLDER.avatar.publicId, alt: "Anonymous traveler" })
     },
     rating:  { type: Number, default: 5, min: 1, max: 5 },
     title:   { type: String, default: "" },

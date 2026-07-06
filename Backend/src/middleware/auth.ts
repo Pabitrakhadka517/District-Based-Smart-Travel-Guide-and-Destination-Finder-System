@@ -42,10 +42,13 @@ export function requireAuth(req: Request, _res: Response, next: NextFunction): v
   if (!token) throw new HttpError(401, "Authentication required");
   try {
     req.auth = jwt.verify(token, env.jwtSecret) as AuthPayload;
-    next();
   } catch {
     throw new HttpError(401, "Invalid or expired token");
   }
+  // `next()` is called outside the try/catch: requireAdmin (below) passes its
+  // own role-check as this `next`, and if that's called from inside the try
+  // block, its 403 gets caught right here and misreported as a generic 401.
+  next();
 }
 
 /** Requires a valid admin token; throws 403 if role is not admin. */

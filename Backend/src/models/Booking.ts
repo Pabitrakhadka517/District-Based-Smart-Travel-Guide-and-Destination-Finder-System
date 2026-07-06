@@ -22,13 +22,21 @@ const bookingSchema = new Schema(
     },
     estimatedCost: { type: Number, default: 0 },
     status:        { type: String, enum: ["pending", "confirmed", "cancelled"], default: "pending" },
-    notes:         { type: String, default: "" },
-    createdAt:     { type: String, default: () => new Date().toISOString() }
+    notes:         { type: String, default: "" }
+    // createdAt / updatedAt come from baseSchemaOptions' `timestamps: true`.
   },
   baseSchemaOptions
 );
 
 bookingSchema.index({ userId: 1, travelDate: 1 });
+
+// Prevent a double form-submit (or resubmit) from creating two identical active
+// bookings. Scoped to non-cancelled bookings so a user can freely rebook the
+// same destination/date after cancelling.
+bookingSchema.index(
+  { userId: 1, destinationId: 1, travelDate: 1 },
+  { unique: true, partialFilterExpression: { status: { $ne: "cancelled" } } }
+);
 
 export type BookingDoc = InferSchemaType<typeof bookingSchema>;
 export const Booking = model<IBooking>("Booking", bookingSchema);

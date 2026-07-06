@@ -7,12 +7,12 @@ import { Trek } from "../models/Trek";
 import { Festival } from "../models/Festival";
 import { Guide } from "../models/Guide";
 import { Review } from "../models/Review";
-import { ok, fail } from "../utils/response";
+import { ok, fail, okPaginated } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
-import { genId } from "../utils/ids";
-import { pick, sanitizeImage } from "../utils/sanitize";
+import { parsePagination } from "../utils/pagination";
 import { getWeatherInsight } from "../services/weather";
-import { cleanupReplacedImages } from "../services/cloudinary.service";
+import { makeAdminCrud } from "../utils/crudFactory";
+import { cascadeDistrictReferences } from "../services/cascade.service";
 
 const DISTRICT_FIELDS = [
   "slug", "name", "province", "description", "heroImage", "coordinates",
@@ -20,10 +20,14 @@ const DISTRICT_FIELDS = [
 ];
 
 // GET /api/districts
-export const listDistricts = asyncHandler(async (_req: Request, res: Response) => {
+export const listDistricts = asyncHandler(async (req: Request, res: Response) => {
   // Sort by province then name for consistent, meaningful ordering
-  const districts = await District.find().sort({ province: 1, name: 1 });
-  ok(res, districts);
+  const { page, limit, skip } = parsePagination(req.query, 100);
+  const [districts, total] = await Promise.all([
+    District.find().sort({ province: 1, name: 1 }).skip(skip).limit(limit),
+    District.countDocuments()
+  ]);
+  okPaginated(res, districts, total, page, limit);
 });
 
 // GET /api/districts/:slug -> full district tourism hub payload
@@ -81,35 +85,18 @@ export const getDistrict = asyncHandler(async (req: Request, res: Response) => {
 
 // --- Admin CRUD ---
 
-export const createDistrict = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, DISTRICT_FIELDS);
-  if (body.heroImage !== undefined) body.heroImage = sanitizeImage(body.heroImage);
-  const district = await District.create({ ...body, id: (body.id as string) ?? genId("d") });
-  ok(res, district, 201);
+const crud = makeAdminCrud(District, {
+  fields: DISTRICT_FIELDS,
+  idPrefix: "d",
+  notFoundMessage: "District not found",
+  imageFields: ["heroImage"],
+  checkSlugConflict: true,
+  // No model here uses ObjectId refs, so cities/destinations/attractions/
+  // festivals/guides/reviews/bookings/wishlist/trip-plan entries scoped to
+  // this district would otherwise be silently orphaned.
+  onDeleted: cascadeDistrictReferences
 });
 
-export const updateDistrict = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, DISTRICT_FIELDS);
-  if (body.heroImage !== undefined) body.heroImage = sanitizeImage(body.heroImage);
-  if (body.slug) {
-    const conflict = await District.findOne({ slug: body.slug, id: { $ne: req.params.id } });
-    if (conflict) return fail(res, `Slug "${body.slug}" is already used by another district.`, 409);
-  }
-
-  const existing = await District.findOne({ id: req.params.id }).select("heroImage");
-  const district = await District.findOneAndUpdate(
-    { id: req.params.id },
-    { $set: body },
-    { new: true, runValidators: true }
-  );
-  if (!district) return fail(res, "District not found", 404);
-  cleanupReplacedImages([existing?.heroImage], [district.heroImage]);
-  ok(res, district);
-});
-
-export const deleteDistrict = asyncHandler(async (req: Request, res: Response) => {
-  const district = await District.findOneAndDelete({ id: req.params.id });
-  if (!district) return fail(res, "District not found", 404);
-  cleanupReplacedImages([district.heroImage], []);
-  ok(res, { id: req.params.id, deleted: true });
-});
+export const createDistrict = crud.create;
+export const updateDistrict = crud.update;
+export const deleteDistrict = crud.remove;

@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
 import { Trek } from "../models/Trek";
-import { ok, fail } from "../utils/response";
+import { ok, fail, okPaginated } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
-import { genId } from "../utils/ids";
-import { pick, qs, sanitizeImage, sanitizeGallery } from "../utils/sanitize";
-import { cleanupReplacedImages } from "../services/cloudinary.service";
+import { qs } from "../utils/sanitize";
+import { parsePagination } from "../utils/pagination";
+import { makeAdminCrud } from "../utils/crudFactory";
 
 const TREK_FIELDS = [
   "slug", "name", "region", "districtIds", "tagline", "description", "heroImage", "gallery",
@@ -27,8 +27,12 @@ export const listTreks = asyncHandler(async (req: Request, res: Response) => {
     filter.difficulty = difficulty;
   }
 
-  const result = await Trek.find(filter).sort({ rating: -1 });
-  ok(res, result);
+  const { page, limit, skip } = parsePagination(req.query, 100);
+  const [result, total] = await Promise.all([
+    Trek.find(filter).sort({ rating: -1 }).skip(skip).limit(limit),
+    Trek.countDocuments(filter)
+  ]);
+  okPaginated(res, result, total, page, limit);
 });
 
 // GET /api/treks/:slug
@@ -40,36 +44,15 @@ export const getTrek = asyncHandler(async (req: Request, res: Response) => {
 
 // --- Admin CRUD ---
 
-export const createTrek = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, TREK_FIELDS);
-  if (body.heroImage !== undefined) body.heroImage = sanitizeImage(body.heroImage);
-  if (body.gallery !== undefined) body.gallery = sanitizeGallery(body.gallery);
-  const trek = await Trek.create({ ...body, id: (body.id as string) ?? genId("tk") });
-  ok(res, trek, 201);
+const crud = makeAdminCrud(Trek, {
+  fields: TREK_FIELDS,
+  idPrefix: "tk",
+  notFoundMessage: "Trek not found",
+  imageFields: ["heroImage"],
+  galleryFields: ["gallery"],
+  checkSlugConflict: true
 });
 
-export const updateTrek = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, TREK_FIELDS);
-  if (body.heroImage !== undefined) body.heroImage = sanitizeImage(body.heroImage);
-  if (body.gallery !== undefined) body.gallery = sanitizeGallery(body.gallery);
-  if (body.slug) {
-    const conflict = await Trek.findOne({ slug: body.slug, id: { $ne: req.params.id } });
-    if (conflict) return fail(res, `Slug "${body.slug}" is already used by another trek.`, 409);
-  }
-  const existing = await Trek.findOne({ id: req.params.id }).select("heroImage gallery");
-  const trek = await Trek.findOneAndUpdate(
-    { id: req.params.id },
-    { $set: body },
-    { new: true, runValidators: true }
-  );
-  if (!trek) return fail(res, "Trek not found", 404);
-  cleanupReplacedImages([existing?.heroImage, existing?.gallery], [trek.heroImage, trek.gallery]);
-  ok(res, trek);
-});
-
-export const deleteTrek = asyncHandler(async (req: Request, res: Response) => {
-  const trek = await Trek.findOneAndDelete({ id: req.params.id });
-  if (!trek) return fail(res, "Trek not found", 404);
-  cleanupReplacedImages([trek.heroImage, trek.gallery], []);
-  ok(res, { id: req.params.id, deleted: true });
-});
+export const createTrek = crud.create;
+export const updateTrek = crud.update;
+export const deleteTrek = crud.remove;

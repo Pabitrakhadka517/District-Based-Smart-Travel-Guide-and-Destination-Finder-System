@@ -1,13 +1,18 @@
 import type { Request, Response } from "express";
 import { Booking } from "../models/Booking";
 import { Destination } from "../models/Destination";
-import { ok, fail } from "../utils/response";
+import { ok, fail, okPaginated } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
 import { genId, today } from "../utils/ids";
+import { parsePagination } from "../utils/pagination";
+import { qs } from "../utils/sanitize";
 
 const VALID_ACCOMMODATION = ["Budget", "Standard", "Luxury"] as const;
 const VALID_TRANSPORT = ["Local Bus", "Private Jeep", "Domestic Flight"] as const;
 const VALID_STATUSES = ["pending", "confirmed", "cancelled"] as const;
+// A user acting on their own booking may only cancel it — moving a booking to
+// "confirmed" requires admin review via the /admin/bookings endpoints below.
+const USER_ALLOWED_STATUSES = ["cancelled"] as const;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Flat per-traveler estimate (NPR) — kept simple and transparent since the
@@ -34,8 +39,13 @@ function estimateCost(
 
 // GET /api/bookings  (requireAuth) → the current user's bookings
 export const listBookings = asyncHandler(async (req: Request, res: Response) => {
-  const bookings = await Booking.find({ userId: req.auth!.sub }).sort({ travelDate: 1 });
-  ok(res, bookings);
+  const { page, limit, skip } = parsePagination(req.query, 100);
+  const filter = { userId: req.auth!.sub };
+  const [bookings, total] = await Promise.all([
+    Booking.find(filter).sort({ travelDate: 1 }).skip(skip).limit(limit),
+    Booking.countDocuments(filter)
+  ]);
+  okPaginated(res, bookings, total, page, limit);
 });
 
 // POST /api/bookings  (requireAuth)
@@ -90,11 +100,13 @@ export const createBooking = asyncHandler(async (req: Request, res: Response) =>
   ok(res, booking, 201);
 });
 
-// PATCH /api/bookings/:id  (requireAuth, own booking only) — status changes (e.g. cancel)
+// PATCH /api/bookings/:id  (requireAuth, own booking only) — self-service cancel only.
+// Moving a booking to "confirmed" is an admin action (see adminUpdateBookingStatus)
+// so a user can never approve their own booking.
 export const updateBookingStatus = asyncHandler(async (req: Request, res: Response) => {
   const status = String(req.body?.status ?? "");
-  if (!VALID_STATUSES.includes(status as (typeof VALID_STATUSES)[number])) {
-    return fail(res, `status must be one of: ${VALID_STATUSES.join(", ")}`, 400);
+  if (!USER_ALLOWED_STATUSES.includes(status as (typeof USER_ALLOWED_STATUSES)[number])) {
+    return fail(res, `You can only cancel your own booking (status must be "cancelled")`, 403);
   }
 
   const booking = await Booking.findOneAndUpdate(
@@ -109,6 +121,51 @@ export const updateBookingStatus = asyncHandler(async (req: Request, res: Respon
 // DELETE /api/bookings/:id  (requireAuth, own booking only)
 export const deleteBooking = asyncHandler(async (req: Request, res: Response) => {
   const booking = await Booking.findOneAndDelete({ id: req.params.id, userId: req.auth!.sub });
+  if (!booking) return fail(res, "Booking not found", 404);
+  ok(res, { id: req.params.id, deleted: true });
+});
+
+// --- Admin oversight ---
+
+// GET /api/admin/bookings?status=  (requireAdmin) → every user's bookings
+export const adminListBookings = asyncHandler(async (req: Request, res: Response) => {
+  const status = qs(req.query.status);
+  const filter: Record<string, unknown> = {};
+  if (status) {
+    if (!VALID_STATUSES.includes(status as (typeof VALID_STATUSES)[number])) {
+      return fail(res, `status must be one of: ${VALID_STATUSES.join(", ")}`, 400);
+    }
+    filter.status = status;
+  }
+
+  const { page, limit, skip } = parsePagination(req.query, 50);
+  const [bookings, total] = await Promise.all([
+    Booking.find(filter).sort({ travelDate: 1 }).skip(skip).limit(limit),
+    Booking.countDocuments(filter)
+  ]);
+  okPaginated(res, bookings, total, page, limit);
+});
+
+// PATCH /api/admin/bookings/:id  { status }  (requireAdmin) — the only way a
+// booking can become "confirmed".
+export const adminUpdateBookingStatus = asyncHandler(async (req: Request, res: Response) => {
+  const status = String(req.body?.status ?? "");
+  if (!VALID_STATUSES.includes(status as (typeof VALID_STATUSES)[number])) {
+    return fail(res, `status must be one of: ${VALID_STATUSES.join(", ")}`, 400);
+  }
+
+  const booking = await Booking.findOneAndUpdate(
+    { id: req.params.id },
+    { $set: { status } },
+    { new: true, runValidators: true }
+  );
+  if (!booking) return fail(res, "Booking not found", 404);
+  ok(res, booking);
+});
+
+// DELETE /api/admin/bookings/:id  (requireAdmin) — any user's booking
+export const adminDeleteBooking = asyncHandler(async (req: Request, res: Response) => {
+  const booking = await Booking.findOneAndDelete({ id: req.params.id });
   if (!booking) return fail(res, "Booking not found", 404);
   ok(res, { id: req.params.id, deleted: true });
 });

@@ -28,7 +28,5 @@ const guideSchema = new Schema(
   baseSchemaOptions
 );
 
-guideSchema.index({ title: "text", excerpt: "text" });
-
 export type GuideDoc = InferSchemaType<typeof guideSchema>;
 export const Guide = model<IGuide>("Guide", guideSchema);

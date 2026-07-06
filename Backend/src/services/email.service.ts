@@ -14,12 +14,18 @@ function createTransport() {
 async function send(to: string, subject: string, html: string): Promise<void> {
   const transporter = createTransport();
   if (!transporter) {
-    // Dev mode: print to console instead of sending
-    console.log("\n========== [EMAIL] ==========");
+    if (env.nodeEnv === "production") {
+      // Never print an email body (which may contain a live reset/verification
+      // link) to logs in production — log aggregators would capture it.
+      console.error(`[EMAIL] No SMTP transporter configured — cannot send "${subject}" to ${to}. Set EMAIL_HOST/EMAIL_USER.`);
+      return;
+    }
+    // Dev-only fallback: print to console instead of sending
+    console.log("\n========== [EMAIL] (development only — not sent) ==========");
     console.log(`To:      ${to}`);
     console.log(`Subject: ${subject}`);
     console.log(`Body:    ${html.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim()}`);
-    console.log("==============================\n");
+    console.log("=============================================================\n");
     return;
   }
   await transporter.sendMail({ from: env.emailFrom, to, subject, html });

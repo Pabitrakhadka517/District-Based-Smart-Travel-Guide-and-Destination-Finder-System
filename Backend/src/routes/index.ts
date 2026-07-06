@@ -34,10 +34,13 @@ const authLimiter = rateLimit({
   message: { success: false, error: "Too many requests. Please try again in 15 minutes." }
 });
 
-// Light limiter: read-only public endpoints
+// Light limiter: read-only public endpoints. Generous on purpose — `next build`
+// statically generates 600+ pages (districts/destinations/attractions/treks/
+// guides), each firing 1-3 same-origin fetches in a tight window, so the cap
+// has to comfortably clear a full production build, not just live traffic.
 const publicLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 120,
+  max: 1000,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, error: "Too many requests. Please slow down." }
@@ -166,6 +169,9 @@ router.delete("/checklists/:id", requireAdmin, checklists.deletePackingChecklist
 
 router.get("/dashboard/activity",  requireAuth,  stats.getUserActivity);
 router.get("/admin/analytics",     requireAdmin, stats.getAdminAnalytics);
+router.get(   "/admin/bookings",     requireAdmin, bookings.adminListBookings);
+router.patch( "/admin/bookings/:id", requireAdmin, bookings.adminUpdateBookingStatus);
+router.delete("/admin/bookings/:id", requireAdmin, bookings.adminDeleteBooking);
 router.get("/users",               requireAdmin, users.listUsers);
 router.get("/users/:id",           requireAdmin, users.getUser);
 router.patch("/users/:id/role",    requireAdmin, users.updateUserRole);

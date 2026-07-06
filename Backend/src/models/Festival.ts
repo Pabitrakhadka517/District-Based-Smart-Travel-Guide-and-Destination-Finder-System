@@ -21,7 +21,5 @@ const festivalSchema = new Schema(
   baseSchemaOptions
 );
 
-festivalSchema.index({ name: "text", description: "text" });
-
 export type FestivalDoc = InferSchemaType<typeof festivalSchema>;
 export const Festival = model<IFestival>("Festival", festivalSchema);

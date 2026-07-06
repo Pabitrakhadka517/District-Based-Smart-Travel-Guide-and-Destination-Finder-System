@@ -1,8 +1,43 @@
-/** Ported from the frontend's src/data/images.ts so seeded image URLs match exactly. */
-const U = "https://images.unsplash.com/photo-";
+import cloudinaryMap from "./cloudinary-map.json";
 
-export const img = (id: string, w = 1200, q = 80): string =>
-  `${U}${id}?auto=format&fit=crop&w=${w}&q=${q}`;
+interface MappedAsset {
+  url: string;
+  publicId: string;
+  width?: number;
+  height?: number;
+}
+
+const UNSPLASH_MAP = cloudinaryMap.unsplash as Record<string, MappedAsset>;
+const PRAVATAR_MAP = cloudinaryMap.pravatar as Record<string, MappedAsset>;
+const PLACEHOLDERS = cloudinaryMap.placeholders as Record<string, MappedAsset>;
+
+/**
+ * All seed imagery is migrated onto this project's own Cloudinary account
+ * (see `cloudinary-migrate.ts` + `cloudinary-map.json`) — there is no longer
+ * any runtime dependency on Unsplash/pravatar.cc. `id`/`i` here are just the
+ * lookup keys into that migrated map; `w`/`q` are intentionally unused now
+ * since Cloudinary delivers responsive sizing/format via URL transformations
+ * applied at render time (see `Frontend/src/lib/cloudinary.ts`'s `cld()`),
+ * not by baking one fixed size into the stored URL.
+ */
+export const img = (id: string, _w = 1200, _q = 80): string => {
+  const asset = UNSPLASH_MAP[id];
+  if (!asset) {
+    // Should never happen once the map is complete — fail loudly in seeding
+    // rather than silently reintroducing an external dependency.
+    throw new Error(`No migrated Cloudinary asset for Unsplash photo id "${id}". Run cloudinary-migrate.ts.`);
+  }
+  return asset.url;
+};
+
+/** Same idea as `img()`, but for the pravatar-sourced avatar photos. */
+export const avatar = (i: number): string => {
+  const asset = PRAVATAR_MAP[String(i)];
+  if (!asset) {
+    throw new Error(`No migrated Cloudinary asset for pravatar avatar #${i}. Run cloudinary-migrate.ts.`);
+  }
+  return asset.url;
+};
 
 export const PHOTO = {
   himalaya1: "1544735716-392fe2489ffa",
@@ -61,20 +96,34 @@ export const gallery = (...ids: string[]): string[] => ids.map((id) => img(id, 1
 
 export interface SeedImage {
   url: string;
-  publicId: null;
+  publicId: string | null;
   alt: string;
 }
 
+/** Cloudinary embeds the asset's public_id in its own delivery URL, so it can
+ *  always be recovered from a migrated URL without a separate lookup table. */
+function extractPublicId(url: string): string | null {
+  const match = /\/upload\/(?:v\d+\/)?(.+?)\.[a-zA-Z0-9]+(?:\?.*)?$/.exec(url);
+  return match ? match[1] : null;
+}
+
 /**
- * Wraps a legacy seed URL string into the structured image shape the models
- * now expect. `publicId` stays null — these were never uploaded through
- * Cloudinary, so they must never be sent to Cloudinary's destroy API.
+ * Wraps a seed URL string into the structured image shape the models expect.
+ * Every URL produced by `img()`/`avatar()` is now a real Cloudinary asset, so
+ * `publicId` is recovered from the URL itself (real assets are safe to send
+ * to Cloudinary's destroy API — unlike the old Unsplash/pravatar URLs, which
+ * is why `publicId` stayed `null` before this migration).
  */
 export const toImage = (url: string, alt: string): SeedImage => ({
   url: url ?? "",
-  publicId: null,
+  publicId: url ? extractPublicId(url) : null,
   alt
 });
 
 export const toGallery = (urls: string[], alt: string): SeedImage[] =>
   (urls ?? []).map((url, i) => toImage(url, `${alt} — photo ${i + 1}`));
+
+/** Dedicated default assets — used by User/Review model defaults, the
+ *  anonymous-reviewer fallback, and the frontend's missing-image fallback. */
+export const DEFAULT_AVATAR: SeedImage = toImage(PLACEHOLDERS.defaultAvatar.url, "");
+export const DEFAULT_IMAGE: SeedImage = toImage(PLACEHOLDERS.defaultImage.url, "");

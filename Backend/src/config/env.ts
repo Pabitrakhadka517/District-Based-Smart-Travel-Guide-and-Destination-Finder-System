@@ -3,11 +3,13 @@ dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET ?? "";
 
-// Fail fast in production if JWT_SECRET is missing or too short.
-// A weak/missing secret makes every token in the system forgeable.
-if (process.env.NODE_ENV === "production" && jwtSecret.length < 32) {
+// Fail fast in every environment if JWT_SECRET is missing or too short — a
+// weak/missing secret makes every token in the system forgeable. There is no
+// hardcoded fallback: a fallback literal would be public (checked into the
+// repo) and forgeable by anyone who reads it, in dev, staging or prod alike.
+if (jwtSecret.length < 32) {
   throw new Error(
-    "JWT_SECRET must be set and at least 32 characters long before starting in production."
+    "JWT_SECRET must be set and at least 32 characters long. Set it in your .env file before starting the server."
   );
 }
 
@@ -25,8 +27,7 @@ export const env = {
   port: Number(process.env.PORT ?? 5000),
   nodeEnv: process.env.NODE_ENV ?? "development",
   mongoUri: process.env.MONGODB_URI ?? "mongodb://127.0.0.1:27017/nepalyatra",
-  // Safe dev-only fallback — production check above will reject this
-  jwtSecret: jwtSecret || "dev_only_secret_at_least_32_chars_long!!",
+  jwtSecret,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? "15m",
   corsOrigin,
   emailHost: process.env.EMAIL_HOST ?? "",

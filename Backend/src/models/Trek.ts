@@ -45,7 +45,5 @@ const trekSchema = new Schema(
   baseSchemaOptions
 );
 
-trekSchema.index({ name: "text", tagline: "text", description: "text" });
-
 export type TrekDoc = InferSchemaType<typeof trekSchema>;
 export const Trek = model<ITrek>("Trek", trekSchema);

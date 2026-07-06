@@ -112,9 +112,6 @@ export interface IUser {
   loginAttempts: number;
   lockUntil?: Date;
   isActive: boolean;
-  emailVerified: boolean;
-  emailVerificationToken?: string;
-  emailVerificationExpiry?: Date;
 }
 
 export interface ITravelAlert {
@@ -174,6 +171,7 @@ export interface ITripPlan {
   notes: string;
   itinerary: ITripDay[];
   checklist: IChecklistItem[];
+  photos: IImage[];
 }
 
 export type AccommodationType = "Budget" | "Standard" | "Luxury";
@@ -191,5 +189,6 @@ export interface IBooking {
   estimatedCost: number;
   status: "pending" | "confirmed" | "cancelled";
   notes: string;
-  createdAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }

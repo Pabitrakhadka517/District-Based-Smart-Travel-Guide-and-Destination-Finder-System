@@ -8,6 +8,7 @@ import { Schema, type SchemaOptions } from "mongoose";
 export const baseSchemaOptions: SchemaOptions = {
   versionKey: false,
   id: false, // disable Mongoose's default ObjectId-backed `id` virtual; we use our own string `id`
+  timestamps: true, // adds/manages createdAt & updatedAt on every model that uses these options
   toJSON: {
     virtuals: false,
     transform(_doc, ret: Record<string, unknown>) {

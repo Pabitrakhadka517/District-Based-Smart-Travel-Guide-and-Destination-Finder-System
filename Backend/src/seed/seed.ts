@@ -24,7 +24,10 @@ export async function seed(): Promise<void> {
     District.deleteMany({}),
     City.deleteMany({}),
     Destination.deleteMany({}),
-    Review.deleteMany({}),
+    // Seed reviews never have a userId (see Review.ts's sparse-index comment);
+    // every real review submitted through the app always does — so this only
+    // clears the demo reviews, never a real traveler's own review.
+    Review.deleteMany({ userId: { $exists: false } }),
     Trek.deleteMany({}),
     Festival.deleteMany({}),
     Guide.deleteMany({}),

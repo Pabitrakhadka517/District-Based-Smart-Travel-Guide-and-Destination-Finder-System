@@ -3,13 +3,14 @@ import { TripPlan } from "../models/TripPlan";
 import { ok, fail } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
 import { genId } from "../utils/ids";
-import { pick } from "../utils/sanitize";
+import { pick, sanitizeGallery } from "../utils/sanitize";
+import { cleanupReplacedImages } from "../services/cloudinary.service";
 
 const TRIP_FIELDS = [
   "title", "travelType", "travelers",
   "destinationIds", "startDate", "endDate",
   "budget", "budgetBreakdown",
-  "status", "notes", "itinerary", "checklist",
+  "status", "notes", "itinerary", "checklist", "photos",
 ];
 
 const VALID_STATUSES = ["draft", "planned", "ready", "ongoing", "completed", "cancelled"];
@@ -57,6 +58,7 @@ export const createTrip = asyncHandler(async (req: Request, res: Response) => {
     notes:     String(body.notes ?? ""),
     itinerary: Array.isArray(body.itinerary) ? body.itinerary : [],
     checklist: Array.isArray(body.checklist) ? body.checklist : [],
+    photos: sanitizeGallery(body.photos, 20),
   });
 
   ok(res, trip, 201);
@@ -65,6 +67,7 @@ export const createTrip = asyncHandler(async (req: Request, res: Response) => {
 // PUT /api/planner/:id  (auth)
 export const updateTrip = asyncHandler(async (req: Request, res: Response) => {
   const body = pick(req.body as Record<string, unknown>, TRIP_FIELDS);
+  if (body.photos !== undefined) body.photos = sanitizeGallery(body.photos, 20);
 
   if (body.startDate && !DATE_RE.test(String(body.startDate)))
     return fail(res, "startDate must be YYYY-MM-DD", 400);
@@ -75,12 +78,17 @@ export const updateTrip = asyncHandler(async (req: Request, res: Response) => {
   if (body.travelType && !VALID_TYPES.includes(String(body.travelType)))
     return fail(res, `travelType must be one of: ${VALID_TYPES.join(", ")}`, 400);
 
+  const existing = body.photos !== undefined
+    ? await TripPlan.findOne({ id: req.params.id, userId: req.auth!.sub }).select("photos")
+    : null;
+
   const trip = await TripPlan.findOneAndUpdate(
     { id: req.params.id, userId: req.auth!.sub },
     { $set: body },
     { new: true, runValidators: true }
   );
   if (!trip) return fail(res, "Trip not found", 404);
+  if (existing) cleanupReplacedImages([existing.photos], [trip.photos]);
   ok(res, trip);
 });
 
@@ -88,5 +96,6 @@ export const updateTrip = asyncHandler(async (req: Request, res: Response) => {
 export const deleteTrip = asyncHandler(async (req: Request, res: Response) => {
   const trip = await TripPlan.findOneAndDelete({ id: req.params.id, userId: req.auth!.sub });
   if (!trip) return fail(res, "Trip not found", 404);
+  cleanupReplacedImages([trip.photos], []);
   ok(res, { id: req.params.id, deleted: true });
 });

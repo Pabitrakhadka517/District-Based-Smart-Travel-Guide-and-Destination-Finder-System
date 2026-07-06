@@ -1,6 +1,6 @@
 import { Schema, model, type InferSchemaType } from "mongoose";
 import type { ITripPlan } from "./types";
-import { baseSchemaOptions } from "./shared";
+import { baseSchemaOptions, imageSchema } from "./shared";
 
 const activitySchema = new Schema(
   {
@@ -70,6 +70,7 @@ const tripPlanSchema = new Schema(
     notes:     { type: String, default: "" },
     itinerary: { type: [daySchema], default: [] },
     checklist: { type: [checklistItemSchema], default: [] },
+    photos:    { type: [imageSchema], default: [] },
   },
   baseSchemaOptions
 );

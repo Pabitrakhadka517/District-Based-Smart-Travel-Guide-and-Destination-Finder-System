@@ -235,7 +235,7 @@ export const openapiSpec = {
           name:           { type: "string", example: "Kathmandu" },
           province:       { type: "string", example: "Bagmati" },
           description:    { type: "string", example: "Nepal's vibrant capital district…" },
-          heroImage:      { type: "string", format: "uri", example: "https://images.unsplash.com/photo-xxx" },
+          heroImage:      { type: "string", format: "uri", example: "https://res.cloudinary.com/your-cloud-name/image/upload/nepalyatra/districts/example.jpg" },
           coordinates:    $ref("Coordinates"),
           cityCount:      { type: "integer", example: 2 },
           destinationCount:{ type: "integer", example: 3 },
@@ -483,7 +483,6 @@ export const openapiSpec = {
           role:          { type: "string", enum: ENUM_ROLE, example: "user" },
           joinedAt:      { type: "string", format: "date", example: "2025-09-01" },
           lastLogin:     { type: "string", format: "date", example: "2026-06-01" },
-          emailVerified: { type: "boolean", example: true },
           isActive:      { type: "boolean", example: true },
           wishlist:      { type: "array", items: { type: "string" }, description: "Wishlist destination IDs" }
         }
@@ -850,7 +849,7 @@ export const openapiSpec = {
                 type: "object",
                 properties: {
                   name:   { type: "string", minLength: 2, example: "Pabitra Khadka" },
-                  avatar: { type: "string", format: "uri", example: "https://i.pravatar.cc/150?img=25" }
+                  avatar: { type: "string", format: "uri", example: "https://res.cloudinary.com/your-cloud-name/image/upload/nepalyatra/users/example.jpg" }
                 }
               }
             }
@@ -990,7 +989,7 @@ export const openapiSpec = {
               schema: $ref("District"),
               example: {
                 id: "d99", slug: "test-district", name: "Test District", province: "Bagmati",
-                description: "A test district.", heroImage: "https://images.unsplash.com/photo-xxx",
+                description: "A test district.", heroImage: "https://res.cloudinary.com/your-cloud-name/image/upload/nepalyatra/districts/example.jpg",
                 coordinates: { lat: 27.7, lng: 85.3 }, cityCount: 0, destinationCount: 0,
                 popularFor: [], rating: 0, bestSeason: "Autumn", attractionCount: 0
               }
@@ -1164,7 +1163,7 @@ export const openapiSpec = {
                 tagline: "Nepal's holiest Hindu shrine",
                 description: "One of the most sacred Hindu temples in Asia…",
                 history: "The temple dates to at least the 5th century…",
-                heroImage: "https://images.unsplash.com/photo-xxx",
+                heroImage: "https://res.cloudinary.com/your-cloud-name/image/upload/nepalyatra/districts/example.jpg",
                 gallery: [], coordinates: { lat: 27.7109, lng: 85.3487 },
                 openingHours: "4:00 AM – 9:00 PM",
                 entryFee: { nepali: 0, saarc: 250, foreigner: 1000, currency: "NPR" },

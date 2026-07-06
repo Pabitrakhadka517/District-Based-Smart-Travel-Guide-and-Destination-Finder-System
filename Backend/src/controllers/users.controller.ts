@@ -1,14 +1,19 @@
 import type { Request, Response } from "express";
 import { User } from "../models/User";
-import { ok, fail } from "../utils/response";
+import { ok, fail, okPaginated } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
+import { parsePagination } from "../utils/pagination";
 
 const VALID_ROLES = ["user", "admin"] as const;
 
 // GET /api/users (admin)
-export const listUsers = asyncHandler(async (_req: Request, res: Response) => {
-  const users = await User.find().sort({ joinedAt: -1 }).limit(500);
-  ok(res, users);
+export const listUsers = asyncHandler(async (req: Request, res: Response) => {
+  const { page, limit, skip } = parsePagination(req.query, 500);
+  const [users, total] = await Promise.all([
+    User.find().sort({ joinedAt: -1 }).skip(skip).limit(limit),
+    User.countDocuments()
+  ]);
+  okPaginated(res, users, total, page, limit);
 });
 
 // GET /api/users/:id (admin)

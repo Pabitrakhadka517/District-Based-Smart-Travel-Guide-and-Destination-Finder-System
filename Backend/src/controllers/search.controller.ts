@@ -8,10 +8,12 @@ import { Guide } from "../models/Guide";
 import { ok } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
 import { escapeRegex, qs } from "../utils/sanitize";
+import { parsePagination } from "../utils/pagination";
 
-// GET /api/search?q=&categories=Adventure,Nature&district=<id>&difficulty=&season=&minRating=&maxBudget=&sort=
+// GET /api/search?q=&categories=Adventure,Nature&district=<id>&difficulty=&season=&minRating=&maxBudget=&sort=&page=&limit=
 export const search = asyncHandler(async (req: Request, res: Response) => {
   const q = qs(req.query.q)?.trim() ?? "";
+  const { page, limit, skip } = parsePagination(req.query, 24);
 
   // Multi-category: "Adventure,Nature" — also accepts legacy single "category" param
   const categoriesRaw = qs(req.query.categories) ?? qs(req.query.category) ?? "";
@@ -85,39 +87,47 @@ export const search = asyncHandler(async (req: Request, res: Response) => {
   if (season)     trekFilter.bestSeasons = season;
 
   /* ── Run all queries in parallel ─────────────────────────────── */
-  const [destinations, districts, attractions, treks, festivals, guides] = await Promise.all([
-    Destination.find(destFilter).sort(mongoSort).limit(100),
+  // Destinations are the primary, most prominent result section, so they get
+  // real page/limit pagination; the other categories are secondary "preview"
+  // sections whose caps are just bumped comfortably above current collection
+  // sizes so a broad query can never silently drop matches.
+  const [destinations, destinationsTotal, districts, attractions, treks, festivals, guides] = await Promise.all([
+    Destination.find(destFilter).sort(mongoSort).skip(skip).limit(limit),
+    Destination.countDocuments(destFilter),
 
     hasText
-      ? District.find({ name: { $regex: escapedQ, $options: "i" } }).limit(20)
+      ? District.find({ name: { $regex: escapedQ, $options: "i" } }).limit(80)
       : Promise.resolve([]),
 
     shouldSearchAttractions
-      ? Attraction.find(attrFilter).sort({ rating: -1 }).limit(20)
+      ? Attraction.find(attrFilter).sort({ rating: -1 }).limit(350)
       : Promise.resolve([]),
 
     shouldSearchTreks
-      ? Trek.find(trekFilter).sort({ rating: -1 }).limit(10)
+      ? Trek.find(trekFilter).sort({ rating: -1 }).limit(50)
       : Promise.resolve([]),
 
     hasText
-      ? Festival.find({ name: { $regex: escapedQ, $options: "i" } }).limit(10)
+      ? Festival.find({ name: { $regex: escapedQ, $options: "i" } }).limit(50)
       : Promise.resolve([]),
 
     hasText
-      ? Guide.find({ title: { $regex: escapedQ, $options: "i" } }).limit(10)
+      ? Guide.find({ title: { $regex: escapedQ, $options: "i" } }).limit(50)
       : Promise.resolve([]),
   ]);
 
   ok(res, {
     destinations,
+    destinationsTotal,
+    destinationsPage: page,
+    destinationsLimit: limit,
     districts,
     attractions,
     treks,
     festivals,
     guides,
     total:
-      destinations.length +
+      destinationsTotal +
       attractions.length +
       treks.length +
       festivals.length +

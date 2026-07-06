@@ -5,7 +5,7 @@ import { baseSchemaOptions, coordinatesSchema, imageSchema, emptyImage } from ".
 const citySchema = new Schema(
   {
     id: { type: String, required: true, unique: true, index: true },
-    slug: { type: String, required: true, index: true },
+    slug: { type: String, required: true, unique: true, index: true },
     districtId: { type: String, required: true, index: true },
     name: { type: String, required: true },
     description: { type: String, default: "" },

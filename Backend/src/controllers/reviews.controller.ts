@@ -3,10 +3,12 @@ import { Review } from "../models/Review";
 import { Destination } from "../models/Destination";
 import { TripPlan } from "../models/TripPlan";
 import { User } from "../models/User";
-import { ok, fail } from "../utils/response";
+import { ok, fail, okPaginated } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
 import { genId, today } from "../utils/ids";
 import { qs, sanitizeGallery } from "../utils/sanitize";
+import { parsePagination } from "../utils/pagination";
+import { PLACEHOLDER } from "../services/cloudinary.service";
 
 const VALID_STATUSES = ["approved", "pending", "rejected"] as const;
 
@@ -38,8 +40,12 @@ export const listReviews = asyncHandler(async (req: Request, res: Response) => {
     filter.status = "approved"; // Public always sees only approved reviews
   }
 
-  const result = await Review.find(filter).sort({ date: -1 }).limit(200);
-  ok(res, result);
+  const { page, limit, skip } = parsePagination(req.query, 200);
+  const [result, total] = await Promise.all([
+    Review.find(filter).sort({ date: -1 }).skip(skip).limit(limit),
+    Review.countDocuments(filter)
+  ]);
+  okPaginated(res, result, total, page, limit);
 });
 
 // POST /api/reviews   (requireAuth)
@@ -76,7 +82,7 @@ export const createReview = asyncHandler(async (req: Request, res: Response) => 
     userId,
     destinationId,
     author:           reviewer?.name   ?? "Anonymous",
-    avatar:           reviewer?.avatar ?? { url: "https://i.pravatar.cc/150?img=3", publicId: null, alt: "Anonymous traveler" },
+    avatar:           reviewer?.avatar ?? { url: PLACEHOLDER.avatar.url, publicId: PLACEHOLDER.avatar.publicId, alt: "Anonymous traveler" },
     rating,
     title:  typeof body.title === "string" ? body.title.trim().slice(0, 200)  : "",
     body:   typeof body.body  === "string" ? body.body.trim().slice(0, 5000)  : "",

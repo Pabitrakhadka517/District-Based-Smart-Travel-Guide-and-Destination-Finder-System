@@ -2,11 +2,11 @@ import type { Request, Response } from "express";
 import { City } from "../models/City";
 import { District } from "../models/District";
 import { Destination } from "../models/Destination";
-import { ok, fail } from "../utils/response";
+import { ok, fail, okPaginated } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
-import { genId } from "../utils/ids";
-import { pick, qs, sanitizeImage } from "../utils/sanitize";
-import { cleanupReplacedImages } from "../services/cloudinary.service";
+import { qs } from "../utils/sanitize";
+import { parsePagination } from "../utils/pagination";
+import { makeAdminCrud } from "../utils/crudFactory";
 
 const CITY_FIELDS = [
   "slug", "districtId", "name", "description", "image", "coordinates",
@@ -34,37 +34,24 @@ export const listCities = asyncHandler(async (req: Request, res: Response) => {
     return ok(res, result);
   }
 
-  const result = await City.find().sort({ name: 1 }).limit(300);
-  ok(res, result);
+  const { page, limit, skip } = parsePagination(req.query, 300);
+  const [result, total] = await Promise.all([
+    City.find().sort({ name: 1 }).skip(skip).limit(limit),
+    City.countDocuments()
+  ]);
+  okPaginated(res, result, total, page, limit);
 });
 
 // --- Admin CRUD ---
 
-export const createCity = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, CITY_FIELDS);
-  if (body.image !== undefined) body.image = sanitizeImage(body.image);
-  const city = await City.create({ ...body, id: (body.id as string) ?? genId("c") });
-  ok(res, city, 201);
+const crud = makeAdminCrud(City, {
+  fields: CITY_FIELDS,
+  idPrefix: "c",
+  notFoundMessage: "City not found",
+  imageFields: ["image"],
+  checkSlugConflict: true
 });
 
-export const updateCity = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, CITY_FIELDS);
-  if (body.image !== undefined) body.image = sanitizeImage(body.image);
-
-  const existing = await City.findOne({ id: req.params.id }).select("image");
-  const city = await City.findOneAndUpdate(
-    { id: req.params.id },
-    { $set: body },
-    { new: true, runValidators: true }
-  );
-  if (!city) return fail(res, "City not found", 404);
-  cleanupReplacedImages([existing?.image], [city.image]);
-  ok(res, city);
-});
-
-export const deleteCity = asyncHandler(async (req: Request, res: Response) => {
-  const city = await City.findOneAndDelete({ id: req.params.id });
-  if (!city) return fail(res, "City not found", 404);
-  cleanupReplacedImages([city.image], []);
-  ok(res, { id: req.params.id, deleted: true });
-});
+export const createCity = crud.create;
+export const updateCity = crud.update;
+export const deleteCity = crud.remove;

@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
 import { Attraction } from "../models/Attraction";
 import { District } from "../models/District";
-import { ok, fail } from "../utils/response";
+import { ok, fail, okPaginated } from "../utils/response";
 import { asyncHandler } from "../utils/asyncHandler";
-import { genId } from "../utils/ids";
-import { escapeRegex, pick, qs, sanitizeImage, sanitizeGallery } from "../utils/sanitize";
-import { cleanupReplacedImages } from "../services/cloudinary.service";
+import { escapeRegex, qs } from "../utils/sanitize";
+import { parsePagination } from "../utils/pagination";
+import { makeAdminCrud } from "../utils/crudFactory";
 
 const ATTRACTION_FIELDS = [
   "slug", "districtId", "name", "category", "tagline", "description", "history",
@@ -28,8 +28,12 @@ export const listAttractions = asyncHandler(async (req: Request, res: Response) 
   if (req.query.trending)    filter.trending   = true;
   if (q)                     filter.name       = { $regex: escapeRegex(q), $options: "i" };
 
-  const result = await Attraction.find(filter).sort({ rating: -1 }).limit(200);
-  ok(res, result);
+  const { page, limit, skip } = parsePagination(req.query, 350);
+  const [result, total] = await Promise.all([
+    Attraction.find(filter).sort({ rating: -1 }).skip(skip).limit(limit),
+    Attraction.countDocuments(filter)
+  ]);
+  okPaginated(res, result, total, page, limit);
 });
 
 // GET /api/attractions/:slug -> { attraction, nearby }
@@ -52,41 +56,24 @@ export const listDistrictAttractions = asyncHandler(async (req: Request, res: Re
   if (category) filter.category = category;
   if (q)        filter.name     = { $regex: escapeRegex(q), $options: "i" };
 
-  const attractions = await Attraction.find(filter).sort({ rating: -1 }).limit(200);
-  ok(res, attractions);
+  const { page, limit, skip } = parsePagination(req.query, 350);
+  const [attractions, total] = await Promise.all([
+    Attraction.find(filter).sort({ rating: -1 }).skip(skip).limit(limit),
+    Attraction.countDocuments(filter)
+  ]);
+  okPaginated(res, attractions, total, page, limit);
 });
 
 // --- Admin CRUD ---
 
-export const createAttraction = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, ATTRACTION_FIELDS);
-  if (body.heroImage !== undefined) body.heroImage = sanitizeImage(body.heroImage);
-  if (body.gallery !== undefined) body.gallery = sanitizeGallery(body.gallery);
-  const attraction = await Attraction.create({ ...body, id: (body.id as string) ?? genId("a") });
-  ok(res, attraction, 201);
+const crud = makeAdminCrud(Attraction, {
+  fields: ATTRACTION_FIELDS,
+  idPrefix: "a",
+  notFoundMessage: "Attraction not found",
+  imageFields: ["heroImage"],
+  galleryFields: ["gallery"]
 });
 
-export const updateAttraction = asyncHandler(async (req: Request, res: Response) => {
-  const body = pick(req.body as Record<string, unknown>, ATTRACTION_FIELDS);
-  if (body.heroImage !== undefined) body.heroImage = sanitizeImage(body.heroImage);
-  if (body.gallery !== undefined) body.gallery = sanitizeGallery(body.gallery);
-  const existing = await Attraction.findOne({ id: req.params.id }).select("heroImage gallery");
-  const attraction = await Attraction.findOneAndUpdate(
-    { id: req.params.id },
-    { $set: body },
-    { new: true, runValidators: true }
-  );
-  if (!attraction) return fail(res, "Attraction not found", 404);
-  cleanupReplacedImages(
-    [existing?.heroImage, existing?.gallery],
-    [attraction.heroImage, attraction.gallery]
-  );
-  ok(res, attraction);
-});
-
-export const deleteAttraction = asyncHandler(async (req: Request, res: Response) => {
-  const attraction = await Attraction.findOneAndDelete({ id: req.params.id });
-  if (!attraction) return fail(res, "Attraction not found", 404);
-  cleanupReplacedImages([attraction.heroImage, attraction.gallery], []);
-  ok(res, { id: req.params.id, deleted: true });
-});
+export const createAttraction = crud.create;
+export const updateAttraction = crud.update;
+export const deleteAttraction = crud.remove;
